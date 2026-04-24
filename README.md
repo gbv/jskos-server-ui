@@ -1,6 +1,6 @@
 # jskos-server-ui
 
-[![CI](https://github.com/gbv/jskos-server-ui/actions/workflows/release.yml/badge.svg)](https://github.com/gbv/jskos-server-ui/actions)
+[![CI](https://github.com/gbv/jskos-server-ui/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/gbv/jskos-server-ui/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/gbv/jskos-server-ui/branch/main/graph/badge.svg)](https://codecov.io/gh/gbv/jskos-server-ui)
 [![GitHub release](https://img.shields.io/github/v/release/gbv/jskos-server-ui)](https://github.com/gbv/jskos-server-ui/releases)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org/)
