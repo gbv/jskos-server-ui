@@ -1,5 +1,9 @@
-# Vue 3 + Vite
+# jskos-server-ui
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+[![CI](https://github.com/gbv/jskos-server-ui/actions/workflows/release.yml/badge.svg)](https://github.com/gbv/jskos-server-ui/actions)
+[![Coverage](https://codecov.io/gh/gbv/jskos-server-ui/branch/main/graph/badge.svg)](https://codecov.io/gh/gbv/jskos-server-ui)
+[![GitHub release](https://img.shields.io/github/v/release/gbv/jskos-server-ui)](https://github.com/gbv/jskos-server-ui/releases)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org/)
+[![License](https://img.shields.io/github/license/gbv/jskos-server-ui)](LICENSE)
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+A Vue 3 single-page application providing a web-based frontend for [jskos-server](https://github.com/gbv/jskos-server) instances. Browse JSKOS data such as terminologies, concepts, mappings, concordances, or annotations via any compatible JSKOS Server. The application is not tied to a specific instance and can connect to any server at runtime.
