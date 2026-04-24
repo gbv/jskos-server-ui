@@ -3,6 +3,8 @@ on: [push]
 
 jobs:
   test:
+    permissions:
+      contents: read
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
