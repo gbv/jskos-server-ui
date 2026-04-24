@@ -6,4 +6,8 @@
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org/)
 [![License](https://img.shields.io/github/license/gbv/jskos-server-ui)](LICENSE)
 
-A Vue 3 single-page application providing a web-based frontend for [jskos-server](https://github.com/gbv/jskos-server) instances. Browse JSKOS data such as terminologies, concepts, mappings, concordances, or annotations via any compatible JSKOS Server. The application is not tied to a specific instance and can connect to any server at runtime.
+A Vue 3 application providing a web-based frontend for [jskos-server](https://github.com/gbv/jskos-server) instances. Browse JSKOS data such as terminologies, concepts, mappings, concordances, or annotations via any compatible JSKOS Server. The application is not tied to a specific instance and can connect to any server at runtime.
+
+## License
+
+MIT, see [LICENSE](LICENSE) for details.
