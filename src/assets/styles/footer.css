@@ -1,0 +1,35 @@
+.app-footer {
+  padding: 1rem 1rem;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  border-top: 1px solid var(--color-secondary);
+}
+
+.app-footer .version {
+  opacity: 0.7;
+}
+
+.app-footer .separator {
+  opacity: 0.4;
+}
+
+.app-footer a,
+.app-footer .github-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
+}
+
+.app-footer .github-link svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.app-footer .github-link:hover {
+  text-decoration: none;
+  opacity: 0.8;
+}

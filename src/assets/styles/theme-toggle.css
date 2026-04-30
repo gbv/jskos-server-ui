@@ -1,0 +1,130 @@
+.theme-switcher-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.theme-switcher-wrapper.has-label {
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.theme-switcher-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bs-secondary-color);
+}
+
+.theme-switcher {
+  font-size: 1.4rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.theme-switcher .form-check-input {
+  margin-top: 0;
+  cursor: pointer;
+  background-color: var(--bs-tertiary-bg);
+  border-color: var(--bs-border-color);
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23e9ecef'/%3e%3c/svg%3e");
+}
+
+.theme-switcher .form-check-input:checked {
+  background-color: var(--bs-tertiary-bg) !important;
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23e9ecef'/%3e%3c/svg%3e");
+}
+
+.theme-switcher .form-check-input:focus {
+  border-color: var(--bs-border-color);
+  box-shadow: none !important;
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23e9ecef'/%3e%3c/svg%3e");
+}
+
+.theme-switcher .form-check-input:focus:checked {
+  background-color: var(--bs-tertiary-bg) !important;
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23e9ecef'/%3e%3c/svg%3e");
+}
+
+.theme-switcher .form-check-input:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-secondary-rgb), 0.25) !important;
+}
+
+.theme-switcher .form-check-input:active {
+  filter: none;
+}
+
+.theme-switcher .form-check-label {
+  position: absolute;
+  width: 2em;
+  height: 1em;
+  margin-left: -2.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.theme-switch-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.5em;
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease-in-out;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bs-gray-700);
+}
+
+.theme-switch-icon.is-dark {
+  left: 1.5em;
+}
+
+.theme-switch-icon svg {
+  width: 0.48em;
+  height: 0.48em;
+}
+
+.theme-switch-icon .sun,
+.theme-switch-icon .moon {
+  position: absolute;
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s ease;
+}
+
+.theme-switch-icon .sun {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.theme-switch-icon .moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.theme-switch-icon.is-dark .sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.theme-switch-icon.is-dark .moon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+[data-bs-theme="dark"] .theme-switcher .form-check-input,
+[data-bs-theme="dark"] .theme-switcher .form-check-input:checked,
+[data-bs-theme="dark"] .theme-switcher .form-check-input:focus,
+[data-bs-theme="dark"] .theme-switcher .form-check-input:focus:checked {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23343a40'/%3e%3c/svg%3e");
+}
+
+[data-bs-theme="dark"] .theme-switch-icon {
+  color: var(--bs-gray-200);
+}

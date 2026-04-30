@@ -1,0 +1,77 @@
+/* Bootstrap 5 color token overrides — map Cocoda style to --bs-* rules */
+:root {
+  /* Bootstrap color overrides — reuse Cocoda palette */
+  --bs-primary: var(--color-primary);
+  --bs-primary-rgb: 178, 69, 17;
+  --bs-secondary: var(--color-secondary);
+  --bs-secondary-rgb: 215, 208, 206;
+  --bs-success: var(--color-success);
+  --bs-success-rgb: 54, 122, 22;
+  --bs-danger: var(--color-danger);
+  --bs-danger-rgb: 213, 18, 18;
+  --bs-body-color: var(--color-text);
+  --bs-body-bg: var(--color-background);
+  --bs-body-bg-rgb: 246, 243, 243;
+  --bs-link-color: var(--color-link);
+  --bs-link-hover-color: var(--color-link-hover);
+
+  /* Toast/Alert variant colors */
+  --bs-warning-rgb: 178, 69, 17;
+  --bs-info-rgb: 244, 240, 240;
+
+  /* jskos-vue overrides */
+  --jskos-vue-loadingIndicator-secondary-color: var(--color-primary);
+  --jskos-vue-itemList-indicator-color: var(--color-primary);
+}
+
+[data-bs-theme="dark"] {
+  --bs-primary: var(--color-primary);
+  --bs-primary-rgb: 190, 120, 80;
+  --bs-secondary: var(--color-secondary);
+  --bs-secondary-rgb: 60, 55, 53;
+  --bs-body-color: var(--color-text);
+  --bs-body-bg: var(--color-background);
+  --bs-body-bg-rgb: 30, 26, 26;
+  --bs-warning-rgb: 190, 120, 80;
+  --bs-info-rgb: 26, 26, 30;
+}
+
+/* Toasts */
+.toast .progress {
+  background-color: transparent;
+  transform: scaleX(-1);
+}
+.toast .progress-bar {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.text-bg-warning,
+.text-bg-success,
+.text-bg-danger {
+  color: #fff !important;
+}
+
+/* Bootstrap buttons */
+.btn-primary {
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-bg: var(--color-primary-dark);
+  --bs-btn-hover-border-color: var(--color-primary-dark);
+  --bs-btn-active-bg: var(--color-primary-dark);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-disabled-bg: var(--color-primary);
+  --bs-btn-disabled-border-color: var(--color-primary);
+  --bs-btn-disabled-color: #fff;
+}
+
+.btn-secondary {
+  --bs-btn-bg: #f1ecea;
+  --bs-btn-border-color: #cfc7c3;
+  --bs-btn-hover-bg: #f5f2f2;
+  --bs-btn-hover-border-color: #cfc7c3;
+  --bs-btn-color: var(--color-primary);
+  --bs-btn-hover-color: var(--color-primary);
+  --bs-btn-active-bg: #f1ecea;
+  --bs-btn-active-color: var(--color-primary);
+}
