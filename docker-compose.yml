@@ -1,0 +1,36 @@
+services:
+  jskos-server-ui:
+    image: ghcr.io/gbv/jskos-server-ui:latest
+    ports:
+      - 8080:80
+    volumes:
+      - ./docker/config.json:/usr/share/nginx/html/config.json:ro
+    depends_on:
+      - jskos-server
+    restart: unless-stopped
+
+  jskos-server:
+    image: ghcr.io/gbv/jskos-server:latest
+    depends_on:
+      - mongo
+    volumes:
+      - ./docker/jskos-server/config:/config
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0"]
+    volumes:
+      - ./docker/data/db:/data/db
+    restart: unless-stopped
+
+  mongo-setup-replica-set:
+    image: mongo:7
+    depends_on:
+      - mongo
+    command: /docker-entrypoint-initdb.d/mongo_setup.sh
+    volumes:
+      - ./docker/mongo-initdb.d:/docker-entrypoint-initdb.d
+    restart: "no"

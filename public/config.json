@@ -1,0 +1,19 @@
+{
+  "defaultServer": "http://localhost:3000",
+  "footer": {
+    "links": [
+      {
+        "label": "Imprint",
+        "url": ""
+      },
+      {
+        "label": "Privacy",
+        "url": ""
+      },
+      {
+        "label": "Accessibility",
+        "url": ""
+      }
+    ]
+  }
+}
