@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/gbv/jskos-server-ui/compare/v0.1.1...v0.1.2) (2026-04-30)
+
+
+### Bug Fixes
+
+* retrigger release for npm publish ([c1597fa](https://github.com/gbv/jskos-server-ui/commit/c1597fa8bbf7e657703c143c60210cd68cd4ac13))
+* retrigger release for npm publish ([#16](https://github.com/gbv/jskos-server-ui/issues/16)) ([b18b9dd](https://github.com/gbv/jskos-server-ui/commit/b18b9dd4096f1ad1fd67e83e57e58ffaf129eaf6))
+
 ## [0.1.1](https://github.com/gbv/jskos-server-ui/compare/v0.1.0...v0.1.1) (2026-04-30)
 
 
