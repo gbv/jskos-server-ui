@@ -241,14 +241,6 @@ describe("ConnectionView", () => {
       expect(wrapper.text()).toContain("My Server")
     })
 
-    it("falls back to 'JSKOS Server' when status.title is absent", () => {
-      const wrapper = mountView({
-        ...connectedState,
-        status: { ...connectedState.status, title: undefined },
-      })
-      expect(wrapper.text()).toContain("JSKOS Server")
-    })
-
     it("shows capability matrix with check, lock, and dash icons", () => {
       const wrapper = mountView(connectedState)
       expect(wrapper.findAll(".icon-check").length).toBeGreaterThan(0)

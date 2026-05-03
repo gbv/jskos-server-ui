@@ -2,6 +2,7 @@
 import { ref, computed } from "vue"
 import { BButton, BBadge, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
+import ServiceInfo from "@/components/ServiceInfo.vue"
 import { RemoveIcon } from "jskos-vue"
 import {
   BIconCheckCircleFill,
@@ -44,127 +45,40 @@ function handleDisconnect() {
   notify(`Disconnected from ${url}`, "warning")
 }
 
-const serverInfo = computed(() => {
+// Returns a JSKOS Service object
+const serviceInfo = computed(() => {
   const cfg = store.status
   if (!cfg) return null
   return {
-    title: cfg.title ?? "JSKOS Server",
-    version: cfg.version ?? "—",
-    serverVersion: cfg.serverVersion ?? "—",
-    baseUrl: cfg.baseUrl ?? store.activeUrl,
-    env: cfg.env ?? "—",
-    auth: cfg.auth === true,
+    prefLabel: cfg.title ? { en: cfg.title } : null,
+    version: cfg.serverVersion,
+    API_VERSION: cfg.version,
+    api: "http://bartoc.org/api-type/jskos",
+    endpoint: cfg.baseUrl ?? store.activeUrl,
+    ENV: cfg.env,
+    AUTH: cfg.auth === true,
+    CAPABILITIES: store.capabilities,
   }
 })
-
-const CAPABILITY_TYPES = [
-  "schemes",
-  "concepts",
-  "mappings",
-  "concordances",
-  "annotations",
-  "registries",
-]
-const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 </script>
 
 <template>
   <div>
     <ViewTitle>Connection to jskos-server</ViewTitle>
 
-    <!-- Connected state -->
-    <BCard v-if="store.activeUrl" no-body>
-      <template #header>
-        <div class="d-flex align-items-center justify-content-between gap-2">
-          <div class="d-flex align-items-center gap-2 fw-bold">
-            {{ serverInfo?.title }}
-            <BBadge variant="success">Connected</BBadge>
-          </div>
-          <BButton variant="outline-danger" size="sm" @click="handleDisconnect">
-            Disconnect
-          </BButton>
+    <div style="padding-bottom: 0.5em">
+      <div class="d-flex align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2 fw-bold">
+          <BBadge variant="success">Connected</BBadge>
         </div>
-      </template>
-
-      <div class="card-body">
-        <dl class="row small mb-0">
-          <dt class="col-sm-4 text-muted">URL</dt>
-          <dd class="col-sm-8 mb-1">
-            <code>{{ serverInfo?.baseUrl }}</code>
-          </dd>
-
-          <dt class="col-sm-4 text-muted">API Version</dt>
-          <dd class="col-sm-8 mb-1">{{ serverInfo?.version }}</dd>
-
-          <dt class="col-sm-4 text-muted">Server Version</dt>
-          <dd class="col-sm-8 mb-1">{{ serverInfo?.serverVersion }}</dd>
-
-          <dt class="col-sm-4 text-muted">Environment</dt>
-          <dd class="col-sm-8 mb-1">{{ serverInfo?.env }}</dd>
-
-          <dt class="col-sm-4 text-muted">Authentication</dt>
-          <dd class="col-sm-8 mb-0">
-            {{ serverInfo?.auth ? "Required" : "Not required" }}
-          </dd>
-        </dl>
-
-        <hr class="my-3" />
-
-        <table class="table table-sm table-borderless small mb-0">
-          <thead>
-            <tr>
-              <th class="text-muted fw-normal ps-0">Type</th>
-              <th
-                v-for="action in CAPABILITY_ACTIONS"
-                :key="action"
-                class="text-muted fw-normal text-center text-capitalize"
-              >
-                {{ action }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="type in CAPABILITY_TYPES" :key="type">
-              <td class="text-capitalize ps-0">{{ type }}</td>
-              <td
-                v-for="action in CAPABILITY_ACTIONS"
-                :key="action"
-                class="text-center"
-              >
-                <template v-if="store.capabilities?.[type] === null">
-                  <BIconDashCircle
-                    v-if="action === 'read'"
-                    class="text-secondary"
-                  />
-                </template>
-                <template
-                  v-else-if="store.capabilities?.[type]?.[action] === null"
-                >
-                  <BIconDashCircle class="text-secondary" />
-                </template>
-                <BIconLockFill
-                  v-else-if="store.requiresAuth(type, action)"
-                  class="text-warning"
-                />
-                <BIconCheckCircleFill v-else class="text-success" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="d-flex gap-3 mt-2 small text-muted">
-          <span class="d-inline-flex align-items-center"
-            ><BIconCheckCircleFill class="text-success me-1" />Open</span
-          >
-          <span class="d-inline-flex align-items-center"
-            ><BIconLockFill class="text-warning me-1" />Auth required</span
-          >
-          <span class="d-inline-flex align-items-center"
-            ><BIconDashCircle class="text-secondary me-1" />Not supported</span
-          >
-        </div>
+        <BButton variant="outline-danger" size="sm" @click="handleDisconnect">
+          Disconnect
+        </BButton>
       </div>
-    </BCard>
+    </div>
+
+    <!-- Connected state -->
+    <ServiceInfo v-if="store.activeUrl" :info="serviceInfo" />
 
     <!-- Disconnected state -->
     <template v-else>

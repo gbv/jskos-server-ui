@@ -50,6 +50,14 @@ Requires Node.js 22 or higher.
 npm install
 ```
 
+## Components
+
+This package is in a very early state of development so its components are not fixed yet. Some preliminary components may also be moved to [jskos-vue](https://www.npmjs.com/package/jskos-vue).
+
+### ServiceInfo
+
+Shows basic metadata and capabilities of a [JSKOS Service](https://gbv.github.io/jskos/#service). This component does not interact with the service.
+
 ## Development
 
 ```bash
