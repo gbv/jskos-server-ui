@@ -23,9 +23,11 @@
 }
 
 /* Button click animation */
-.button, button {
+.button,
+button {
   transition: transform 0.2s ease-in-out;
 }
-.button:not(.button-disabled):active, button:not(:disabled):active {
+.button:not(.button-disabled):active,
+button:not(:disabled):active {
   transform: translateY(1px);
 }

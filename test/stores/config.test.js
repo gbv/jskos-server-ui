@@ -11,7 +11,6 @@ afterEach(() => {
 })
 
 describe("useConfigStore", () => {
-
   it("starts with null defaultServer and empty footerLinks", () => {
     const store = useConfigStore()
     expect(store.defaultServer).toBeNull()

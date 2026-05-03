@@ -12,11 +12,31 @@ vi.mock("cocoda-sdk", () => ({
 
 vi.mock("@/utils/capabilities", () => ({
   parseCapabilities: vi.fn(() => ({
-    schemes: { read: { supported: true, requiresAuth: false }, create: { supported: true, requiresAuth: true }, update: null, delete: null },
+    schemes: {
+      read: { supported: true, requiresAuth: false },
+      create: { supported: true, requiresAuth: true },
+      update: null,
+      delete: null,
+    },
     concepts: null,
-    mappings: { read: { supported: true, requiresAuth: false }, create: { supported: true, requiresAuth: true }, update: null, delete: null },
-    concordances: { read: { supported: true, requiresAuth: false }, create: null, update: null, delete: null },
-    annotations: { read: { supported: true, requiresAuth: false }, create: null, update: null, delete: null },
+    mappings: {
+      read: { supported: true, requiresAuth: false },
+      create: { supported: true, requiresAuth: true },
+      update: null,
+      delete: null,
+    },
+    concordances: {
+      read: { supported: true, requiresAuth: false },
+      create: null,
+      update: null,
+      delete: null,
+    },
+    annotations: {
+      read: { supported: true, requiresAuth: false },
+      create: null,
+      update: null,
+      delete: null,
+    },
     registries: null,
   })),
 }))
@@ -34,7 +54,10 @@ vi.mock("bootstrap-vue-next", async (importOriginal) => {
 function createStubRouter() {
   return createRouter({
     history: createMemoryHistory(),
-    routes: [{ path: "/", component: { template: "<div/>" } }, { path: "/connection", component: ConnectionView }],
+    routes: [
+      { path: "/", component: { template: "<div/>" } },
+      { path: "/connection", component: ConnectionView },
+    ],
   })
 }
 
@@ -42,11 +65,17 @@ function mountView(storeState = {}) {
   return mount(ConnectionView, {
     global: {
       plugins: [
-        createTestingPinia({ initialState: { server: storeState }, stubActions: false }),
+        createTestingPinia({
+          initialState: { server: storeState },
+          stubActions: false,
+        }),
         createStubRouter(),
       ],
       stubs: {
-        RemoveIcon: { template: '<button class="remove-icon-stub" @click="$emit(\'click\')" />' },
+        RemoveIcon: {
+          template:
+            '<button class="remove-icon-stub" @click="$emit(\'click\')" />',
+        },
         ViewTitle: { template: "<h1><slot /></h1>" },
         BIconCheckCircleFill: { template: "<span class='icon-check' />" },
         BIconLockFill: { template: "<span class='icon-lock' />" },
@@ -67,7 +96,6 @@ afterEach(() => {
 })
 
 describe("ConnectionView", () => {
-
   describe("disconnected state", () => {
     it("renders the URL input field", () => {
       expect(mountView().find("input[type='url']").exists()).toBe(true)
@@ -75,7 +103,8 @@ describe("ConnectionView", () => {
 
     it("Connect button is disabled when input is empty, enabled when filled", async () => {
       const wrapper = mountView()
-      const connectBtn = () => wrapper.findAll("button").find((b) => b.text().includes("Connect"))
+      const connectBtn = () =>
+        wrapper.findAll("button").find((b) => b.text().includes("Connect"))
       expect(connectBtn().attributes("disabled")).toBeDefined()
       await wrapper.find("input[type='url']").setValue("http://example.org/")
       expect(connectBtn().attributes("disabled")).toBeUndefined()
@@ -83,21 +112,30 @@ describe("ConnectionView", () => {
 
     it("calls store.connectToServer with trimmed URL on Connect click", async () => {
       const { cdk } = await import("cocoda-sdk")
-      cdk.initializeRegistry.mockReturnValueOnce(makeRegistry()).mockReturnValueOnce(makeRegistry())
+      cdk.initializeRegistry
+        .mockReturnValueOnce(makeRegistry())
+        .mockReturnValueOnce(makeRegistry())
 
       const wrapper = mountView()
       const store = useServerStore()
       vi.spyOn(store, "connectToServer")
 
-      await wrapper.find("input[type='url']").setValue("  http://example.org/  ")
-      await wrapper.findAll("button").find((b) => b.text().includes("Connect")).trigger("click")
+      await wrapper
+        .find("input[type='url']")
+        .setValue("  http://example.org/  ")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Connect"))
+        .trigger("click")
       await flushPromises()
 
       expect(store.connectToServer).toHaveBeenCalledWith("http://example.org/")
     })
 
     it("shows store.error in an alert", () => {
-      expect(mountView({ error: "Connection refused" }).text()).toContain("Connection refused")
+      expect(mountView({ error: "Connection refused" }).text()).toContain(
+        "Connection refused",
+      )
     })
 
     it("renders a list item per URL in store.servers", () => {
@@ -107,7 +145,9 @@ describe("ConnectionView", () => {
 
     it("clicking a history URL calls store.connectToServer", async () => {
       const { cdk } = await import("cocoda-sdk")
-      cdk.initializeRegistry.mockReturnValueOnce(makeRegistry()).mockReturnValueOnce(makeRegistry())
+      cdk.initializeRegistry
+        .mockReturnValueOnce(makeRegistry())
+        .mockReturnValueOnce(makeRegistry())
 
       const wrapper = mountView({ servers: ["http://a.org/"] })
       const store = useServerStore()
@@ -129,14 +169,21 @@ describe("ConnectionView", () => {
 
     it("shows success toast after successful connection", async () => {
       const { cdk } = await import("cocoda-sdk")
-      cdk.initializeRegistry.mockReturnValueOnce(makeRegistry()).mockReturnValueOnce(makeRegistry())
+      cdk.initializeRegistry
+        .mockReturnValueOnce(makeRegistry())
+        .mockReturnValueOnce(makeRegistry())
 
       const wrapper = mountView()
       await wrapper.find("input[type='url']").setValue("http://example.org/")
-      await wrapper.findAll("button").find((b) => b.text().includes("Connect")).trigger("click")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Connect"))
+        .trigger("click")
       await flushPromises()
 
-      expect(mockToastCreate).toHaveBeenCalledWith(expect.objectContaining({ variant: "success" }))
+      expect(mockToastCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ variant: "success" }),
+      )
     })
 
     it("shows danger toast after failed connection", async () => {
@@ -145,10 +192,15 @@ describe("ConnectionView", () => {
 
       const wrapper = mountView()
       await wrapper.find("input[type='url']").setValue("http://bad.org/")
-      await wrapper.findAll("button").find((b) => b.text().includes("Connect")).trigger("click")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Connect"))
+        .trigger("click")
       await flushPromises()
 
-      expect(mockToastCreate).toHaveBeenCalledWith(expect.objectContaining({ variant: "danger" }))
+      expect(mockToastCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ variant: "danger" }),
+      )
     })
   })
 
@@ -164,9 +216,19 @@ describe("ConnectionView", () => {
         auth: true,
       },
       capabilities: {
-        schemes: { read: { supported: true, requiresAuth: false }, create: { supported: true, requiresAuth: true }, update: null, delete: null },
+        schemes: {
+          read: { supported: true, requiresAuth: false },
+          create: { supported: true, requiresAuth: true },
+          update: null,
+          delete: null,
+        },
         concepts: null,
-        mappings: { read: { supported: true, requiresAuth: false }, create: null, update: null, delete: null },
+        mappings: {
+          read: { supported: true, requiresAuth: false },
+          create: null,
+          update: null,
+          delete: null,
+        },
         concordances: null,
         annotations: null,
         registries: null,
@@ -180,7 +242,10 @@ describe("ConnectionView", () => {
     })
 
     it("falls back to 'JSKOS Server' when status.title is absent", () => {
-      const wrapper = mountView({ ...connectedState, status: { ...connectedState.status, title: undefined } })
+      const wrapper = mountView({
+        ...connectedState,
+        status: { ...connectedState.status, title: undefined },
+      })
       expect(wrapper.text()).toContain("JSKOS Server")
     })
 
@@ -196,10 +261,15 @@ describe("ConnectionView", () => {
       const store = useServerStore()
       vi.spyOn(store, "disconnectServer")
 
-      await wrapper.findAll("button").find((b) => b.text().includes("Disconnect")).trigger("click")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Disconnect"))
+        .trigger("click")
 
       expect(store.disconnectServer).toHaveBeenCalled()
-      expect(mockToastCreate).toHaveBeenCalledWith(expect.objectContaining({ variant: "warning" }))
+      expect(mockToastCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ variant: "warning" }),
+      )
     })
   })
 })

@@ -8,10 +8,10 @@ import { useCountUp } from "@/composables/useCountUp"
 const store = useServerStore()
 
 const STATS = [
-  { key: "schemes",      label: "Terminologies", route: "/terminologies" },
-  { key: "concordances", label: "Concordances",  route: "/concordances"  },
-  { key: "mappings",     label: "Mappings",      route: "/mappings"      },
-  { key: "annotations",  label: "Annotations",   route: "/annotations"   },
+  { key: "schemes", label: "Terminologies", route: "/terminologies" },
+  { key: "concordances", label: "Concordances", route: "/concordances" },
+  { key: "mappings", label: "Mappings", route: "/mappings" },
+  { key: "annotations", label: "Annotations", route: "/annotations" },
   // TODO: show concepts once cocoda-sdk supports it
   // { key: "concepts",     label: "Concepts",      route: "/concepts",     unknownCount: true },
   // TODO: show registries once cocoda-sdk supports it
@@ -51,7 +51,7 @@ async function fetchCount(key) {
     return r._totalCount ?? 0
   }
   if (key === "concepts") {
-    return null   // mreg.getConcepts throws InvalidOrMissingParameterError; needs 'uri'
+    return null // mreg.getConcepts throws InvalidOrMissingParameterError; needs 'uri'
   }
   if (key === "registries") {
     return null // mreg.getRegistries throws MethodNotImplementedError
@@ -112,19 +112,19 @@ watch(
           :to="s.route"
           class="type-card"
         >
-        <div class="card-label">{{ s.label }}</div>
-        <div class="card-count">
-          <BSpinner v-if="loadingCounts[s.key]" small />
-          <span
-            v-else-if="errorCounts[s.key]"
-            class="count-na"
-            title="Failed to load"
-            >✕</span
-          >
+          <div class="card-label">{{ s.label }}</div>
+          <div class="card-count">
+            <BSpinner v-if="loadingCounts[s.key]" small />
+            <span
+              v-else-if="errorCounts[s.key]"
+              class="count-na"
+              title="Failed to load"
+              >✕</span
+            >
 
-          <span v-else-if="counts[s.key] == null" class="count-na">—</span>
-          <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
-        </div>
+            <span v-else-if="counts[s.key] == null" class="count-na">—</span>
+            <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
+          </div>
         </router-link>
       </template>
     </div>

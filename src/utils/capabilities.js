@@ -1,4 +1,11 @@
-const TYPES = ["schemes", "concepts", "mappings", "concordances", "annotations", "registries"]
+const TYPES = [
+  "schemes",
+  "concepts",
+  "mappings",
+  "concordances",
+  "annotations",
+  "registries",
+]
 const ACTIONS = ["read", "create", "update", "delete"]
 
 /**

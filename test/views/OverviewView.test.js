@@ -27,7 +27,10 @@ function mountView(storeState = {}) {
   return mount(OverviewView, {
     global: {
       plugins: [
-        createTestingPinia({ initialState: { server: storeState }, stubActions: false }),
+        createTestingPinia({
+          initialState: { server: storeState },
+          stubActions: false,
+        }),
         createStubRouter(),
       ],
       stubs: {
@@ -50,16 +53,22 @@ afterEach(() => {
 const cap = { read: { supported: true, requiresAuth: false } }
 
 describe("OverviewView", () => {
-
   it("renders 'No server connected' message when not connected", () => {
-    expect(mountView({ activeUrl: null }).text()).toContain("No server connected")
+    expect(mountView({ activeUrl: null }).text()).toContain(
+      "No server connected",
+    )
   })
 
   describe("capability-gated card visibility", () => {
     it("shows a card for a capability type that is not null", () => {
       const wrapper = mountView({
         activeUrl: "http://example.org/",
-        capabilities: { schemes: cap, concordances: null, mappings: null, annotations: null },
+        capabilities: {
+          schemes: cap,
+          concordances: null,
+          mappings: null,
+          annotations: null,
+        },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(1)
     })
@@ -67,7 +76,12 @@ describe("OverviewView", () => {
     it("hides a card for a capability type that is null", () => {
       const wrapper = mountView({
         activeUrl: "http://example.org/",
-        capabilities: { schemes: null, concordances: null, mappings: null, annotations: null },
+        capabilities: {
+          schemes: null,
+          concordances: null,
+          mappings: null,
+          annotations: null,
+        },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(0)
     })
@@ -75,7 +89,12 @@ describe("OverviewView", () => {
     it("renders all four cards when all capabilities are set", () => {
       const wrapper = mountView({
         activeUrl: "http://example.org/",
-        capabilities: { schemes: cap, concordances: cap, mappings: cap, annotations: cap },
+        capabilities: {
+          schemes: cap,
+          concordances: cap,
+          mappings: cap,
+          annotations: cap,
+        },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(4)
     })
@@ -93,14 +112,23 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         registry: reg,
         mappingsRegistry: mreg,
-        capabilities: { schemes: cap, concordances: cap, mappings: cap, annotations: cap },
+        capabilities: {
+          schemes: cap,
+          concordances: cap,
+          mappings: cap,
+          annotations: cap,
+        },
       })
       await wrapper.vm.$nextTick()
-      expect(wrapper.findAll(".spinner-border, [role='status']").length).toBeGreaterThan(0)
+      expect(
+        wrapper.findAll(".spinner-border, [role='status']").length,
+      ).toBeGreaterThan(0)
     })
 
     it("renders card without spinner after successful fetch", async () => {
-      const reg = { getSchemes: vi.fn().mockResolvedValue(makeCountResponse(42)) }
+      const reg = {
+        getSchemes: vi.fn().mockResolvedValue(makeCountResponse(42)),
+      }
       const mreg = {
         getMappings: vi.fn().mockResolvedValue(makeCountResponse(0)),
         getConcordances: vi.fn().mockResolvedValue(makeCountResponse(0)),
@@ -110,7 +138,12 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         registry: reg,
         mappingsRegistry: mreg,
-        capabilities: { schemes: cap, concordances: null, mappings: null, annotations: null },
+        capabilities: {
+          schemes: cap,
+          concordances: null,
+          mappings: null,
+          annotations: null,
+        },
       })
       await flushPromises()
       const card = wrapper.find(".type-card")
@@ -119,7 +152,9 @@ describe("OverviewView", () => {
     })
 
     it("shows error indicator when a fetch throws", async () => {
-      const reg = { getSchemes: vi.fn().mockRejectedValue(new Error("Network error")) }
+      const reg = {
+        getSchemes: vi.fn().mockRejectedValue(new Error("Network error")),
+      }
       const mreg = {
         getMappings: vi.fn().mockResolvedValue(makeCountResponse(0)),
         getConcordances: vi.fn().mockResolvedValue(makeCountResponse(0)),
@@ -129,10 +164,17 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         registry: reg,
         mappingsRegistry: mreg,
-        capabilities: { schemes: cap, concordances: cap, mappings: cap, annotations: cap },
+        capabilities: {
+          schemes: cap,
+          concordances: cap,
+          mappings: cap,
+          annotations: cap,
+        },
       })
       await flushPromises()
-      const errorEl = wrapper.findAll(".count-na").find((el) => el.text() === "✕")
+      const errorEl = wrapper
+        .findAll(".count-na")
+        .find((el) => el.text() === "✕")
       expect(errorEl).toBeTruthy()
     })
 
@@ -147,16 +189,32 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         registry: reg,
         mappingsRegistry: mreg,
-        capabilities: { schemes: cap, concordances: cap, mappings: cap, annotations: cap },
+        capabilities: {
+          schemes: cap,
+          concordances: cap,
+          mappings: cap,
+          annotations: cap,
+        },
       })
       await flushPromises()
       expect(wrapper.findAll(".type-card")).toHaveLength(4)
-      expect(wrapper.findAll(".count-na").filter((el) => el.text() === "✕")).toHaveLength(1)
+      expect(
+        wrapper.findAll(".count-na").filter((el) => el.text() === "✕"),
+      ).toHaveLength(1)
     })
 
     it("does not call registry methods when registry is null", async () => {
-      const mreg = { getMappings: vi.fn(), getConcordances: vi.fn(), getAnnotations: vi.fn() }
-      mountView({ activeUrl: null, registry: null, mappingsRegistry: mreg, capabilities: null })
+      const mreg = {
+        getMappings: vi.fn(),
+        getConcordances: vi.fn(),
+        getAnnotations: vi.fn(),
+      }
+      mountView({
+        activeUrl: null,
+        registry: null,
+        mappingsRegistry: mreg,
+        capabilities: null,
+      })
       await flushPromises()
       expect(mreg.getMappings).not.toHaveBeenCalled()
     })

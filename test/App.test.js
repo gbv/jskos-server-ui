@@ -61,7 +61,12 @@ describe("App.vue — startup sequence", () => {
     const { makeRegistry } = await import("./mocks/cdk.js")
     cdk.initializeRegistry.mockReturnValue(makeRegistry())
 
-    mountApp({ server: { activeUrl: "http://cached.org/", servers: ["http://cached.org/"] } })
+    mountApp({
+      server: {
+        activeUrl: "http://cached.org/",
+        servers: ["http://cached.org/"],
+      },
+    })
     await flushPromises()
 
     expect(cdk.initializeRegistry).toHaveBeenCalledWith(

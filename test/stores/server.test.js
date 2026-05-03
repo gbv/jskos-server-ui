@@ -10,7 +10,10 @@ vi.mock("@/utils/capabilities", () => ({
   parseCapabilities: vi.fn(() => ({
     schemes: { read: { supported: true, requiresAuth: false } },
     concepts: null,
-    mappings: { read: { supported: true, requiresAuth: false }, create: { supported: true, requiresAuth: true } },
+    mappings: {
+      read: { supported: true, requiresAuth: false },
+      create: { supported: true, requiresAuth: true },
+    },
     concordances: { read: { supported: true, requiresAuth: false } },
     annotations: { read: { supported: true, requiresAuth: false } },
     registries: null,
@@ -39,7 +42,6 @@ afterEach(() => {
 })
 
 describe("useServerStore", () => {
-
   describe("localStorage hydration", () => {
     it("reads activeUrl from localStorage on store creation", () => {
       localStorage.setItem(LS_URL_KEY, "http://example.org/")
@@ -48,7 +50,10 @@ describe("useServerStore", () => {
     })
 
     it("reads servers list from localStorage on store creation", () => {
-      localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(["http://a.org/", "http://b.org/"]))
+      localStorage.setItem(
+        LS_SERVERS_KEY,
+        JSON.stringify(["http://a.org/", "http://b.org/"]),
+      )
       const store = useServerStore()
       expect(store.servers).toEqual(["http://a.org/", "http://b.org/"])
     })
@@ -69,15 +74,22 @@ describe("useServerStore", () => {
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
       expect(localStorage.getItem(LS_URL_KEY)).toBe("http://example.org/")
-      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).toContain("http://example.org/")
+      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).toContain(
+        "http://example.org/",
+      )
     })
 
     it("does not duplicate a URL already in servers", async () => {
-      localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(["http://example.org/"]))
+      localStorage.setItem(
+        LS_SERVERS_KEY,
+        JSON.stringify(["http://example.org/"]),
+      )
       await setup()
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
-      expect(store.servers.filter((u) => u === "http://example.org/")).toHaveLength(1)
+      expect(
+        store.servers.filter((u) => u === "http://example.org/"),
+      ).toHaveLength(1)
     })
 
     it("clears error after a successful reconnect", async () => {
@@ -139,11 +151,16 @@ describe("useServerStore", () => {
 
   describe("removeServer(url)", () => {
     it("removes URL from list and persists", () => {
-      localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(["http://a.org/", "http://b.org/"]))
+      localStorage.setItem(
+        LS_SERVERS_KEY,
+        JSON.stringify(["http://a.org/", "http://b.org/"]),
+      )
       const store = useServerStore()
       store.removeServer("http://a.org/")
       expect(store.servers).not.toContain("http://a.org/")
-      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).not.toContain("http://a.org/")
+      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).not.toContain(
+        "http://a.org/",
+      )
     })
 
     it("disconnects when the active URL is removed", async () => {
@@ -179,10 +196,16 @@ describe("useServerStore", () => {
       const { parseCapabilities } = await import("@/utils/capabilities")
       parseCapabilities.mockReturnValueOnce({
         schemes: { read: null },
-        concepts: null, mappings: null, concordances: null, annotations: null, registries: null,
+        concepts: null,
+        mappings: null,
+        concordances: null,
+        annotations: null,
+        registries: null,
       })
       const { cdk } = await import("cocoda-sdk")
-      cdk.initializeRegistry.mockReturnValueOnce(makeRegistry()).mockReturnValueOnce(makeRegistry())
+      cdk.initializeRegistry
+        .mockReturnValueOnce(makeRegistry())
+        .mockReturnValueOnce(makeRegistry())
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
       expect(store.canDo("schemes", "read")).toBe(false)

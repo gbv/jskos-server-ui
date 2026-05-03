@@ -51,10 +51,7 @@ const navLinks = [
           {{ link.label }}
         </BNavItem>
         <hr />
-        <ThemeToggle
-          v-model="theme.dark"
-          label="Appearance"
-        />
+        <ThemeToggle v-model="theme.dark" label="Appearance" />
       </BNavbarNav>
     </BOffcanvas>
 

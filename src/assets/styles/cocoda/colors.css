@@ -9,22 +9,38 @@
   --color-secondary-h: 0;
   --color-secondary-s: 14%;
   --color-secondary-l: 90%;
-  --color-secondary: hsl(var(--color-secondary-h), var(--color-secondary-s), var(--color-secondary-l));
+  --color-secondary: hsl(
+    var(--color-secondary-h),
+    var(--color-secondary-s),
+    var(--color-secondary-l)
+  );
 
   --color-text-h: 0;
   --color-text-s: 0%;
   --color-text-l: 13%;
-  --color-text: hsl(var(--color-text-h), var(--color-text-s), var(--color-text-l));
+  --color-text: hsl(
+    var(--color-text-h),
+    var(--color-text-s),
+    var(--color-text-l)
+  );
 
   --color-text-secondary-h: var(--color-text-h);
   --color-text-secondary-s: var(--color-text-s);
   --color-text-secondary-l: var(--color-text-l);
-  --color-text-secondary: hsl(var(--color-text-secondary-h), var(--color-text-secondary-s), var(--color-text-secondary-l));
+  --color-text-secondary: hsl(
+    var(--color-text-secondary-h),
+    var(--color-text-secondary-s),
+    var(--color-text-secondary-l)
+  );
 
   --color-button-h: 0;
   --color-button-s: 0%;
   --color-button-l: 33%;
-  --color-button: hsl(var(--color-button-h), var(--color-button-s), var(--color-button-l));
+  --color-button: hsl(
+    var(--color-button-h),
+    var(--color-button-s),
+    var(--color-button-l)
+  );
 
   --color-danger-h: 0;
   --color-danger-s: 84%;
@@ -44,36 +60,104 @@
 
   /* Computed colors */
 
-  --color-primary-dark: hsl(var(--color-primary-h), var(--color-primary-s), calc(var(--color-primary-l) * .95));
-  --color-primary-light: hsl(var(--color-primary-h), var(--color-primary-s), calc(var(--color-primary-l) * 1.15));
-  --color-primary-opacity: hsla(var(--color-primary-h), var(--color-primary-s), calc(var(--color-primary-l) * 1.15), 0.7);
+  --color-primary-dark: hsl(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 0.95)
+  );
+  --color-primary-light: hsl(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 1.15)
+  );
+  --color-primary-opacity: hsla(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 1.15),
+    0.7
+  );
 
-  --color-secondary-light: var(--color-secondary-h), var(--color-secondary-s), calc(var(--color-secondary-l) * 1.08);
-  --color-secondary-dark: var(--color-secondary-h), var(--color-secondary-s),  calc(var(--color-secondary-l) * 0.75);
+  --color-secondary-light:
+    var(--color-secondary-h), var(--color-secondary-s),
+    calc(var(--color-secondary-l) * 1.08);
+  --color-secondary-dark:
+    var(--color-secondary-h), var(--color-secondary-s),
+    calc(var(--color-secondary-l) * 0.75);
   --color-secondary-dark-faded-30: hsla(var(--color-secondary-dark), 0.3);
   --color-secondary-dark-faded-65: hsla(var(--color-secondary-dark), 0.65);
 
-  --color-success: hsl(var(--color-success-h), var(--color-success-s), var(--color-success-l));
-  --color-success-dark: hsl(var(--color-success-h), var(--color-success-s), calc(var(--color-success-l) * 0.5));
-  --color-success-light: hsl(var(--color-success-h), var(--color-success-s), calc(var(--color-success-l) * 1.5));
-  --color-success-lighter: hsl(var(--color-success-h), var(--color-success-s), calc(var(--color-success-l) * 3));
+  --color-success: hsl(
+    var(--color-success-h),
+    var(--color-success-s),
+    var(--color-success-l)
+  );
+  --color-success-dark: hsl(
+    var(--color-success-h),
+    var(--color-success-s),
+    calc(var(--color-success-l) * 0.5)
+  );
+  --color-success-light: hsl(
+    var(--color-success-h),
+    var(--color-success-s),
+    calc(var(--color-success-l) * 1.5)
+  );
+  --color-success-lighter: hsl(
+    var(--color-success-h),
+    var(--color-success-s),
+    calc(var(--color-success-l) * 3)
+  );
 
-  --color-danger: hsl(var(--color-danger-h), var(--color-danger-s), var(--color-danger-l));
-  --color-danger-dark: hsl(var(--color-danger-h), var(--color-danger-s), calc(var(--color-danger-l) * 0.65));
-  --color-danger-light: hsl(var(--color-danger-h), var(--color-danger-s), calc(var(--color-danger-l) * 1.68));
-  --color-danger-lighter: hsl(var(--color-danger-h), var(--color-danger-s), calc(var(--color-danger-l) * 2));
+  --color-danger: hsl(
+    var(--color-danger-h),
+    var(--color-danger-s),
+    var(--color-danger-l)
+  );
+  --color-danger-dark: hsl(
+    var(--color-danger-h),
+    var(--color-danger-s),
+    calc(var(--color-danger-l) * 0.65)
+  );
+  --color-danger-light: hsl(
+    var(--color-danger-h),
+    var(--color-danger-s),
+    calc(var(--color-danger-l) * 1.68)
+  );
+  --color-danger-lighter: hsl(
+    var(--color-danger-h),
+    var(--color-danger-s),
+    calc(var(--color-danger-l) * 2)
+  );
 
   /* Text colors */
   --color-text-navbar: var(--color-text);
   --color-text-grey: hsl(var(--color-text-h), var(--color-text-s), 29%);
   --color-text-lightGrey: hsl(var(--color-text-h), var(--color-text-s), 45%);
-  --color-text-veryLightGrey: hsl(var(--color-text-h), var(--color-text-s), 82%);
-  --color-text-veryLightGrey-opacity: hsla(var(--color-text-h), var(--color-text-s), 82%, 0.7);
+  --color-text-veryLightGrey: hsl(
+    var(--color-text-h),
+    var(--color-text-s),
+    82%
+  );
+  --color-text-veryLightGrey-opacity: hsla(
+    var(--color-text-h),
+    var(--color-text-s),
+    82%,
+    0.7
+  );
 
   /* Button colors */
   --color-button-hover: var(--color-primary-light);
-  --color-button-light: hsla(var(--color-button-h), var(--color-button-s), var(--color-button-l), 0.8);
-  --color-button-lighter: hsla(var(--color-button-h), var(--color-button-s), var(--color-button-l), 0.4);
+  --color-button-light: hsla(
+    var(--color-button-h),
+    var(--color-button-s),
+    var(--color-button-l),
+    0.8
+  );
+  --color-button-lighter: hsla(
+    var(--color-button-h),
+    var(--color-button-s),
+    var(--color-button-l),
+    0.4
+  );
 
   --color-button-delete: var(--color-danger);
   --color-button-delete-hover: var(--color-danger-dark);
@@ -85,9 +169,22 @@
   /* Component specific colors */
   --color--conceptSearch-result-selected: var(--color-primary-dark);
   --color--mappingBrowser-table-match: hsla(var(--color-secondary-light), 0.7);
-  --color--mappingBrowser-table-match-hover: hsla(var(--color-secondary-light), 0.45);
-  --color--mappingBrowser-table-editing: hsla(var(--color-secondary-h), var(--color-secondary-s), var(--color-secondary-l), 0.4);
-  --color--mappingBrowser-table-editing-hover: hsla(var(--color-secondary-h), var(--color-secondary-s), var(--color-secondary-l), 0.3);
+  --color--mappingBrowser-table-match-hover: hsla(
+    var(--color-secondary-light),
+    0.45
+  );
+  --color--mappingBrowser-table-editing: hsla(
+    var(--color-secondary-h),
+    var(--color-secondary-s),
+    var(--color-secondary-l),
+    0.4
+  );
+  --color--mappingBrowser-table-editing-hover: hsla(
+    var(--color-secondary-h),
+    var(--color-secondary-s),
+    var(--color-secondary-l),
+    0.3
+  );
 
   --color--conceptSearch-result-selected-background: var(--color-background);
   --color--conceptSearch-searchHighlight: var(--color-secondary-dark);

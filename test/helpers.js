@@ -9,14 +9,14 @@ export function mockFetchSuccess(data) {
 }
 
 export function mockFetchFailure(status = 404) {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn().mockResolvedValue({ ok: false, status }),
-  )
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status }))
 }
 
 export function mockFetchNetworkError() {
-  vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Network error")))
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockRejectedValue(new TypeError("Network error")),
+  )
 }
 
 export function mockMatchMedia(prefersDark = false) {

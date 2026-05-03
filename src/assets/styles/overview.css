@@ -4,7 +4,9 @@
   border-radius: 8px;
   padding: 1.25rem 1rem;
   cursor: pointer;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
   text-decoration: none;
   color: inherit;
   display: block;
@@ -17,7 +19,9 @@
 
 [data-bs-theme="dark"] .type-card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary), 0 4px 16px rgba(177, 63, 19, 0.25);
+  box-shadow:
+    0 0 0 1px var(--color-primary),
+    0 4px 16px rgba(177, 63, 19, 0.25);
 }
 
 .card-label {
