@@ -37,6 +37,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(version),
   },
   build,
+  base: '',
   test: {
     globals: true,
     environment: "happy-dom",
