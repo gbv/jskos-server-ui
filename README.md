@@ -78,11 +78,17 @@ Coverage is reported to [Codecov](https://codecov.io/gh/gbv/jskos-server-ui) on 
 
 ## Build
 
+Build the application to `app/`:
+
+```bash
+npm run app
+```
+
+Build the library to `dist/`:
+
 ```bash
 npm run build
 ```
-
-The production build is written to `dist/`.
 
 ## Configuration
 

@@ -4,12 +4,19 @@
   "version": "0.0.0",
   "license": "MIT",
   "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/jskos-server-ui.umd.cjs",
+      "import": "./dist/jskos-server.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "BUILD_MODE=dist vite build",
+    "app": "vite build",
     "preview": "vite preview",
     "lint": "eslint src/",
-    "fix": "prettier --write src/; eslint --fix",
+    "fix": "prettier --write src/; eslint src/ --fix",
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",
