@@ -39,7 +39,7 @@ export const useServerStore = defineStore("server", () => {
       registry.value = reg
       mappingsRegistry.value = mappingsReg
       status.value = reg._config
-      capabilities.value = parseCapabilities(reg._config)
+      capabilities.value = parseCapabilities(reg)
       activeUrl.value = url
       localStorage.setItem(LS_URL_KEY, url)
       if (!servers.value.includes(url)) {

@@ -15,6 +15,8 @@ const CAPABILITY_TYPES = [
   "concordances",
   "annotations",
   "registries",
+  "types",
+  "occurrences",
 ]
 const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 </script>
