@@ -33,7 +33,7 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 
         <dt class="col-sm-4 text-muted">API</dt>
         <dd class="col-sm-8 mb-1">
-          {{ info.api?.split("/")?.pop() }} {{ info.API_VERSION ?? "—" }}
+          {{ info.api?.split("/")?.pop() }} {{ info.API_VERSION }}
         </dd>
 
         <dt class="col-sm-4 text-muted">Server Version</dt>
