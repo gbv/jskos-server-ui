@@ -12,7 +12,6 @@ import {
 } from "bootstrap-vue-next"
 import ThemeToggle from "./ThemeToggle.vue"
 import { useThemeStore } from "@/stores/theme"
-import coliConcLogo from "@/assets/coli-conc-logo.svg"
 import { useNotify } from "@/composables/useNotify"
 import { useServerStore } from "@/stores/server"
 
@@ -36,12 +35,7 @@ function handleDisconnect() {
 <template>
   <BNavbar toggleable="md" class="app-navbar px-3">
     <BNavbarBrand href="#/">
-      <img
-        :src="coliConcLogo"
-        class="app-navbar-logo d-inline-block align-middle"
-        alt="coli-conc logo"
-      />
-      JSKOS Server UI
+      JSKOS Service
     </BNavbarBrand>
 
     <BNavbarToggle target="nav-offcanvas" @click="offcanvasVisible = true" />
