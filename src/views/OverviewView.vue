@@ -15,6 +15,13 @@ const STATS = [
     method: "getSchemes",
   },
   {
+    key: "concepts",
+    label: "Concepts",
+    route: "/concepts",
+    method: "getConcepts",
+  },
+  { key: "types", label: "Types", route: "/types", method: "getTypes" },
+  {
     key: "concordances",
     label: "Concordances",
     route: "/concordances",
@@ -26,21 +33,14 @@ const STATS = [
     route: "/mappings",
     method: "getMappings",
   },
+  // TODO: show registries once cocoda-sdk supports it
+  // { key: "registries",   label: "Registries",    route: "/registries", method: "getRegistries" },
   {
     key: "annotations",
     label: "Annotations",
     route: "/annotations",
     method: "getAnnotations",
   },
-  {
-    key: "concepts",
-    label: "Concepts",
-    route: "/concepts",
-    method: "getConcepts",
-  },
-  // TODO: show registries once cocoda-sdk supports it
-  // { key: "registries",   label: "Registries",    route: "/registries", method: "getRegistries" },
-  { key: "types", label: "Types", route: "/types", method: "getTypes" },
 ]
 
 const counts = ref({})
