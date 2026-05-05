@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from "vue"
 import {
+  BBadge,
+  BButton,
   BNavbar,
   BNavbarBrand,
   BNavbarToggle,
@@ -11,7 +13,11 @@ import {
 import ThemeToggle from "./ThemeToggle.vue"
 import { useThemeStore } from "@/stores/theme"
 import coliConcLogo from "@/assets/coli-conc-logo.svg"
+import { useNotify } from "@/composables/useNotify"
+import { useServerStore } from "@/stores/server"
 
+const store = useServerStore()
+const { notify } = useNotify()
 const offcanvasVisible = ref(false)
 const theme = useThemeStore()
 
@@ -19,6 +25,12 @@ const navLinks = [
   { to: "/", label: "Overview" },
   { to: "/connection", label: "Connection" },
 ]
+
+function handleDisconnect() {
+  const url = store.activeUrl
+  store.disconnectServer()
+  notify(`Disconnected from ${url}`, "warning")
+}
 </script>
 
 <template>
@@ -54,6 +66,15 @@ const navLinks = [
         <ThemeToggle v-model="theme.dark" label="Appearance" />
       </BNavbarNav>
     </BOffcanvas>
+
+    <BButton
+      v-if="store.activeUrl"
+      variant="outline-danger"
+      size="sm"
+      @click="handleDisconnect"
+    >
+      Disconnect
+    </BButton>
 
     <BNavbarNav
       class="gap-2 ms-auto mb-2 mb-md-0 d-none d-md-flex align-items-center"

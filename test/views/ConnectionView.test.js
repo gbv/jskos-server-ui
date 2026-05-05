@@ -248,20 +248,5 @@ describe("ConnectionView", () => {
       expect(wrapper.findAll(".icon-dash").length).toBeGreaterThan(0)
     })
 
-    it("calls disconnectServer and shows warning toast on Disconnect click", async () => {
-      const wrapper = mountView(connectedState)
-      const store = useServerStore()
-      vi.spyOn(store, "disconnectServer")
-
-      await wrapper
-        .findAll("button")
-        .find((b) => b.text().includes("Disconnect"))
-        .trigger("click")
-
-      expect(store.disconnectServer).toHaveBeenCalled()
-      expect(mockToastCreate).toHaveBeenCalledWith(
-        expect.objectContaining({ variant: "warning" }),
-      )
-    })
   })
 })

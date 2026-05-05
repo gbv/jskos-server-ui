@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue"
-import { BButton, BBadge, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
+import { BButton, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
 import ServiceInfo from "@/components/ServiceInfo.vue"
 import { RemoveIcon } from "jskos-vue"
@@ -38,13 +38,6 @@ async function connectFromHistory(url) {
   await connect(url)
 }
 
-function handleDisconnect() {
-  const url = store.activeUrl
-  store.disconnectServer()
-  urlInput.value = ""
-  notify(`Disconnected from ${url}`, "warning")
-}
-
 // Returns a JSKOS Service object
 const serviceInfo = computed(() => {
   const cfg = store.status
@@ -65,17 +58,6 @@ const serviceInfo = computed(() => {
 <template>
   <div>
     <ViewTitle>Connection to jskos-server</ViewTitle>
-
-    <div style="padding-bottom: 0.5em">
-      <div class="d-flex align-items-center justify-content-between gap-2">
-        <div class="d-flex align-items-center gap-2 fw-bold">
-          <BBadge variant="success">Connected</BBadge>
-        </div>
-        <BButton variant="outline-danger" size="sm" @click="handleDisconnect">
-          Disconnect
-        </BButton>
-      </div>
-    </div>
 
     <!-- Connected state -->
     <ServiceInfo v-if="store.activeUrl" :info="serviceInfo" />
