@@ -40,24 +40,13 @@ async function connectFromHistory(url) {
 
 // Returns a JSKOS Service object
 const serviceInfo = computed(() => {
-  const cfg = store.status
-  if (!cfg) return null
-  return {
-    prefLabel: cfg.title ? { en: cfg.title } : null,
-    version: cfg.serverVersion,
-    API_VERSION: cfg.version,
-    api: "http://bartoc.org/api-type/jskos",
-    endpoint: cfg.baseUrl ?? store.activeUrl,
-    ENV: cfg.env,
-    AUTH: cfg.auth === true,
-    CAPABILITIES: store.capabilities,
-  }
+  return store.service
 })
 </script>
 
 <template>
   <div>
-    <ViewTitle>Connection to jskos-server</ViewTitle>
+    <ViewTitle>Connection</ViewTitle>
 
     <!-- Connected state -->
     <ServiceInfo v-if="store.activeUrl" :info="serviceInfo" />

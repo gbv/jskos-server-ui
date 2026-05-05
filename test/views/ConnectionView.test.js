@@ -207,15 +207,16 @@ describe("ConnectionView", () => {
   describe("connected state", () => {
     const connectedState = {
       activeUrl: "http://example.org/",
-      status: {
-        title: "My Server",
-        version: "1.0",
-        serverVersion: "2.5",
-        baseUrl: "http://example.org/",
-        env: "production",
-        auth: true,
+      service: {
+        prefLabel: { en: "My Server" },
+        API_VERSION: "1.0",
+        version: "2.5",
+        api: "http://bartoc.org/api-type/jskos",
+        endpoint: "http://example.org/",
+        ENV: "production",
+        AUTH: true,
       },
-      capabilities: {
+      CAPABILITIES: {
         schemes: {
           read: { supported: true, requiresAuth: false },
           create: { supported: true, requiresAuth: true },
