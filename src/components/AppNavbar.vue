@@ -36,7 +36,7 @@ function handleDisconnect() {
   <BNavbar toggleable="md" class="app-navbar px-3">
     <BNavbarBrand href="#/">
       JSKOS Service
-      <a href="{{ store.service.endpoint }}" v-if="store.service">
+      <a :href="store.service.endpoint" v-if="store.service">
         {{ store.service.prefLabel?.en ?? "Connected" }}
       </a>
     </BNavbarBrand>

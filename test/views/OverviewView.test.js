@@ -14,6 +14,7 @@ function createStubRouter() {
     history: createMemoryHistory(),
     routes: [
       { path: "/", component: OverviewView },
+      { path: "/concepts", component: { template: "<div/>" } },
       { path: "/annotations", component: { template: "<div/>" } },
       { path: "/concordances", component: { template: "<div/>" } },
       { path: "/connection", component: { template: "<div/>" } },
@@ -67,6 +68,7 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         capabilities: {
           schemes: cap,
+          concepts: null,
           concordances: null,
           mappings: null,
           annotations: null,
@@ -83,6 +85,7 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         capabilities: {
           schemes: null,
+          concepts: null,
           concordances: null,
           mappings: null,
           annotations: null,
@@ -99,13 +102,14 @@ describe("OverviewView", () => {
         activeUrl: "http://example.org/",
         capabilities: {
           schemes: cap,
+          concepts: cap,
           concordances: cap,
           mappings: cap,
           annotations: cap,
           registries: cap,
         },
       })
-      expect(wrapper.findAll(".type-card")).toHaveLength(5)
+      expect(wrapper.findAll(".type-card")).toHaveLength(6)
     })
   })
 
@@ -200,6 +204,7 @@ describe("OverviewView", () => {
         mappingsRegistry: mreg,
         capabilities: {
           schemes: cap,
+          concepts: cap,
           concordances: cap,
           mappings: cap,
           annotations: cap,
@@ -207,10 +212,10 @@ describe("OverviewView", () => {
         },
       })
       await flushPromises()
-      expect(wrapper.findAll(".type-card")).toHaveLength(5)
+      expect(wrapper.findAll(".type-card")).toHaveLength(6)
       expect(
         wrapper.findAll(".count-na").filter((el) => el.text() === "✕"),
-      ).toHaveLength(2)
+      ).toHaveLength(3)
     })
 
     it("does not call registry methods when registry is null", async () => {

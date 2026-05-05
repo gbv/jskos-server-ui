@@ -32,8 +32,12 @@ const STATS = [
     route: "/annotations",
     method: "getAnnotations",
   },
-  // TODO: show concepts once cocoda-sdk supports it
-  // { key: "concepts",     label: "Concepts",      route: "/concepts", method: "getConcepts" },
+  {
+    key: "concepts",
+    label: "Concepts",
+    route: "/concepts",
+    method: "getConcepts",
+  },
   // TODO: show registries once cocoda-sdk supports it
   // { key: "registries",   label: "Registries",    route: "/registries", method: "getRegistries" },
   { key: "types", label: "Types", route: "/types", method: "getTypes" },
