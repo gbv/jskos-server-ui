@@ -14,11 +14,13 @@ function createStubRouter() {
     history: createMemoryHistory(),
     routes: [
       { path: "/", component: OverviewView },
-      { path: "/terminologies", component: { template: "<div/>" } },
-      { path: "/concordances", component: { template: "<div/>" } },
-      { path: "/mappings", component: { template: "<div/>" } },
       { path: "/annotations", component: { template: "<div/>" } },
+      { path: "/concordances", component: { template: "<div/>" } },
       { path: "/connection", component: { template: "<div/>" } },
+      { path: "/mappings", component: { template: "<div/>" } },
+      { path: "/occurrences", component: { template: "<div/>" } },
+      { path: "/terminologies", component: { template: "<div/>" } },
+      { path: "/types", component: { template: "<div/>" } },
     ],
   })
 }
@@ -68,6 +70,9 @@ describe("OverviewView", () => {
           concordances: null,
           mappings: null,
           annotations: null,
+          registries: null,
+          occurrences: null,
+          types: null,
         },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(1)
@@ -81,12 +86,15 @@ describe("OverviewView", () => {
           concordances: null,
           mappings: null,
           annotations: null,
+          registries: null,
+          occurrences: null,
+          types: null,
         },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(0)
     })
 
-    it("renders all four cards when all capabilities are set", () => {
+    it("renders all five cards when all capabilities are set", () => {
       const wrapper = mountView({
         activeUrl: "http://example.org/",
         capabilities: {
@@ -94,9 +102,10 @@ describe("OverviewView", () => {
           concordances: cap,
           mappings: cap,
           annotations: cap,
+          registries: cap,
         },
       })
-      expect(wrapper.findAll(".type-card")).toHaveLength(4)
+      expect(wrapper.findAll(".type-card")).toHaveLength(5)
     })
   })
 
@@ -194,13 +203,14 @@ describe("OverviewView", () => {
           concordances: cap,
           mappings: cap,
           annotations: cap,
+          registries: cap,
         },
       })
       await flushPromises()
-      expect(wrapper.findAll(".type-card")).toHaveLength(4)
+      expect(wrapper.findAll(".type-card")).toHaveLength(5)
       expect(
         wrapper.findAll(".count-na").filter((el) => el.text() === "✕"),
-      ).toHaveLength(1)
+      ).toHaveLength(2)
     })
 
     it("does not call registry methods when registry is null", async () => {
