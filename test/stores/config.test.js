@@ -11,17 +11,21 @@ afterEach(() => {
 })
 
 describe("useConfigStore", () => {
-  it("starts with null defaultServer and empty footerLinks", () => {
+  it("starts with null defaultService and empty footerLinks", () => {
     const store = useConfigStore()
-    expect(store.defaultServer).toBeNull()
+    expect(store.defaultService).toBeNull()
     expect(store.footerLinks).toEqual([])
   })
 
-  it("sets defaultServer from config.json", async () => {
-    mockFetchSuccess({ defaultServer: "http://example.org/" })
+  it("sets defaultService from config.json", async () => {
+    const service = {
+      endpoint:"http://example.org/",
+      api: "http://bartoc.org/api-type/jskos"
+    }
+    mockFetchSuccess({ services: [service]})
     const store = useConfigStore()
     await store.loadConfig()
-    expect(store.defaultServer).toBe("http://example.org/")
+    expect(store.defaultService).toEqual(service)
   })
 
   it("sets footerLinks from config.json", async () => {
@@ -36,7 +40,7 @@ describe("useConfigStore", () => {
     mockFetchSuccess({})
     const store = useConfigStore()
     await store.loadConfig()
-    expect(store.defaultServer).toBeNull()
+    expect(store.defaultService).toBeNull()
     expect(store.footerLinks).toEqual([])
   })
 
@@ -44,7 +48,7 @@ describe("useConfigStore", () => {
     mockFetchFailure(404)
     const store = useConfigStore()
     await store.loadConfig()
-    expect(store.defaultServer).toBeNull()
+    expect(store.defaultService).toBeNull()
     expect(store.footerLinks).toEqual([])
   })
 })

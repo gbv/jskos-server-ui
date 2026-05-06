@@ -74,8 +74,11 @@ describe("App.vue — startup sequence", () => {
     )
   })
 
-  it("auto-connects with defaultServer when no activeUrl", async () => {
-    mockFetchSuccess({ defaultServer: "http://default.org/" })
+  it("auto-connects with default service when no activeUrl", async () => {
+    mockFetchSuccess({ services: [{
+      endpoint:"http://default.org/",
+      api: "http://bartoc.org/api-type/jskos"
+    }]})
     const { cdk } = await import("cocoda-sdk")
     const { makeRegistry } = await import("./mocks/cdk.js")
     cdk.initializeRegistry.mockReturnValue(makeRegistry())
@@ -88,7 +91,7 @@ describe("App.vue — startup sequence", () => {
     )
   })
 
-  it("does not connect when neither activeUrl nor defaultServer is set", async () => {
+  it("does not connect when neither activeUrl nor default service is set", async () => {
     const { cdk } = await import("cocoda-sdk")
     mountApp({ server: { activeUrl: null } })
     await flushPromises()

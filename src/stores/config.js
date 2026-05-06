@@ -2,20 +2,23 @@ import { defineStore } from "pinia"
 import { ref } from "vue"
 
 export const useConfigStore = defineStore("config", () => {
-  const defaultServer = ref(null)
+  const defaultService = ref(null)
   const footerLinks = ref([])
 
   async function loadConfig() {
     try {
       const res = await fetch("config.json")
       if (!res.ok) return
-      const data = await res.json()
-      defaultServer.value = data.defaultServer ?? null
-      footerLinks.value = data.footer?.links ?? []
+      const { services, footer } = await res.json()
+      defaultService.value =
+        services?.filter(
+          ({ api }) => "http://bartoc.org/api-type/jskos",
+        )?.[0] ?? null
+      footerLinks.value = footer?.links ?? []
     } catch {
       // config.json not available, use defaults
     }
   }
 
-  return { defaultServer, footerLinks, loadConfig }
+  return { defaultService, footerLinks, loadConfig }
 })
