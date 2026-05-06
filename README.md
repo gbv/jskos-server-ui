@@ -96,7 +96,12 @@ Runtime configuration is loaded from `public/config.json` at startup. This file 
 
 ```json
 {
-  "defaultServer": "http://localhost:3000",
+  "services": [
+    {
+      "api": "http://bartoc.org/api-type/jskos",
+      "endpoint": "http://localhost:3000"
+    }
+  ],
   "footer": {
     "links": [
       { "label": "Imprint", "url": "https://example.org/imprint" },
@@ -109,8 +114,10 @@ Runtime configuration is loaded from `public/config.json` at startup. This file 
 
 | Property        | Type   | Description                               |
 | --------------- | ------ | ----------------------------------------- |
-| `defaultServer` | string | JSKOS Server URL loaded on startup        |
+| `services`      | array  | [JSKOS Service] objects to choose from    |
 | `footer.links`  | array  | Footer navigation links (`label` + `url`) |
+
+[JSKOS Service]: https://gbv.github.io/jskos/#service
 
 ## Deployment
 
@@ -132,7 +139,12 @@ The UI is then available at `http://localhost:8080`, jskos-server at `http://loc
 
 ```json
 {
-  "defaultServer": "http://localhost:3000",
+  "services": [
+    {
+      "api": "http://bartoc.org/api-type/jskos",
+      "endpoint": "http://localhost:3000"
+    }
+  ],
   "footer": {
     "links": [{ "label": "Imprint", "url": "https://example.org/imprint" }]
   }

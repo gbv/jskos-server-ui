@@ -17,7 +17,7 @@ useThemeStore()
 
 onMounted(async () => {
   await config.loadConfig()
-  const url = server.activeUrl ?? config.defaultServer ?? null
+  const url = server.activeUrl ?? config.defaultService?.endpoint ?? null
   if (url) {
     await server.connectToServer(url)
     if (server.error) {
