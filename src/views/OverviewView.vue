@@ -20,12 +20,7 @@ const STATS = [
     route: "/concepts",
     method: "getConcepts",
   },
-  {
-    key: "types",
-    label: "Types",
-    route: "/types",
-    method: "getTypes",
-  },
+  { key: "types", label: "Types", route: "/types", method: "getTypes" },
   {
     key: "concordances",
     label: "Concordances",
@@ -38,12 +33,8 @@ const STATS = [
     route: "/mappings",
     method: "getMappings",
   },
-  {
-    key: "registries",
-    label: "Registries",
-    route: "/registries",
-    method: "getRegistries",
-  },
+  // TODO: show registries once cocoda-sdk supports it
+  // { key: "registries",   label: "Registries",    route: "/registries", method: "getRegistries" },
   {
     key: "annotations",
     label: "Annotations",
