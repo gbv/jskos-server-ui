@@ -5,7 +5,8 @@
   flex-direction: column;
 }
 
-h1, h3 {
+h1,
+h3 {
   color: var(--color-primary);
   font-weight: 700;
 }

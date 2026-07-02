@@ -1,5 +1,10 @@
 {
-  "defaultServer": "http://localhost:3000",
+  "services": [
+    {
+      "endpoint": "http://localhost:3000",
+      "api": "http://bartoc.org/api-type/jskos"
+    }
+  ],
   "footer": {
     "links": [
       {

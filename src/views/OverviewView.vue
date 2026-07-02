@@ -8,14 +8,39 @@ import { useCountUp } from "@/composables/useCountUp"
 const store = useServerStore()
 
 const STATS = [
-  { key: "schemes",      label: "Terminologies", route: "/terminologies" },
-  { key: "concordances", label: "Concordances",  route: "/concordances"  },
-  { key: "mappings",     label: "Mappings",      route: "/mappings"      },
-  { key: "annotations",  label: "Annotations",   route: "/annotations"   },
-  // TODO: show concepts once cocoda-sdk supports it
-  // { key: "concepts",     label: "Concepts",      route: "/concepts",     unknownCount: true },
+  {
+    key: "schemes",
+    label: "Terminologies",
+    route: "/terminologies",
+    method: "getSchemes",
+  },
+  {
+    key: "concepts",
+    label: "Concepts",
+    route: "/concepts",
+    method: "getConcepts",
+  },
+  { key: "types", label: "Types", route: "/types", method: "getTypes" },
+  {
+    key: "concordances",
+    label: "Concordances",
+    route: "/concordances",
+    method: "getConcordances",
+  },
+  {
+    key: "mappings",
+    label: "Mappings",
+    route: "/mappings",
+    method: "getMappings",
+  },
   // TODO: show registries once cocoda-sdk supports it
-  // { key: "registries",   label: "Registries",    route: "/registries",   unknownCount: true },
+  // { key: "registries",   label: "Registries",    route: "/registries", method: "getRegistries" },
+  {
+    key: "annotations",
+    label: "Annotations",
+    route: "/annotations",
+    method: "getAnnotations",
+  },
 ]
 
 const counts = ref({})
@@ -30,35 +55,6 @@ for (const s of STATS) {
   useCountUp(elRef, valRef)
 }
 
-async function fetchCount(key) {
-  const reg = store.registry
-  const mreg = store.mappingsRegistry
-
-  if (key === "schemes") {
-    const r = await reg.getSchemes({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "mappings") {
-    const r = await mreg.getMappings({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "concordances") {
-    const r = await mreg.getConcordances({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "annotations") {
-    const r = await mreg.getAnnotations({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "concepts") {
-    return null   // mreg.getConcepts throws InvalidOrMissingParameterError; needs 'uri'
-  }
-  if (key === "registries") {
-    return null // mreg.getRegistries throws MethodNotImplementedError
-  }
-  return null
-}
-
 async function fetchAllCounts() {
   counts.value = {}
   errorCounts.value = {}
@@ -67,8 +63,11 @@ async function fetchAllCounts() {
   await Promise.allSettled(
     STATS.filter((s) => store.capabilities?.[s.key] !== null).map(async (s) => {
       try {
-        const n = await fetchCount(s.key)
-        if (n != null) counts.value = { ...counts.value, [s.key]: n }
+        const reg = ["mappings", "concordances", "annotations"].includes(s.key) // TODO: use one store only
+          ? store.mappingsRegistry
+          : store.registry
+        const n = (await reg[s.method]({ limit: 0 }))?._totalCount
+        if (n !== undefined) counts.value = { ...counts.value, [s.key]: n }
       } catch (e) {
         errorCounts.value = { ...errorCounts.value, [s.key]: true }
       } finally {
@@ -112,19 +111,19 @@ watch(
           :to="s.route"
           class="type-card"
         >
-        <div class="card-label">{{ s.label }}</div>
-        <div class="card-count">
-          <BSpinner v-if="loadingCounts[s.key]" small />
-          <span
-            v-else-if="errorCounts[s.key]"
-            class="count-na"
-            title="Failed to load"
-            >✕</span
-          >
+          <div class="card-label">{{ s.label }}</div>
+          <div class="card-count">
+            <BSpinner v-if="loadingCounts[s.key]" small />
+            <span
+              v-else-if="errorCounts[s.key]"
+              class="count-na"
+              title="Failed to load"
+              >✕</span
+            >
 
-          <span v-else-if="counts[s.key] == null" class="count-na">—</span>
-          <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
-        </div>
+            <span v-else-if="counts[s.key] == null" class="count-na">—</span>
+            <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
+          </div>
         </router-link>
       </template>
     </div>

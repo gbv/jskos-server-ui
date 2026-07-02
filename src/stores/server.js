@@ -13,6 +13,7 @@ export const useServerStore = defineStore("server", () => {
   const mappingsRegistry = ref(null)
   const status = ref(null)
   const capabilities = ref(null)
+  const service = ref(null)
   const error = ref(null)
 
   async function connectToServer(url) {
@@ -39,12 +40,25 @@ export const useServerStore = defineStore("server", () => {
       registry.value = reg
       mappingsRegistry.value = mappingsReg
       status.value = reg._config
-      capabilities.value = parseCapabilities(reg._config)
+      capabilities.value = parseCapabilities(reg)
       activeUrl.value = url
       localStorage.setItem(LS_URL_KEY, url)
       if (!servers.value.includes(url)) {
         servers.value = [...servers.value, url]
         localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(servers.value))
+      }
+      if (status.value) {
+        const cfg = status.value
+        service.value = {
+          prefLabel: cfg.title ? { en: cfg.title } : null,
+          version: cfg.serverVersion,
+          API_VERSION: cfg.version,
+          api: "http://bartoc.org/api-type/jskos",
+          endpoint: cfg.baseUrl ?? activeUrl,
+          ENV: cfg.env,
+          AUTH: cfg.auth === true,
+          CAPABILITIES: capabilities,
+        }
       }
     } catch (e) {
       error.value = e?.message ?? String(e)
@@ -58,6 +72,7 @@ export const useServerStore = defineStore("server", () => {
     mappingsRegistry.value = null
     status.value = null
     capabilities.value = null
+    service.value = null
     error.value = null
     activeUrl.value = null
     localStorage.removeItem(LS_URL_KEY)
@@ -86,6 +101,7 @@ export const useServerStore = defineStore("server", () => {
     mappingsRegistry,
     status,
     capabilities,
+    service,
     error,
     connectToServer,
     disconnectServer,
