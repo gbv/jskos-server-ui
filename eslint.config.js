@@ -6,7 +6,7 @@ export default [
   prettierRecommended,
   {
     rules: {
-      "prettier/prettier": "warn",
+      "prettier/prettier": "error",
     },
   },
 ]
