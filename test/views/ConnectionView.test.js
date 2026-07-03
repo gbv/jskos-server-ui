@@ -249,5 +249,24 @@ describe("ConnectionView", () => {
       expect(wrapper.findAll(".icon-dash").length).toBeGreaterThan(0)
     })
 
+    it("renders the endpoint URL as an external API link", () => {
+      const wrapper = mountView(connectedState)
+      const link = wrapper.find("a[target='_blank']")
+      expect(link.exists()).toBe(true)
+      expect(link.attributes("href")).toBe("http://example.org/")
+    })
+
+    it("shows a Disconnect button that calls store.disconnectServer", async () => {
+      const wrapper = mountView(connectedState)
+      const store = useServerStore()
+      vi.spyOn(store, "disconnectServer")
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Disconnect"))
+        .trigger("click")
+
+      expect(store.disconnectServer).toHaveBeenCalled()
+    })
   })
 })
