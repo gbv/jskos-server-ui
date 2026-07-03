@@ -1,0 +1,23 @@
+/* jskos-vue color token overrides */
+:root {
+  --jskos-vue-loadingIndicator-secondary-color: var(--color-primary);
+  --jskos-vue-itemList-indicator-color: var(--color-primary);
+}
+
+:root[data-bs-theme="light"] {
+  --jskos-vue-bgColor: #fff;
+  --jskos-vue-highlight-bgColor: #fdbd5888;
+  --jskos-vue-color-lightGrey: #737373;
+  --jskos-vue-border-color: #e2e2e2;
+  --jskos-vue-arrow-color: #000;
+  --jskos-vue-arrow-hover-color: #666;
+}
+
+:root[data-bs-theme="dark"] {
+  --jskos-vue-bgColor: #161618;
+  --jskos-vue-highlight-bgColor: #e4ad5587;
+  --jskos-vue-color-lightGrey: #999;
+  --jskos-vue-border-color: #333;
+  --jskos-vue-arrow-color: #fff;
+  --jskos-vue-arrow-hover-color: #999;
+}
