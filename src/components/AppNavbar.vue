@@ -1,8 +1,6 @@
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import {
-  BBadge,
-  BButton,
   BNavbar,
   BNavbarBrand,
   BNavbarToggle,
@@ -12,11 +10,9 @@ import {
 } from "bootstrap-vue-next"
 import ThemeToggle from "./ThemeToggle.vue"
 import { useThemeStore } from "@/stores/theme"
-import { useNotify } from "@/composables/useNotify"
 import { useServerStore } from "@/stores/server"
 
 const store = useServerStore()
-const { notify } = useNotify()
 const offcanvasVisible = ref(false)
 const theme = useThemeStore()
 
@@ -25,20 +21,16 @@ const navLinks = [
   { to: "/connection", label: "Connection" },
 ]
 
-function handleDisconnect() {
-  const url = store.activeUrl
-  store.disconnectServer()
-  notify(`Disconnected from ${url}`, "warning")
-}
+// Uses the connected server's title when available, otherwise the app name.
+const appName = computed(
+  () => store.service?.prefLabel?.en ?? "JSKOS Server UI",
+)
 </script>
 
 <template>
   <BNavbar toggleable="md" class="app-navbar px-3">
-    <BNavbarBrand href="#/">
-      JSKOS Service
-      <a :href="store.service.endpoint" v-if="store.service">
-        {{ store.service.prefLabel?.en ?? "Connected" }}
-      </a>
+    <BNavbarBrand :to="{ name: 'overview' }" tag="router-link">
+      {{ appName }}
     </BNavbarBrand>
 
     <BNavbarToggle target="nav-offcanvas" @click="offcanvasVisible = true" />
@@ -47,7 +39,7 @@ function handleDisconnect() {
       id="nav-offcanvas"
       v-model="offcanvasVisible"
       placement="end"
-      title="JSKOS Server UI"
+      :title="appName"
     >
       <BNavbarNav class="gap-2">
         <BNavItem
@@ -63,15 +55,6 @@ function handleDisconnect() {
         <ThemeToggle v-model="theme.dark" label="Appearance" />
       </BNavbarNav>
     </BOffcanvas>
-
-    <BButton
-      v-if="store.activeUrl"
-      variant="outline-danger"
-      size="sm"
-      @click="handleDisconnect"
-    >
-      Disconnect
-    </BButton>
 
     <BNavbarNav
       class="gap-2 ms-auto mb-2 mb-md-0 d-none d-md-flex align-items-center"
