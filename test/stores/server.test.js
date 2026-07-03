@@ -173,23 +173,23 @@ describe("useServerStore", () => {
     })
   })
 
-  describe("canDo(type, action)", () => {
+  describe("isSupported(type, action)", () => {
     it("returns true when the capability entry is non-null", async () => {
       await setup()
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
-      expect(store.canDo("schemes", "read")).toBe(true)
+      expect(store.isSupported("schemes", "read")).toBe(true)
     })
 
     it("returns false when capabilities is null", () => {
-      expect(useServerStore().canDo("schemes", "read")).toBe(false)
+      expect(useServerStore().isSupported("schemes", "read")).toBe(false)
     })
 
     it("returns false when the type entry is null", async () => {
       await setup()
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
-      expect(store.canDo("concepts", "read")).toBe(false)
+      expect(store.isSupported("concepts", "read")).toBe(false)
     })
 
     it("returns false when the action entry is null", async () => {
@@ -208,7 +208,7 @@ describe("useServerStore", () => {
         .mockReturnValueOnce(makeRegistry())
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
-      expect(store.canDo("schemes", "read")).toBe(false)
+      expect(store.isSupported("schemes", "read")).toBe(false)
     })
   })
 
