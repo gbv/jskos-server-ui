@@ -38,6 +38,12 @@ async function connectFromHistory(url) {
   await connect(url)
 }
 
+function handleDisconnect() {
+  const url = store.activeUrl
+  store.disconnectServer()
+  notify(`Disconnected from ${url}`, "warning")
+}
+
 // Returns a JSKOS Service object
 const serviceInfo = computed(() => {
   return store.service
@@ -49,7 +55,14 @@ const serviceInfo = computed(() => {
     <ViewTitle>Connection</ViewTitle>
 
     <!-- Connected state -->
-    <ServiceInfo v-if="store.activeUrl" :info="serviceInfo" />
+    <template v-if="store.activeUrl">
+      <div class="d-flex justify-content-end mb-2">
+        <BButton variant="outline-danger" size="sm" @click="handleDisconnect">
+          Disconnect
+        </BButton>
+      </div>
+      <ServiceInfo :info="serviceInfo" />
+    </template>
 
     <!-- Disconnected state -->
     <template v-else>
