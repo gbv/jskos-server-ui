@@ -1,9 +1,10 @@
 <script setup>
-import { BButton, BBadge, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
+import { BCard } from "bootstrap-vue-next"
 import {
   BIconCheckCircleFill,
   BIconLockFill,
   BIconDashCircle,
+  BIconBoxArrowUpRight,
 } from "bootstrap-icons-vue"
 
 defineProps({ info: Object })
@@ -30,7 +31,10 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 
         <dt class="col-sm-4 text-muted">URL</dt>
         <dd class="col-sm-8 mb-1">
-          <code>{{ info.endpoint }}</code>
+          <a :href="info.endpoint" target="_blank" rel="noopener">
+            <code>{{ info.endpoint }}</code>
+            <BIconBoxArrowUpRight class="ms-1" />
+          </a>
         </dd>
 
         <dt class="col-sm-4 text-muted">API</dt>
