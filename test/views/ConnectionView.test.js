@@ -55,8 +55,8 @@ function createStubRouter() {
   return createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: "/", component: { template: "<div/>" } },
-      { path: "/connection", component: ConnectionView },
+      { path: "/", name: "overview", component: { template: "<div/>" } },
+      { path: "/connection", name: "connection", component: ConnectionView },
     ],
   })
 }
@@ -184,6 +184,44 @@ describe("ConnectionView", () => {
       expect(mockToastCreate).toHaveBeenCalledWith(
         expect.objectContaining({ variant: "success" }),
       )
+    })
+
+    it("redirects to the overview after successful connection", async () => {
+      const { cdk } = await import("cocoda-sdk")
+      cdk.initializeRegistry
+        .mockReturnValueOnce(makeRegistry())
+        .mockReturnValueOnce(makeRegistry())
+
+      const wrapper = mountView()
+      await wrapper.vm.$router.push("/connection")
+      await flushPromises()
+
+      await wrapper.find("input[type='url']").setValue("http://example.org/")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Connect"))
+        .trigger("click")
+      await flushPromises()
+
+      expect(wrapper.vm.$router.currentRoute.value.name).toBe("overview")
+    })
+
+    it("stays on the connection view after a failed connection", async () => {
+      const { cdk } = await import("cocoda-sdk")
+      cdk.initializeRegistry.mockReturnValueOnce(makeRegistry({ _config: {} }))
+
+      const wrapper = mountView()
+      await wrapper.vm.$router.push("/connection")
+      await flushPromises()
+
+      await wrapper.find("input[type='url']").setValue("http://bad.org/")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Connect"))
+        .trigger("click")
+      await flushPromises()
+
+      expect(wrapper.vm.$router.currentRoute.value.name).toBe("connection")
     })
 
     it("shows danger toast after failed connection", async () => {
