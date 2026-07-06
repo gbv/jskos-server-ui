@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from "vue"
+import { useRouter } from "vue-router"
 import { BButton, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
 import ServiceInfo from "@/components/ServiceInfo.vue"
@@ -13,6 +14,7 @@ import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
 
 const store = useServerStore()
+const router = useRouter()
 const urlInput = ref(store.activeUrl ?? "")
 const loading = ref(false)
 const { notify } = useNotify()
@@ -26,6 +28,9 @@ async function connect(url) {
     notify(`Connection failed: ${store.error}`, "danger")
   } else {
     notify(`Connected to ${url}`, "success")
+    // Redirect to the overview immediately on success; the success
+    // notification stays visible and provides feedback after navigating.
+    router.push({ name: "overview" })
   }
 }
 
