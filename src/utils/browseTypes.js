@@ -5,13 +5,19 @@
  * @property {string} capability Key used against the server store's capabilities.
  * @property {string} label Human-readable heading.
  * @property {string} registry Server-store registry to call ("registry" or "mappingsRegistry").
- * @property {?string} list Registry method returning a paginated array (with `_totalCount`), or null when the type has no generic list endpoint.
- * @property {boolean} item Whether records are JSKOS items renderable via jskos-vue (ItemName / ItemList / ItemDetails).
- * @property {boolean} hierarchical Whether records form a scheme-bound hierarchy.
+ * @property {?string} list Registry method returning a paginated array (with `_totalCount`), or null when the type has no generic list endpoint (e.g. hierarchical concepts).
+ * @property {boolean} hierarchical Whether records form a scheme-bound hierarchy, rendered via ConceptTree instead of a flat list.
+ * @property {string} listComponent Key selecting the flat list renderer, doubling as the renderer's collection prop name: `"items"` (ItemList), `"mappings"` (MappingList). Ignored for hierarchical types. Meant to grow for other non-item types (occurrences, annotations).
+ * @property {?string} detailComponent Key selecting the detail renderer, doubling as its record prop name: `"item"` (BrowseDetail), `"mapping"` (MappingDetail), or null when the type has no detail pane.
+ * @property {"url"|"memory"} selection Where the current selection lives: `"url"` for URI-resolvable JSKOS items (deep-linkable via the route), `"memory"` for records only available from the loaded list (mappings).
  */
 
 /**
  * Central configuration for the generic browse view, keyed by object type.
+ *
+ * Adding a browsable type is meant to be additive: add an entry here and, for a
+ * new record shape, register its renderer(s) in the component maps in
+ * BrowseList (list) and BrowseView (detail).
  *
  * @const {!Object<string, BrowseType>}
  */
@@ -21,16 +27,30 @@ export const BROWSE_TYPES = {
     label: "Terminologies",
     registry: "registry",
     list: "getSchemes",
-    item: true,
     hierarchical: false,
+    listComponent: "items",
+    detailComponent: "item",
+    selection: "url",
   },
   concepts: {
     capability: "concepts",
     label: "Concepts",
     registry: "registry",
     list: null,
-    item: true,
     hierarchical: true,
+    listComponent: "items",
+    detailComponent: "item",
+    selection: "url",
+  },
+  mappings: {
+    capability: "mappings",
+    label: "Mappings",
+    registry: "mappingsRegistry",
+    list: "getMappings",
+    hierarchical: false,
+    listComponent: "mappings",
+    detailComponent: "mapping",
+    selection: "memory",
   },
 }
 

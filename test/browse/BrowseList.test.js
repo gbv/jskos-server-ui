@@ -12,9 +12,8 @@ const schemesConfig = {
   label: "Terminologies",
   registry: "registry",
   list: "getSchemes",
-  item: true,
   hierarchical: false,
-  row: null,
+  listComponent: "items",
 }
 
 const ItemListStub = {
@@ -28,8 +27,24 @@ const conceptsConfig = {
   label: "Concepts",
   registry: "registry",
   list: null,
-  item: true,
   hierarchical: true,
+  listComponent: "items",
+}
+
+const mappingsConfig = {
+  capability: "mappings",
+  label: "Mappings",
+  registry: "mappingsRegistry",
+  list: "getMappings",
+  hierarchical: false,
+  listComponent: "mappings",
+}
+
+const MappingListStub = {
+  props: ["mappings"],
+  emits: ["select"],
+  template:
+    "<ul class='stub-mappinglist'><li v-for='(m, i) in mappings' :key='i' @click=\"$emit('select', { mapping: m })\">{{ m.uri }}</li></ul>",
 }
 
 // Shared spy for the ConceptTree stub's navigateToUri, reset before each test.
@@ -51,11 +66,15 @@ function mountList(registry, config = schemesConfig, props = {}) {
     props: { config, ...props },
     global: {
       plugins: [createTestingPinia({ stubActions: false })],
-      stubs: { ItemList: ItemListStub, ConceptTree: ConceptTreeStub },
+      stubs: {
+        ItemList: ItemListStub,
+        ConceptTree: ConceptTreeStub,
+        MappingList: MappingListStub,
+      },
     },
   })
   const store = useServerStore()
-  store.registry = registry
+  store[config.registry] = registry
   return wrapper
 }
 
@@ -120,6 +139,37 @@ describe("BrowseList browsing", () => {
     expect(navigateToUri).toHaveBeenCalledWith("urn:concept", {
       select: false,
     })
+  })
+
+  it("renders mappings via MappingList and forwards their selection", async () => {
+    const result = Object.assign([{ uri: "urn:m1" }, { uri: "urn:m2" }], {
+      _totalCount: 5,
+    })
+    const getMappings = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getMappings }, mappingsConfig)
+    await flushPromises()
+
+    expect(getMappings).toHaveBeenCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+    expect(wrapper.find(".stub-itemlist").exists()).toBe(false)
+    expect(wrapper.findAll(".stub-mappinglist li")).toHaveLength(2)
+    expect(wrapper.text()).toContain("Showing 1–2 of 5")
+
+    await wrapper.findAll(".stub-mappinglist li")[0].trigger("click")
+    expect(wrapper.emitted("select")?.at(-1)).toEqual([
+      { record: { uri: "urn:m1" } },
+    ])
+  })
+
+  it("shows a natural empty state when the server has no mappings", async () => {
+    const getMappings = vi.fn().mockResolvedValue(Object.assign([], {}))
+    const wrapper = mountList({ getMappings }, mappingsConfig)
+    await flushPromises()
+
+    expect(wrapper.find(".browse-list-empty").exists()).toBe(true)
+    expect(wrapper.text()).toContain("This server has no mappings.")
+    expect(wrapper.find(".stub-mappinglist").exists()).toBe(false)
   })
 
   it("emits scheme-change when the user picks another scheme", async () => {

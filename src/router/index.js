@@ -23,7 +23,12 @@ export default createRouter({
       props: { type: "concepts" },
     },
     { path: "/concordances", name: "concordances", component: placeholder },
-    { path: "/mappings", name: "mappings", component: placeholder },
+    {
+      path: "/mappings",
+      name: "mappings",
+      component: browse,
+      props: { type: "mappings" },
+    },
     { path: "/registries", name: "registries", component: placeholder },
     { path: "/annotations", name: "annotations", component: placeholder },
   ],
