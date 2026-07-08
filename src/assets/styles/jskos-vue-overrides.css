@@ -2,6 +2,18 @@
 :root {
   --jskos-vue-loadingIndicator-secondary-color: var(--color-primary);
   --jskos-vue-itemList-indicator-color: var(--color-primary);
+  --jskos-vue-mappingList-hover-bgColor: hsla(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 1.15),
+    0.1
+  );
+  --jskos-vue-mappingList-selected-bgColor: hsla(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 1.15),
+    0.2
+  );
 }
 
 :root[data-bs-theme="light"] {

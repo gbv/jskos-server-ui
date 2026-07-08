@@ -3,10 +3,16 @@ import { ref, computed, watch, nextTick } from "vue"
 import { BSpinner, BFormSelect, BPagination } from "bootstrap-vue-next"
 import { ItemList, ConceptTree } from "jskos-vue"
 import * as jskos from "jskos-tools"
+import MappingList from "@/components/MappingList.vue"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
 
 const PAGE_SIZE = 20
+
+const listComponents = {
+  items: ItemList,
+  mappings: MappingList,
+}
 
 const props = defineProps({
   config: {
@@ -17,6 +23,11 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  // Currently selected record, used to highlight its row in the flat lists.
+  selectedRecord: {
+    type: Object,
+    default: null,
+  },
   // URI of the scheme to browse concepts in, mirrored from the route (?scheme=).
   schemeUri: {
     type: String,
@@ -24,7 +35,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["select", "scheme-change"])
+const emit = defineEmits(["select", "scheme-change", "page-change"])
 
 const store = useServerStore()
 const { notify } = useNotify()
@@ -41,12 +52,15 @@ const rangeEnd = computed(
   () => (page.value - 1) * PAGE_SIZE + items.value.length,
 )
 
+const formattedTotalCount = computed(() =>
+  totalCount.value != null ? totalCount.value.toLocaleString() : "",
+)
+
 const isPaginationVisible = computed(
   () =>
     !props.config.hierarchical && totalCount.value != null && !isEmpty.value,
 )
 
-// True once loading finished and there is nothing to show for this state.
 const isEmpty = computed(() => {
   if (!props.config.hierarchical) {
     return !items.value.length
@@ -64,11 +78,8 @@ const emptyMessage = computed(() => {
   return "This terminology has no concepts."
 })
 
-// Concepts are browsed per scheme via ConceptTree.
 const schemes = ref([])
 const selectedScheme = ref(null)
-// Top concepts of the selected scheme, loaded here so we can show an empty
-// state and passed to ConceptTree instead of letting it fetch them itself.
 const topConcepts = ref([])
 const conceptTreeRef = ref(null)
 
@@ -76,8 +87,6 @@ const highlightByUri = computed(() =>
   props.selectedUri ? { [props.selectedUri]: true } : {},
 )
 
-// Minimal concept object driving the ConceptTree's v-model highlight. The tree
-// only needs `uri`; the full concept is loaded for the detail pane elsewhere.
 const selectedConcept = computed(() =>
   props.selectedUri ? { uri: props.selectedUri } : null,
 )
@@ -108,6 +117,21 @@ const schemeOptions = computed(() =>
     text: jskos.prefLabel(scheme) || scheme.uri,
   })),
 )
+
+// Props bound to the active flat list component
+const listBindings = computed(() => {
+  if (props.config.listComponent === "items") {
+    return {
+      items: items.value,
+      highlightByUri: highlightByUri.value,
+      draggable: false,
+    }
+  }
+  return {
+    [props.config.listComponent]: items.value,
+    selected: props.selectedRecord,
+  }
+})
 
 /**
  * Loads one page of records for the current type via its configured registry
@@ -178,9 +202,6 @@ async function fetchTopConcepts() {
 
 /**
  * Opens the hierarchy path to the currently selected concept and scrolls to it.
- * Relies on ConceptTree.navigateToUri, which loads the ancestor chain via the
- * registry. Selection itself is driven by the URL, so navigation must not touch
- * the model value.
  */
 async function navigateToSelected() {
   if (!props.config.hierarchical || !props.selectedUri) {
@@ -190,6 +211,10 @@ async function navigateToSelected() {
   conceptTreeRef.value?.navigateToUri?.(props.selectedUri, { select: false })
 }
 
+/**
+ * Resets the list state and loads the current type: schemes for hierarchical
+ * types (concept browsing), or the first page of records otherwise.
+ */
 function load() {
   items.value = []
   totalCount.value = null
@@ -220,6 +245,7 @@ function onSchemeChange(scheme) {
  */
 function goToPage(newPage) {
   page.value = newPage
+  emit("page-change")
   fetchList()
 }
 
@@ -229,8 +255,7 @@ watch(
   { immediate: true },
 )
 
-// Keep the selected scheme in sync when the route (?scheme=) changes, e.g. via
-// a deep link or browser navigation.
+// Keep the selected scheme in sync when the route (?scheme=) changes
 watch(
   () => props.schemeUri,
   (uri) => {
@@ -244,8 +269,7 @@ watch(
   },
 )
 
-// Reload the concept tree whenever the selected scheme changes, then reveal the
-// deep-linked concept (if any).
+// Reload the concept tree whenever the selected scheme changes
 watch(selectedScheme, async () => {
   if (!props.config.hierarchical) {
     return
@@ -255,11 +279,26 @@ watch(selectedScheme, async () => {
 })
 
 // Reveal a concept that becomes selected while the tree is already mounted
-// (deep link or detail-pane navigation within the same scheme).
 watch(() => props.selectedUri, navigateToSelected)
 
-function onSelect({ item }) {
-  emit("select", { item })
+/**
+ * Forwards a ConceptTree selection, normalized to `{ record }`.
+ *
+ * @param {{ item: Object }} payload the selected concept
+ */
+function onTreeSelect({ item }) {
+  emit("select", { record: item })
+}
+
+/**
+ * Normalizes a selection from any flat list component into `{ record }`
+ *
+ * @param {{ item?: Object, mapping?: Object }} payload the selected record
+ */
+function onFlatSelect(payload) {
+  emit("select", {
+    record: payload.item ?? payload.mapping,
+  })
 }
 </script>
 
@@ -275,7 +314,10 @@ function onSelect({ item }) {
     </div>
 
     <div class="browse-list-scroll">
-      <div v-if="isLoading" class="text-center py-4">
+      <div
+        v-if="isLoading"
+        class="d-flex align-items-center justify-content-center h-100"
+      >
         <BSpinner small />
       </div>
 
@@ -295,15 +337,14 @@ function onSelect({ item }) {
           :registry="store[config.registry]"
           :scheme="selectedScheme"
           :concepts="topConcepts"
-          @select="onSelect"
+          @select="onTreeSelect"
         />
 
-        <ItemList
+        <component
+          :is="listComponents[config.listComponent]"
           v-else
-          :items="items"
-          :highlight-by-uri="highlightByUri"
-          :draggable="false"
-          @select="onSelect"
+          v-bind="listBindings"
+          @select="onFlatSelect"
         />
       </template>
     </div>
@@ -313,7 +354,7 @@ function onSelect({ item }) {
       class="browse-list-pagination d-flex flex-wrap align-items-center justify-content-between gap-2"
     >
       <div class="browse-list-count text-muted small">
-        Showing {{ rangeStart }}–{{ rangeEnd }} of {{ totalCount }}
+        Showing {{ rangeStart }}–{{ rangeEnd }} of {{ formattedTotalCount }}
       </div>
       <BPagination
         v-if="totalCount > PAGE_SIZE"

@@ -4,11 +4,12 @@ import { BButton } from "bootstrap-vue-next"
 import { BIconArrowLeft } from "bootstrap-icons-vue"
 import { useRoute, useRouter } from "vue-router"
 import { useServerStore } from "@/stores/server"
-import { useNotify } from "@/composables/useNotify"
 import { getBrowseType } from "@/utils/browseTypes"
+import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
 import BrowseDetail from "@/components/browse/BrowseDetail.vue"
+import MappingDetail from "@/components/MappingDetail.vue"
 
 const props = defineProps({
   type: {
@@ -20,44 +21,54 @@ const props = defineProps({
 const store = useServerStore()
 const route = useRoute()
 const router = useRouter()
-const { notify } = useNotify()
 
 const config = computed(() => getBrowseType(props.type))
+
+// Keyed by config.detailComponent, which is also the component's record prop name.
+const detailComponents = {
+  item: BrowseDetail,
+  mapping: MappingDetail,
+}
+
+const { loadDetail, resolveConceptHierarchy } = useBrowseItemDetail(
+  config,
+  store,
+)
 
 const isSupported = computed(
   () => config.value && store.isSupported(config.value.capability, "read"),
 )
 
 const selectedItem = ref(null)
+const selectedMemoryRecord = ref(null)
 const selectedUri = computed(() => route.query.uri ?? null)
 const selectedSchemeUri = computed(() => route.query.scheme ?? null)
 
-/**
- * Loads full details for a JSKOS item selected via URI (e.g. a deep link).
- * Only item types (schemes, concepts) can be resolved this way.
- *
- * @param {string} uri the item URI to resolve
- */
-async function loadDetail(uri) {
-  if (!uri || !config.value?.item) {
-    return
-  }
-  const registry = store[config.value.registry]
-  if (!registry) {
-    return
-  }
-  try {
-    const result =
-      props.type === "concepts"
-        ? await registry.getConcepts({ concepts: [{ uri }] })
-        : await registry.getSchemes({ params: { uri } })
-    selectedItem.value = result?.[0] ?? { uri }
-  } catch (error) {
-    notify(`Could not load details: ${error.message}`, "danger")
-    selectedItem.value = { uri }
-  }
-}
+const detailComponent = computed(() =>
+  config.value?.detailComponent
+    ? detailComponents[config.value.detailComponent]
+    : null,
+)
+const hasDetailPane = computed(() => !!detailComponent.value)
 
+const selectedRecord = computed(() =>
+  config.value?.selection === "url"
+    ? selectedItem.value
+    : selectedMemoryRecord.value,
+)
+const hasSelection = computed(() => !!selectedRecord.value)
+
+const detailProps = computed(() =>
+  config.value?.detailComponent
+    ? { [config.value.detailComponent]: selectedRecord.value }
+    : {},
+)
+
+/**
+ * Reflects the selected item URI in the route query, or removes it when falsy.
+ *
+ * @param {?string} uri the selected item URI, or a falsy value to clear it
+ */
 function setUri(uri) {
   router.replace({ query: { ...route.query, uri: uri || undefined } })
 }
@@ -74,31 +85,57 @@ function onSchemeChange(schemeUri) {
   })
 }
 
-function onListSelect({ item }) {
-  selectedItem.value = item
-  setUri(item?.uri)
+/**
+ * Handles a selection from the list or detail pane, normalized to `{ record }`.
+ * URL-selected types mirror it in the route; memory types keep it in memory.
+ *
+ * @param {{ record: Object }} payload the selected record
+ */
+function onSelect({ record }) {
+  if (config.value?.selection === "url") {
+    selectedItem.value = record
+    setUri(record?.uri)
+    return
+  }
+  selectedMemoryRecord.value = record
 }
 
+/**
+ * Clears the current selection: drops the in-memory record and, for URL-selected
+ * types, removes the URI from the route.
+ */
 function clearSelection() {
-  setUri(undefined)
+  selectedMemoryRecord.value = null
+  if (config.value?.selection === "url") {
+    setUri(undefined)
+  }
 }
 
 watch(
   selectedUri,
   (uri) => {
+    if (config.value?.selection !== "url") {
+      return
+    }
     if (!uri) {
       selectedItem.value = null
     } else if (selectedItem.value?.uri !== uri) {
-      loadDetail(uri)
+      loadDetail(uri).then((record) => {
+        selectedItem.value = record
+      })
     }
   },
   { immediate: true },
 )
 
+// Resolve hierarchy placeholders whenever a concept enters the detail pane.
+watch(selectedItem, (item) => resolveConceptHierarchy(item))
+
 watch(
   () => props.type,
   () => {
     selectedItem.value = null
+    selectedMemoryRecord.value = null
     if (route.query.uri || route.query.scheme) {
       router.replace({
         query: { ...route.query, uri: undefined, scheme: undefined },
@@ -131,30 +168,35 @@ watch(
 
     <div class="row g-4">
       <div
-        class="col-12 col-lg-6"
-        :class="{ 'd-none d-lg-block': selectedItem }"
+        :class="[
+          hasDetailPane ? 'col-12 col-lg-6' : 'col-12',
+          { 'd-none d-lg-block': hasDetailPane && hasSelection },
+        ]"
       >
         <div
           class="browse-pane browse-list-pane browse-pane-body"
-          :class="{ 'browse-list-pane-active': selectedItem }"
+          :class="{ 'browse-list-pane-active': hasSelection }"
         >
           <BrowseList
             :config="config"
             :selected-uri="selectedUri"
+            :selected-record="selectedRecord"
             :scheme-uri="selectedSchemeUri"
-            @select="onListSelect"
+            @select="onSelect"
             @scheme-change="onSchemeChange"
+            @page-change="clearSelection"
           />
         </div>
       </div>
 
       <div
+        v-if="hasDetailPane"
         class="col-12 col-lg-6"
-        :class="{ 'd-none d-lg-block': !selectedItem }"
+        :class="{ 'd-none d-lg-block': !hasSelection }"
       >
         <div class="browse-pane browse-detail-pane browse-pane-body">
           <BButton
-            v-if="selectedItem"
+            v-if="hasSelection"
             variant="secondary"
             size="sm"
             class="d-lg-none mb-2 d-inline-flex align-items-center gap-1"
@@ -163,7 +205,15 @@ watch(
             <BIconArrowLeft aria-hidden="true" />
             Back
           </BButton>
-          <BrowseDetail :item="selectedItem" @select="onListSelect" />
+          <component
+            :is="detailComponent"
+            v-if="hasSelection"
+            v-bind="detailProps"
+            @select="onSelect"
+          />
+          <p v-else class="text-muted py-4 text-center">
+            Select an entry to see its details.
+          </p>
         </div>
       </div>
     </div>

@@ -10,19 +10,20 @@ defineProps({
 
 const emit = defineEmits(["select"])
 
+/**
+ * Forwards a selection from within ItemDetails (e.g. a related concept),
+ * normalized to `{ record }` so the view handles it like a list selection.
+ *
+ * @param {{ item: Object }} payload the selected item
+ */
 function onSelect({ item }) {
-  emit("select", { item })
+  emit("select", { record: item })
 }
 </script>
 
 <template>
   <div class="browse-detail">
-    <div v-if="!item" class="text-muted py-4 text-center">
-      Select an entry to see its details.
-    </div>
-
     <ItemDetails
-      v-else
       :item="item"
       :draggable="false"
       :dropzone="false"
