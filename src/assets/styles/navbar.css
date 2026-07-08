@@ -29,3 +29,74 @@
 .app-navbar-logo {
   height: 55px;
 }
+
+.app-navbar .app-navbar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-navbar .app-navbar-panel-label {
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.app-navbar .app-navbar-account {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-navbar .user-status {
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.app-navbar .user-status > a {
+  color: var(--color-primary);
+  background: var(--color-background-component);
+  border: 1px solid var(--color-secondary);
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-navbar .user-status > a:hover,
+.app-navbar .user-status > a:focus {
+  color: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.app-navbar .user-status > a.user-status-disconnected {
+  color: var(--color-button-lighter);
+  text-decoration: none;
+}
+
+.app-navbar .user-status .user-status-dropdown {
+  z-index: var(--bs-dropdown-zindex, 1000);
+  color: var(--color-text);
+  background: var(--color-background-component);
+  border-color: var(--color-secondary);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px var(--color-shadow);
+}
+
+.app-navbar .user-status .user-status-dropdown a {
+  color: var(--color-primary);
+}
+
+.app-navbar .user-status .user-status-dropdown a:hover,
+.app-navbar .user-status .user-status-dropdown a:focus {
+  color: var(--color-primary-light);
+}
+
+.app-navbar .user-status .user-status-dropdown hr {
+  border-top-color: var(--color-secondary);
+}
+
+.app-navbar .user-status .user-status-dropdown li:hover {
+  background: var(--color-background);
+}

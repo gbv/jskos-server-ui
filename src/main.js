@@ -16,13 +16,30 @@ import "./assets/styles/navbar.css"
 import "./assets/styles/footer.css"
 import "./assets/styles/overview.css"
 import "./assets/styles/theme-toggle.css"
+import "gbv-login-client-vue/style"
 
 import App from "./App.vue"
 import router from "./router/index.js"
+import { Login, UserStatus } from "gbv-login-client-vue"
+import { useConfigStore } from "@/stores/config"
 
-const app = createApp(App)
-app.use(createPinia())
-app.use(router)
-app.use(JskosVue)
-app.use(createBootstrap())
-app.mount("#app")
+async function bootstrap() {
+  const app = createApp(App)
+  const pinia = createPinia()
+  app.use(pinia)
+  app.use(router)
+  app.use(JskosVue)
+  app.use(createBootstrap())
+  app.use(Login)
+  app.use(UserStatus)
+
+  const config = useConfigStore(pinia)
+  await config.loadConfig()
+  if (config.loginEnabled) {
+    Login.connect(config.login.url, { ssl: config.login.ssl ?? true })
+  }
+
+  app.mount("#app")
+}
+
+bootstrap()
