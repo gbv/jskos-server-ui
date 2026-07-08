@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from "vue"
 import {
-  BButton,
   BNavbar,
   BNavbarBrand,
   BNavbarToggle,
@@ -16,7 +15,6 @@ import { useServerStore } from "@/stores/server"
 
 const store = useServerStore()
 const config = useConfigStore()
-const { notify } = useNotify()
 const offcanvasVisible = ref(false)
 const theme = useThemeStore()
 
@@ -29,12 +27,6 @@ const navLinks = [
 const appName = computed(
   () => store.service?.prefLabel?.en ?? "JSKOS Server UI",
 )
-function handleDisconnect() {
-  const url = store.activeUrl
-  store.disconnectServer()
-  offcanvasVisible.value = false
-  notify(`Disconnected from JSKOS server ${url}`, "warning")
-}
 </script>
 
 <template>
