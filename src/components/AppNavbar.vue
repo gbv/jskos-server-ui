@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import {
+  BButton,
   BNavbar,
   BNavbarBrand,
   BNavbarToggle,
@@ -9,10 +10,13 @@ import {
   BOffcanvas,
 } from "bootstrap-vue-next"
 import ThemeToggle from "./ThemeToggle.vue"
+import { useConfigStore } from "@/stores/config"
 import { useThemeStore } from "@/stores/theme"
 import { useServerStore } from "@/stores/server"
 
 const store = useServerStore()
+const config = useConfigStore()
+const { notify } = useNotify()
 const offcanvasVisible = ref(false)
 const theme = useThemeStore()
 
@@ -25,6 +29,12 @@ const navLinks = [
 const appName = computed(
   () => store.service?.prefLabel?.en ?? "JSKOS Server UI",
 )
+function handleDisconnect() {
+  const url = store.activeUrl
+  store.disconnectServer()
+  offcanvasVisible.value = false
+  notify(`Disconnected from JSKOS server ${url}`, "warning")
+}
 </script>
 
 <template>
@@ -52,6 +62,10 @@ const appName = computed(
           {{ link.label }}
         </BNavItem>
         <hr />
+        <div v-if="config.loginEnabled" class="app-navbar-panel">
+          <div class="app-navbar-panel-label">Account</div>
+          <UserStatus redirect />
+        </div>
         <ThemeToggle v-model="theme.dark" label="Appearance" />
       </BNavbarNav>
     </BOffcanvas>
@@ -72,6 +86,9 @@ const appName = computed(
           class="vr d-none d-md-flex opacity-50"
           style="height: 1.3rem"
         ></div>
+      </BNavItem>
+      <BNavItem v-if="config.loginEnabled" class="py-0 app-navbar-account">
+        <UserStatus redirect />
       </BNavItem>
       <ThemeToggle v-model="theme.dark" />
     </BNavbarNav>

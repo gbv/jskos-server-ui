@@ -24,5 +24,9 @@
         "url": ""
       }
     ]
+  },
+  "login": {
+    "url": "bartoc.org/login/",
+    "ssl": true
   }
 }
