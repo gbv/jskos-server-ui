@@ -19,10 +19,25 @@ import "./assets/styles/theme-toggle.css"
 
 import App from "./App.vue"
 import router from "./router/index.js"
+import { Login } from "gbv-login-client-vue"
+import { useConfigStore } from "@/stores/config"
 
-const app = createApp(App)
-app.use(createPinia())
-app.use(router)
-app.use(JskosVue)
-app.use(createBootstrap())
-app.mount("#app")
+async function bootstrap() {
+  const app = createApp(App)
+  const pinia = createPinia()
+  app.use(pinia)
+  app.use(router)
+  app.use(JskosVue)
+  app.use(createBootstrap())
+  app.use(Login)
+
+  const config = useConfigStore(pinia)
+  await config.loadConfig()
+  if (config.loginEnabled) {
+    Login.connect(config.login.url, { ssl: config.login.ssl ?? true })
+  }
+
+  app.mount("#app")
+}
+
+bootstrap()
