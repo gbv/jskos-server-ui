@@ -9,6 +9,7 @@ import {
   BOffcanvas,
 } from "bootstrap-vue-next"
 import ThemeToggle from "./ThemeToggle.vue"
+import AccountMenu from "./AccountMenu.vue"
 import { useConfigStore } from "@/stores/config"
 import { useThemeStore } from "@/stores/theme"
 import { useServerStore } from "@/stores/server"
@@ -56,7 +57,7 @@ const appName = computed(
         <hr />
         <div v-if="config.loginEnabled" class="app-navbar-panel">
           <div class="app-navbar-panel-label">Account</div>
-          <UserStatus redirect />
+          <AccountMenu inline />
         </div>
         <ThemeToggle v-model="theme.dark" label="Appearance" />
       </BNavbarNav>
@@ -79,9 +80,7 @@ const appName = computed(
           style="height: 1.3rem"
         ></div>
       </BNavItem>
-      <BNavItem v-if="config.loginEnabled" class="py-0 app-navbar-account">
-        <UserStatus redirect />
-      </BNavItem>
+      <AccountMenu v-if="config.loginEnabled" class="py-0" />
       <ThemeToggle v-model="theme.dark" />
     </BNavbarNav>
   </BNavbar>
