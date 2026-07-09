@@ -29,3 +29,94 @@
 .app-navbar-logo {
   height: 55px;
 }
+
+.app-navbar .app-navbar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-navbar .app-navbar-panel-label {
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.app-navbar .account-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-navbar .account-menu-icon {
+  font-size: 1.5rem;
+}
+
+.app-navbar .account-menu-name {
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.app-navbar .account-menu-identity {
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+}
+
+.app-navbar .account-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.app-navbar .account-menu .dropdown-menu {
+  --bs-dropdown-link-hover-bg: var(--color-secondary);
+  --bs-dropdown-link-hover-color: var(--color-primary);
+  --bs-dropdown-link-active-bg: var(--bs-dropdown-link-hover-bg);
+  --bs-dropdown-link-active-color: var(--bs-dropdown-link-hover-color);
+}
+
+.account-menu-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-left: 0.75rem;
+}
+
+.account-menu-inline .account-menu-name {
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.account-menu-inline .account-menu-identity {
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+}
+
+.account-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: var(--bs-border-radius);
+  background: none;
+  color: var(--bs-body-color);
+  text-align: left;
+}
+
+.account-menu-item:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.account-menu-item:hover,
+.account-menu-item:focus {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.account-menu-item:active {
+  background-color: var(--color-secondary-dark-faded-30);
+}
