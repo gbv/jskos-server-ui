@@ -7,9 +7,9 @@
  * @property {string} registry Server-store registry to call ("registry" or "mappingsRegistry").
  * @property {?string} list Registry method returning a paginated array (with `_totalCount`), or null when the type has no generic list endpoint (e.g. hierarchical concepts).
  * @property {boolean} hierarchical Whether records form a scheme-bound hierarchy, rendered via ConceptTree instead of a flat list.
- * @property {string} listComponent Key selecting the flat list renderer, doubling as the renderer's collection prop name: `"items"` (ItemList), `"mappings"` (MappingList). Ignored for hierarchical types. Meant to grow for other non-item types (occurrences, annotations).
- * @property {?string} detailComponent Key selecting the detail renderer, doubling as its record prop name: `"item"` (BrowseDetail), `"mapping"` (MappingDetail), or null when the type has no detail pane.
- * @property {"url"|"memory"} selection Where the current selection lives: `"url"` for URI-resolvable JSKOS items (deep-linkable via the route), `"memory"` for records only available from the loaded list (mappings).
+ * @property {string} listComponent Key selecting the flat list renderer, doubling as the renderer's collection prop name: `"items"` (ItemList), `"mappings"` (MappingList), `"concordances"` (ConcordanceList). Ignored for hierarchical types. Meant to grow for other non-item types (occurrences, annotations).
+ * @property {?string} detailComponent Key selecting the detail renderer, doubling as its record prop name: `"item"` (BrowseDetail), `"mapping"` (MappingDetail), `"concordance"` (ConcordanceDetail), or null when the type has no detail pane.
+ * @property {"url"|"memory"} selection Where the current selection lives: `"url"` for URI-resolvable JSKOS items (deep-linkable via the route), `"memory"` for records only available from the loaded list (mappings, concordances).
  */
 
 /**
@@ -50,6 +50,16 @@ export const BROWSE_TYPES = {
     hierarchical: false,
     listComponent: "mappings",
     detailComponent: "mapping",
+    selection: "memory",
+  },
+  concordances: {
+    capability: "concordances",
+    label: "Concordances",
+    registry: "mappingsRegistry",
+    list: "getConcordances",
+    hierarchical: false,
+    listComponent: "concordances",
+    detailComponent: "concordance",
     selection: "memory",
   },
 }

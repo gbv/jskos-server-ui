@@ -10,6 +10,7 @@ import ViewTitle from "@/components/ViewTitle.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
 import BrowseDetail from "@/components/browse/BrowseDetail.vue"
 import MappingDetail from "@/components/MappingDetail.vue"
+import ConcordanceDetail from "@/components/ConcordanceDetail.vue"
 
 const props = defineProps({
   type: {
@@ -28,6 +29,7 @@ const config = computed(() => getBrowseType(props.type))
 const detailComponents = {
   item: BrowseDetail,
   mapping: MappingDetail,
+  concordance: ConcordanceDetail,
 }
 
 const { loadDetail, resolveConceptHierarchy } = useBrowseItemDetail(

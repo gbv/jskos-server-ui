@@ -14,6 +14,12 @@
     calc(var(--color-primary-l) * 1.15),
     0.2
   );
+  --jskos-vue-concordanceList-hover-bgColor: var(
+    --jskos-vue-mappingList-hover-bgColor
+  );
+  --jskos-vue-concordanceList-selected-bgColor: var(
+    --jskos-vue-mappingList-selected-bgColor
+  );
 }
 
 :root[data-bs-theme="light"] {
