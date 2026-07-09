@@ -4,6 +4,7 @@ import { BSpinner, BFormSelect, BPagination } from "bootstrap-vue-next"
 import { ItemList, ConceptTree } from "jskos-vue"
 import * as jskos from "jskos-tools"
 import MappingList from "@/components/MappingList.vue"
+import ConcordanceList from "@/components/ConcordanceList.vue"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
 
@@ -12,6 +13,7 @@ const PAGE_SIZE = 20
 const listComponents = {
   items: ItemList,
   mappings: MappingList,
+  concordances: ConcordanceList,
 }
 
 const props = defineProps({
@@ -293,11 +295,11 @@ function onTreeSelect({ item }) {
 /**
  * Normalizes a selection from any flat list component into `{ record }`
  *
- * @param {{ item?: Object, mapping?: Object }} payload the selected record
+ * @param {{ item?: Object, mapping?: Object, concordance?: Object }} payload the selected record
  */
 function onFlatSelect(payload) {
   emit("select", {
-    record: payload.item ?? payload.mapping,
+    record: payload.item ?? payload.mapping ?? payload.concordance,
   })
 }
 </script>

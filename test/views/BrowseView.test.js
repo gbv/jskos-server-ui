@@ -25,6 +25,12 @@ const mappingFixture = {
   to: { memberSet: [{ uri: "urn:concept:to" }] },
 }
 
+const concordanceFixture = {
+  uri: "urn:concordance:1",
+  fromScheme: { uri: "urn:scheme:from", notation: ["A"] },
+  toScheme: { uri: "urn:scheme:to", notation: ["B"] },
+}
+
 const schemeFixture = { uri: "urn:scheme:1" }
 
 const BrowseListStub = {
@@ -32,11 +38,13 @@ const BrowseListStub = {
   data: () => ({
     scheme: schemeFixture,
     mapping: mappingFixture,
+    concordance: concordanceFixture,
   }),
   template:
     "<div class='stub-list'>" +
     "<button class='stub-emit-item' @click=\"$emit('select', { record: scheme })\">i</button>" +
     "<button class='stub-emit-mapping' @click=\"$emit('select', { record: mapping })\">m</button>" +
+    "<button class='stub-emit-concordance' @click=\"$emit('select', { record: concordance })\">c</button>" +
     "</div>",
 }
 
@@ -130,6 +138,25 @@ describe("BrowseView", () => {
     await wrapper.find(".stub-emit-mapping").trigger("click")
 
     expect(wrapper.find(".jskos-vue-mappingDetail").exists()).toBe(true)
+  })
+
+  it("gives concordances a detail pane that shows ConcordanceDetail once selected", async () => {
+    const wrapper = await mountView(
+      {
+        activeUrl: "http://example.org/",
+        capabilities: { concordances: cap },
+      },
+      "concordances",
+    )
+    expect(wrapper.find("h1").text()).toBe("Concordances")
+    expect(wrapper.find(".stub-list").exists()).toBe(true)
+    expect(wrapper.find(".stub-detail").exists()).toBe(false)
+    expect(wrapper.text()).toContain("Select an entry to see its details.")
+    expect(wrapper.find(".jskos-vue-concordanceDetail").exists()).toBe(false)
+
+    await wrapper.find(".stub-emit-concordance").trigger("click")
+
+    expect(wrapper.find(".jskos-vue-concordanceDetail").exists()).toBe(true)
   })
 
   it("resolves the narrower placeholder of a deep-linked concept", async () => {

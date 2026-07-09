@@ -47,6 +47,22 @@ const MappingListStub = {
     "<ul class='stub-mappinglist'><li v-for='(m, i) in mappings' :key='i' @click=\"$emit('select', { mapping: m })\">{{ m.uri }}</li></ul>",
 }
 
+const concordancesConfig = {
+  capability: "concordances",
+  label: "Concordances",
+  registry: "mappingsRegistry",
+  list: "getConcordances",
+  hierarchical: false,
+  listComponent: "concordances",
+}
+
+const ConcordanceListStub = {
+  props: ["concordances"],
+  emits: ["select"],
+  template:
+    "<ul class='stub-concordancelist'><li v-for='(c, i) in concordances' :key='i' @click=\"$emit('select', { concordance: c })\">{{ c.uri }}</li></ul>",
+}
+
 // Shared spy for the ConceptTree stub's navigateToUri, reset before each test.
 const navigateToUri = vi.fn()
 const ConceptTreeStub = {
@@ -70,6 +86,7 @@ function mountList(registry, config = schemesConfig, props = {}) {
         ItemList: ItemListStub,
         ConceptTree: ConceptTreeStub,
         MappingList: MappingListStub,
+        ConcordanceList: ConcordanceListStub,
       },
     },
   })
@@ -160,6 +177,36 @@ describe("BrowseList browsing", () => {
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
       { record: { uri: "urn:m1" } },
     ])
+  })
+
+  it("renders concordances via ConcordanceList and forwards their selection", async () => {
+    const result = Object.assign([{ uri: "urn:c1" }, { uri: "urn:c2" }], {
+      _totalCount: 7,
+    })
+    const getConcordances = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getConcordances }, concordancesConfig)
+    await flushPromises()
+
+    expect(getConcordances).toHaveBeenCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+    expect(wrapper.findAll(".stub-concordancelist li")).toHaveLength(2)
+    expect(wrapper.text()).toContain("Showing 1–2 of 7")
+
+    await wrapper.findAll(".stub-concordancelist li")[0].trigger("click")
+    expect(wrapper.emitted("select")?.at(-1)).toEqual([
+      { record: { uri: "urn:c1" } },
+    ])
+  })
+
+  it("shows a natural empty state when the server has no concordances", async () => {
+    const getConcordances = vi.fn().mockResolvedValue(Object.assign([], {}))
+    const wrapper = mountList({ getConcordances }, concordancesConfig)
+    await flushPromises()
+
+    expect(wrapper.find(".browse-list-empty").exists()).toBe(true)
+    expect(wrapper.text()).toContain("This server has no concordances.")
+    expect(wrapper.find(".stub-concordancelist").exists()).toBe(false)
   })
 
   it("shows a natural empty state when the server has no mappings", async () => {
