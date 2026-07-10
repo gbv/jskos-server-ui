@@ -71,7 +71,6 @@
 .browse-list-pagination {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
-  /* border-top: 1px solid var(--bs-border-color); */
 }
 
 .browse-list-pagination .page-link:focus,

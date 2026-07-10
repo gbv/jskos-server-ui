@@ -31,6 +31,13 @@ const concordanceFixture = {
   toScheme: { uri: "urn:scheme:to", notation: ["B"] },
 }
 
+const annotationFixture = {
+  id: "urn:annotation:1",
+  motivation: "assessing",
+  bodyValue: "+1",
+  target: "urn:mapping:1",
+}
+
 const schemeFixture = { uri: "urn:scheme:1" }
 
 const BrowseListStub = {
@@ -39,12 +46,14 @@ const BrowseListStub = {
     scheme: schemeFixture,
     mapping: mappingFixture,
     concordance: concordanceFixture,
+    annotation: annotationFixture,
   }),
   template:
     "<div class='stub-list'>" +
     "<button class='stub-emit-item' @click=\"$emit('select', { record: scheme })\">i</button>" +
     "<button class='stub-emit-mapping' @click=\"$emit('select', { record: mapping })\">m</button>" +
     "<button class='stub-emit-concordance' @click=\"$emit('select', { record: concordance })\">c</button>" +
+    "<button class='stub-emit-annotation' @click=\"$emit('select', { record: annotation })\">a</button>" +
     "</div>",
 }
 
@@ -157,6 +166,25 @@ describe("BrowseView", () => {
     await wrapper.find(".stub-emit-concordance").trigger("click")
 
     expect(wrapper.find(".jskos-vue-concordanceDetail").exists()).toBe(true)
+  })
+
+  it("gives annotations a detail pane that shows AnnotationDetail once selected", async () => {
+    const wrapper = await mountView(
+      {
+        activeUrl: "http://example.org/",
+        capabilities: { annotations: cap },
+      },
+      "annotations",
+    )
+    expect(wrapper.find("h1").text()).toBe("Annotations")
+    expect(wrapper.find(".stub-list").exists()).toBe(true)
+    expect(wrapper.find(".stub-detail").exists()).toBe(false)
+    expect(wrapper.text()).toContain("Select an entry to see its details.")
+    expect(wrapper.find(".jskos-vue-annotationDetail").exists()).toBe(false)
+
+    await wrapper.find(".stub-emit-annotation").trigger("click")
+
+    expect(wrapper.find(".jskos-vue-annotationDetail").exists()).toBe(true)
   })
 
   it("resolves the narrower placeholder of a deep-linked concept", async () => {

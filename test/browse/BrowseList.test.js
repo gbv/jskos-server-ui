@@ -63,6 +63,22 @@ const ConcordanceListStub = {
     "<ul class='stub-concordancelist'><li v-for='(c, i) in concordances' :key='i' @click=\"$emit('select', { concordance: c })\">{{ c.uri }}</li></ul>",
 }
 
+const annotationsConfig = {
+  capability: "annotations",
+  label: "Annotations",
+  registry: "mappingsRegistry",
+  list: "getAnnotations",
+  hierarchical: false,
+  listComponent: "annotations",
+}
+
+const AnnotationListStub = {
+  props: ["annotations"],
+  emits: ["select"],
+  template:
+    "<ul class='stub-annotationlist'><li v-for='(a, i) in annotations' :key='i' @click=\"$emit('select', { annotation: a })\">{{ a.id }}</li></ul>",
+}
+
 // Shared spy for the ConceptTree stub's navigateToUri, reset before each test.
 const navigateToUri = vi.fn()
 const ConceptTreeStub = {
@@ -87,6 +103,7 @@ function mountList(registry, config = schemesConfig, props = {}) {
         ConceptTree: ConceptTreeStub,
         MappingList: MappingListStub,
         ConcordanceList: ConcordanceListStub,
+        AnnotationList: AnnotationListStub,
       },
     },
   })
@@ -197,6 +214,36 @@ describe("BrowseList browsing", () => {
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
       { record: { uri: "urn:c1" } },
     ])
+  })
+
+  it("renders annotations via AnnotationList and forwards their selection", async () => {
+    const result = Object.assign([{ id: "urn:a1" }, { id: "urn:a2" }], {
+      _totalCount: 3,
+    })
+    const getAnnotations = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getAnnotations }, annotationsConfig)
+    await flushPromises()
+
+    expect(getAnnotations).toHaveBeenCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+    expect(wrapper.findAll(".stub-annotationlist li")).toHaveLength(2)
+    expect(wrapper.text()).toContain("Showing 1–2 of 3")
+
+    await wrapper.findAll(".stub-annotationlist li")[0].trigger("click")
+    expect(wrapper.emitted("select")?.at(-1)).toEqual([
+      { record: { id: "urn:a1" } },
+    ])
+  })
+
+  it("shows a natural empty state when the server has no annotations", async () => {
+    const getAnnotations = vi.fn().mockResolvedValue(Object.assign([], {}))
+    const wrapper = mountList({ getAnnotations }, annotationsConfig)
+    await flushPromises()
+
+    expect(wrapper.find(".browse-list-empty").exists()).toBe(true)
+    expect(wrapper.text()).toContain("This server has no annotations.")
+    expect(wrapper.find(".stub-annotationlist").exists()).toBe(false)
   })
 
   it("shows a natural empty state when the server has no concordances", async () => {
