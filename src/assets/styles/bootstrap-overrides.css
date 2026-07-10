@@ -18,13 +18,9 @@
   /* Toast/Alert variant colors */
   --bs-warning-rgb: 178, 69, 17;
   --bs-info-rgb: 244, 240, 240;
-
-  /* jskos-vue overrides */
-  --jskos-vue-loadingIndicator-secondary-color: var(--color-primary);
-  --jskos-vue-itemList-indicator-color: var(--color-primary);
 }
 
-[data-bs-theme="dark"] {
+:root[data-bs-theme="dark"] {
   --bs-primary: var(--color-primary);
   --bs-primary-rgb: 190, 120, 80;
   --bs-secondary: var(--color-secondary);
@@ -74,4 +70,30 @@
   --bs-btn-hover-color: var(--color-primary);
   --bs-btn-active-bg: #f1ecea;
   --bs-btn-active-color: var(--color-primary);
+}
+
+/* Form controls */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--color-primary);
+}
+
+.form-check-input:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Pagination */
+.pagination {
+  --bs-pagination-color: var(--color-link);
+  --bs-pagination-hover-color: var(--color-primary-dark);
+  --bs-pagination-hover-bg: var(--bs-tertiary-bg);
+  --bs-pagination-hover-border-color: var(--bs-border-color);
+  --bs-pagination-focus-color: var(--color-primary-dark);
+  --bs-pagination-focus-bg: var(--bs-tertiary-bg);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem var(--color-primary-opacity);
+  --bs-pagination-active-bg: var(--color-primary);
+  --bs-pagination-active-border-color: var(--color-primary);
+  --bs-pagination-active-color: #fff;
 }
