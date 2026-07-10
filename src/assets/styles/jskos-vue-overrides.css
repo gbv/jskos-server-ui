@@ -2,24 +2,31 @@
 :root {
   --jskos-vue-loadingIndicator-secondary-color: var(--color-primary);
   --jskos-vue-itemList-indicator-color: var(--color-primary);
-  --jskos-vue-mappingList-hover-bgColor: hsla(
+  --browse-list-hover-bgColor: hsla(
     var(--color-primary-h),
     var(--color-primary-s),
     calc(var(--color-primary-l) * 1.15),
     0.1
   );
-  --jskos-vue-mappingList-selected-bgColor: hsla(
+  --browse-list-selected-bgColor: hsla(
     var(--color-primary-h),
     var(--color-primary-s),
     calc(var(--color-primary-l) * 1.15),
     0.2
   );
-  --jskos-vue-concordanceList-hover-bgColor: var(
-    --jskos-vue-mappingList-hover-bgColor
-  );
+  --jskos-vue-mappingList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-mappingList-selected-bgColor: var(--browse-list-selected-bgColor);
+  --jskos-vue-concordanceList-hover-bgColor: var(--browse-list-hover-bgColor);
   --jskos-vue-concordanceList-selected-bgColor: var(
-    --jskos-vue-mappingList-selected-bgColor
+    --browse-list-selected-bgColor
   );
+  --jskos-vue-annotationList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-annotationList-selected-bgColor: var(
+    --browse-list-selected-bgColor
+  );
+  --jskos-vue-itemList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-conceptTree-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-conceptTree-selected-bgColor: var(--browse-list-selected-bgColor);
 }
 
 :root[data-bs-theme="light"] {

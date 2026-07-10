@@ -62,6 +62,16 @@ export const BROWSE_TYPES = {
     detailComponent: "concordance",
     selection: "memory",
   },
+  annotations: {
+    capability: "annotations",
+    label: "Annotations",
+    registry: "mappingsRegistry",
+    list: "getAnnotations",
+    hierarchical: false,
+    listComponent: "annotations",
+    detailComponent: "annotation",
+    selection: "memory",
+  },
 }
 
 /**
