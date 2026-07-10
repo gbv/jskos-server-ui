@@ -1,0 +1,86 @@
+/* Layout for the generic browse view */
+
+/* Panes */
+.browse-pane-body {
+  max-height: calc(100vh - 16rem);
+  overflow-y: auto;
+}
+
+.browse-detail-pane {
+  background-color: transparent;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+@media (min-width: 992px) {
+  .browse-detail-pane {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .browse-list-pane {
+    padding-inline-end: 1.5rem;
+    border-inline-end: 1px solid transparent;
+    border-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        var(--bs-border-color) 2rem,
+        var(--bs-border-color) calc(100% - 2rem),
+        transparent 100%
+      )
+      1;
+  }
+
+  .browse-list-pane-active {
+    border-inline-end-width: 2px;
+    border-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        var(--bs-primary) 2rem,
+        var(--bs-primary) calc(100% - 2rem),
+        transparent 100%
+      )
+      1;
+  }
+}
+
+/* List layout */
+.browse-list-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: calc(100vh - 16rem);
+}
+
+.browse-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.browse-list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* Pagination */
+.browse-list-pagination {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.browse-list-pagination .page-link:focus,
+.browse-list-pagination .page-link:active {
+  box-shadow: none;
+  outline: 0;
+  transform: none;
+}
+
+.browse-list-pagination .page-link:focus-visible {
+  box-shadow: 0 0 0 0.2rem var(--color-primary-opacity);
+  outline: 0;
+}

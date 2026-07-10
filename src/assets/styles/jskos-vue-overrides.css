@@ -1,0 +1,48 @@
+/* jskos-vue color token overrides */
+:root {
+  --jskos-vue-loadingIndicator-secondary-color: var(--color-primary);
+  --jskos-vue-itemList-indicator-color: var(--color-primary);
+  --browse-list-hover-bgColor: hsla(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 1.15),
+    0.1
+  );
+  --browse-list-selected-bgColor: hsla(
+    var(--color-primary-h),
+    var(--color-primary-s),
+    calc(var(--color-primary-l) * 1.15),
+    0.2
+  );
+  --jskos-vue-mappingList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-mappingList-selected-bgColor: var(--browse-list-selected-bgColor);
+  --jskos-vue-concordanceList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-concordanceList-selected-bgColor: var(
+    --browse-list-selected-bgColor
+  );
+  --jskos-vue-annotationList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-annotationList-selected-bgColor: var(
+    --browse-list-selected-bgColor
+  );
+  --jskos-vue-itemList-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-conceptTree-hover-bgColor: var(--browse-list-hover-bgColor);
+  --jskos-vue-conceptTree-selected-bgColor: var(--browse-list-selected-bgColor);
+}
+
+:root[data-bs-theme="light"] {
+  --jskos-vue-bgColor: #fff;
+  --jskos-vue-highlight-bgColor: #fdbd5888;
+  --jskos-vue-color-lightGrey: #737373;
+  --jskos-vue-border-color: #e2e2e2;
+  --jskos-vue-arrow-color: #000;
+  --jskos-vue-arrow-hover-color: #666;
+}
+
+:root[data-bs-theme="dark"] {
+  --jskos-vue-bgColor: #161618;
+  --jskos-vue-highlight-bgColor: #e4ad5587;
+  --jskos-vue-color-lightGrey: #999;
+  --jskos-vue-border-color: #333;
+  --jskos-vue-arrow-color: #fff;
+  --jskos-vue-arrow-hover-color: #999;
+}

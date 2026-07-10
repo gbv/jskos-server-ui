@@ -86,7 +86,7 @@ export const useServerStore = defineStore("server", () => {
     }
   }
 
-  function canDo(type, action) {
+  function isSupported(type, action) {
     return capabilities.value?.[type]?.[action] != null
   }
 
@@ -106,7 +106,7 @@ export const useServerStore = defineStore("server", () => {
     connectToServer,
     disconnectServer,
     removeServer,
-    canDo,
+    isSupported,
     requiresAuth,
   }
 })
