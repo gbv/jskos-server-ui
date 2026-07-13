@@ -108,16 +108,24 @@ Runtime configuration is loaded from `public/config.json` at startup. This file 
       { "label": "Privacy", "url": "https://example.org/privacy" },
       { "label": "Accessibility", "url": "https://example.org/accessibility" }
     ]
+  },
+  "login": {
+    "url": "login.example.org/",
+    "ssl": true
   }
 }
 ```
 
-| Property        | Type   | Description                               |
-| --------------- | ------ | ----------------------------------------- |
-| `services`      | array  | [JSKOS Service] objects to choose from    |
-| `footer.links`  | array  | Footer navigation links (`label` + `url`) |
+| Property       | Type    | Description                                                   |
+| -------------- | ------- | ------------------------------------------------------------- |
+| `services`     | array   | [JSKOS Service] objects to choose from                        |
+| `footer.links` | array   | Footer navigation links (`label` + `url`)                     |
+| `login`        | object  | Optional [login-server] connection; omit to disable login     |
+| `login.url`    | string  | Login server URL without protocol (e.g. `login.example.org/`) |
+| `login.ssl`    | boolean | Connect via HTTPS/WSS (default: `true`)                       |
 
 [JSKOS Service]: https://gbv.github.io/jskos/#service
+[login-server]: https://github.com/gbv/login-server
 
 ## Deployment
 
@@ -181,4 +189,3 @@ Releases are automated via [semantic-release](https://semantic-release.gitbook.i
 ## License
 
 MIT, see [LICENSE](LICENSE) for details.
-
