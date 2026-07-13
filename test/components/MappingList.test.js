@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils"
-import MappingList from "@/components/MappingList.vue"
+import MappingList from "@/components/browse/MappingList.vue"
 
 const ItemNameStub = {
   props: ["item"],
