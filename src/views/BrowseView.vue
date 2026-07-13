@@ -9,9 +9,9 @@ import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
 import BrowseDetail from "@/components/browse/BrowseDetail.vue"
-import MappingDetail from "@/components/MappingDetail.vue"
-import ConcordanceDetail from "@/components/ConcordanceDetail.vue"
-import AnnotationDetail from "@/components/AnnotationDetail.vue"
+import MappingDetail from "@/components/browse/MappingDetail.vue"
+import ConcordanceDetail from "@/components/browse/ConcordanceDetail.vue"
+import AnnotationDetail from "@/components/browse/AnnotationDetail.vue"
 
 const props = defineProps({
   type: {
