@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils"
-import AnnotationList from "@/components/AnnotationList.vue"
+import AnnotationList from "@/components/browse/AnnotationList.vue"
 
 function makeAnnotation(overrides = {}) {
   return {

@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils"
-import ConcordanceDetail from "@/components/ConcordanceDetail.vue"
+import ConcordanceDetail from "@/components/browse/ConcordanceDetail.vue"
 
 const ItemNameStub = {
   props: ["item"],
