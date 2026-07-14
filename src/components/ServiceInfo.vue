@@ -3,11 +3,16 @@ import { BCard } from "bootstrap-vue-next"
 import {
   BIconCheckCircleFill,
   BIconLockFill,
+  BIconUnlockFill,
   BIconDashCircle,
   BIconBoxArrowUpRight,
 } from "bootstrap-icons-vue"
 
-defineProps({ info: Object })
+defineProps({
+  info: Object,
+  authorization: Object,
+  isLoggedIn: Boolean,
+})
 
 const CAPABILITY_TYPES = [
   "schemes",
@@ -71,11 +76,11 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
         </thead>
         <tbody>
           <tr v-for="type in CAPABILITY_TYPES" :key="type">
-            <td class="text-capitalize ps-0">{{ type }}</td>
+            <td class="text-capitalize ps-0 align-middle">{{ type }}</td>
             <td
               v-for="action in CAPABILITY_ACTIONS"
               :key="action"
-              class="text-center"
+              class="text-center align-middle"
             >
               <template v-if="info.CAPABILITIES?.[type] === null">
                 <BIconDashCircle
@@ -88,10 +93,16 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
               >
                 <BIconDashCircle class="text-secondary" />
               </template>
-              <BIconLockFill
+              <template
                 v-else-if="info.CAPABILITIES?.[type]?.[action]?.requiresAuth"
-                class="text-warning"
-              />
+              >
+                <BIconLockFill v-if="!isLoggedIn" class="text-warning" />
+                <BIconUnlockFill
+                  v-else-if="authorization?.[type]?.[action]"
+                  class="text-success"
+                />
+                <BIconLockFill v-else class="text-danger" />
+              </template>
               <BIconCheckCircleFill v-else class="text-success" />
             </td>
           </tr>
@@ -105,6 +116,12 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
         <span class="d-inline-flex align-items-center"
           ><BIconLockFill class="text-warning me-1" />Auth required</span
         >
+        <span v-if="isLoggedIn" class="d-inline-flex align-items-center"
+          ><BIconUnlockFill class="text-success me-1" />Authorized</span
+        >
+        <span v-if="isLoggedIn" class="d-inline-flex align-items-center"
+          ><BIconLockFill class="text-danger me-1" />Not authorized</span
+        >
         <span class="d-inline-flex align-items-center"
           ><BIconDashCircle class="text-secondary me-1" />Not supported</span
         >
@@ -112,3 +129,10 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
     </div>
   </BCard>
 </template>
+
+<style scoped>
+td :deep(svg) {
+  display: inline-block;
+  vertical-align: middle;
+}
+</style>

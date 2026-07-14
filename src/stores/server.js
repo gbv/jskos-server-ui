@@ -1,10 +1,13 @@
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import { cdk } from "cocoda-sdk"
 import { parseCapabilities } from "@/utils/capabilities"
+import { useAuth } from "@/composables/useAuth"
 
 const LS_URL_KEY = "jskos-server-ui:activeUrl"
 const LS_SERVERS_KEY = "jskos-server-ui:servers"
+
+const MAPPINGS_TYPES = new Set(["mappings", "concordances", "annotations"])
 
 export const useServerStore = defineStore("server", () => {
   const activeUrl = ref(localStorage.getItem(LS_URL_KEY) ?? null)
@@ -13,8 +16,57 @@ export const useServerStore = defineStore("server", () => {
   const mappingsRegistry = ref(null)
   const status = ref(null)
   const capabilities = ref(null)
+  const authorizationMatrix = ref(null)
   const service = ref(null)
   const error = ref(null)
+
+  const { user, token, loginPublicKey } = useAuth()
+
+  function registryForType(type) {
+    return MAPPINGS_TYPES.has(type) ? mappingsRegistry.value : registry.value
+  }
+
+  /**
+   * Rebuilds the authorization matrix from the current capabilities and
+   * the logged-in user.
+   *
+   * @returns {?Object<string, Object<string, boolean>>} Matrix keyed by type
+   *     and action, or `null` when no capabilities are loaded.
+   */
+  function computeAuthorizationMatrix() {
+    const caps = capabilities.value
+    if (!caps) return null
+    const matrix = {}
+    for (const [type, actions] of Object.entries(caps)) {
+      if (!actions) continue
+      for (const [action, cap] of Object.entries(actions)) {
+        if (!cap?.requiresAuth) continue
+        const reg = registryForType(type)
+        if (!reg) continue
+        matrix[type] ??= {}
+        matrix[type][action] = reg.isAuthorizedFor({
+          type,
+          action,
+          user: user.value,
+        })
+      }
+    }
+    return matrix
+  }
+
+  /**
+   * Pushes the current login credentials into both registries and refreshes the
+   * authorization matrix.
+   */
+  function syncAuth() {
+    const auth = { key: loginPublicKey.value, bearerToken: token.value }
+    registry.value?.setAuth(auth)
+    mappingsRegistry.value?.setAuth(auth)
+    authorizationMatrix.value = computeAuthorizationMatrix()
+  }
+
+  // Keep registry auth and authorization in sync when the login state changes
+  watch([user, token, loginPublicKey], syncAuth)
 
   async function connectToServer(url) {
     error.value = null
@@ -41,6 +93,7 @@ export const useServerStore = defineStore("server", () => {
       mappingsRegistry.value = mappingsReg
       status.value = reg._config
       capabilities.value = parseCapabilities(reg)
+      syncAuth()
       activeUrl.value = url
       localStorage.setItem(LS_URL_KEY, url)
       if (!servers.value.includes(url)) {
@@ -72,6 +125,7 @@ export const useServerStore = defineStore("server", () => {
     mappingsRegistry.value = null
     status.value = null
     capabilities.value = null
+    authorizationMatrix.value = null
     service.value = null
     error.value = null
     activeUrl.value = null
@@ -94,6 +148,22 @@ export const useServerStore = defineStore("server", () => {
     return capabilities.value?.[type]?.[action]?.requiresAuth ?? false
   }
 
+  /**
+   * Returns whether the currently logged-in user is authorized for the given
+   * action.
+   *
+   * @param {string} type Capability type (e.g. `"schemes"`, `"mappings"`).
+   * @param {string} action Action to check (`"read"`, `"create"`, `"update"`,
+   *     or `"delete"`).
+   * @returns {boolean} Whether the user is authorized; `false` when not
+   *     connected.
+   */
+  function isAuthorizedFor(type, action) {
+    const reg = registryForType(type)
+    if (!reg) return false
+    return reg.isAuthorizedFor({ type, action, user: user.value })
+  }
+
   return {
     activeUrl,
     servers,
@@ -101,6 +171,7 @@ export const useServerStore = defineStore("server", () => {
     mappingsRegistry,
     status,
     capabilities,
+    authorizationMatrix,
     service,
     error,
     connectToServer,
@@ -108,5 +179,6 @@ export const useServerStore = defineStore("server", () => {
     removeServer,
     isSupported,
     requiresAuth,
+    isAuthorizedFor,
   }
 })
