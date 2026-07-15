@@ -24,6 +24,17 @@
     0 4px 16px rgba(177, 63, 19, 0.25);
 }
 
+.type-card-locked {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.type-card-locked:hover,
+[data-bs-theme="dark"] .type-card-locked:hover {
+  box-shadow: none;
+  border-color: var(--color-secondary);
+}
+
 .card-label {
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -37,6 +48,12 @@
   min-height: 1.8rem;
   display: flex;
   align-items: center;
+}
+
+.card-count svg {
+  flex: none;
+  width: 1em;
+  height: 1em;
 }
 
 .count-na {

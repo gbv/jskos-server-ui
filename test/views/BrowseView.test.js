@@ -8,6 +8,17 @@ vi.mock("@/composables/useNotify", () => ({
   useNotify: () => ({ notify: vi.fn() }),
 }))
 
+const auth = vi.hoisted(() => ({}))
+
+vi.mock("@/composables/useAuth", async () => {
+  const { ref } = await import("vue")
+  auth.user = ref(null)
+  auth.token = ref(null)
+  auth.loginPublicKey = ref(null)
+  auth.loggedIn = ref(false)
+  return { useAuth: () => auth }
+})
+
 function createStubRouter() {
   return createRouter({
     history: createMemoryHistory(),
@@ -85,11 +96,16 @@ const conceptCap = {
 }
 
 const cap = { read: { supported: true, requiresAuth: false } }
+const authCap = { read: { supported: true, requiresAuth: true } }
 
 beforeEach(() => {
   localStorage.clear()
   setActivePinia(createPinia())
   vi.clearAllMocks()
+  auth.user.value = null
+  auth.token.value = null
+  auth.loginPublicKey.value = null
+  auth.loggedIn.value = false
 })
 
 describe("BrowseView", () => {
@@ -112,6 +128,25 @@ describe("BrowseView", () => {
       capabilities: { schemes: null },
     })
     expect(wrapper.text()).toContain("does not support browsing")
+  })
+
+  it("prompts sign-in when read requires auth and the user is logged out", async () => {
+    const wrapper = await mountView({
+      activeUrl: "http://example.org/",
+      capabilities: { schemes: authCap },
+    })
+    expect(wrapper.text()).toContain("Sign in to browse")
+    expect(wrapper.find(".stub-list").exists()).toBe(false)
+  })
+
+  it("shows a not-authorized message when logged in without read access", async () => {
+    auth.loggedIn.value = true
+    const wrapper = await mountView({
+      activeUrl: "http://example.org/",
+      capabilities: { schemes: authCap },
+    })
+    expect(wrapper.text()).toContain("not authorized to browse")
+    expect(wrapper.find(".stub-list").exists()).toBe(false)
   })
 
   it("renders title and list, and the detail once an item is selected", async () => {
