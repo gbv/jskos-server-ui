@@ -1,9 +1,10 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { BButton } from "bootstrap-vue-next"
-import { BIconArrowLeft } from "bootstrap-icons-vue"
+import { BIconArrowLeft, BIconLockFill } from "bootstrap-icons-vue"
 import { useRoute, useRouter } from "vue-router"
 import { useServerStore } from "@/stores/server"
+import { useAuth } from "@/composables/useAuth"
 import { getBrowseType } from "@/utils/browseTypes"
 import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
@@ -21,6 +22,7 @@ const props = defineProps({
 })
 
 const store = useServerStore()
+const { loggedIn } = useAuth()
 const route = useRoute()
 const router = useRouter()
 
@@ -42,6 +44,16 @@ const { loadDetail, resolveConceptHierarchy } = useBrowseItemDetail(
 const isSupported = computed(
   () => config.value && store.isSupported(config.value.capability, "read"),
 )
+
+const canRead = computed(() => {
+  if (!config.value) {
+    return false
+  }
+  if (!store.requiresAuth(config.value.capability, "read")) {
+    return true
+  }
+  return store.isAuthorizedFor(config.value.capability, "read")
+})
 
 const selectedItem = ref(null)
 const selectedMemoryRecord = ref(null)
@@ -165,6 +177,16 @@ watch(
 
   <div v-else-if="!isSupported" class="text-muted py-5 text-center">
     This server does not support browsing {{ config.label }}.
+  </div>
+
+  <div v-else-if="!canRead" class="text-muted py-5 text-center">
+    <BIconLockFill class="text-warning me-1" />
+    <template v-if="store.requiresAuth(config.capability, 'read') && !loggedIn">
+      Sign in to browse {{ config.label }}.
+    </template>
+    <template v-else>
+      You are not authorized to browse {{ config.label }}.
+    </template>
   </div>
 
   <div v-else>
