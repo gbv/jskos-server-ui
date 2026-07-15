@@ -21,6 +21,8 @@ export function makeRegistry(overrides = {}) {
     getMappings: vi.fn().mockResolvedValue(makeCountResponse(100)),
     getConcordances: vi.fn().mockResolvedValue(makeCountResponse(3)),
     getAnnotations: vi.fn().mockResolvedValue(makeCountResponse(0)),
+    setAuth: vi.fn(),
+    isAuthorizedFor: vi.fn(() => true),
     ...overrides,
   }
 }

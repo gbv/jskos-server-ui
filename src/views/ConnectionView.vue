@@ -12,8 +12,10 @@ import {
 } from "bootstrap-icons-vue"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
+import { useAuth } from "@/composables/useAuth"
 
 const store = useServerStore()
+const { loggedIn } = useAuth()
 const router = useRouter()
 const urlInput = ref(store.activeUrl ?? "")
 const loading = ref(false)
@@ -28,8 +30,6 @@ async function connect(url) {
     notify(`Connection failed: ${store.error}`, "danger")
   } else {
     notify(`Connected to ${url}`, "success")
-    // Redirect to the overview immediately on success; the success
-    // notification stays visible and provides feedback after navigating.
     router.push({ name: "overview" })
   }
 }
@@ -66,7 +66,11 @@ const serviceInfo = computed(() => {
           Disconnect
         </BButton>
       </div>
-      <ServiceInfo :info="serviceInfo" />
+      <ServiceInfo
+        :info="serviceInfo"
+        :authorization="store.authorizationMatrix"
+        :is-logged-in="loggedIn"
+      />
     </template>
 
     <!-- Disconnected state -->

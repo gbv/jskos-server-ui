@@ -1,3 +1,4 @@
+import { nextTick } from "vue"
 import { setActivePinia, createPinia } from "pinia"
 import { useServerStore } from "@/stores/server"
 import { makeRegistry } from "../mocks/cdk.js"
@@ -5,6 +6,17 @@ import { makeRegistry } from "../mocks/cdk.js"
 vi.mock("cocoda-sdk", () => ({
   cdk: { initializeRegistry: vi.fn() },
 }))
+
+const auth = vi.hoisted(() => ({}))
+
+vi.mock("@/composables/useAuth", async () => {
+  const { ref } = await import("vue")
+  auth.user = ref(null)
+  auth.token = ref(null)
+  auth.loginPublicKey = ref(null)
+  auth.loggedIn = ref(false)
+  return { useAuth: () => auth }
+})
 
 vi.mock("@/utils/capabilities", () => ({
   parseCapabilities: vi.fn(() => ({
@@ -35,6 +47,10 @@ beforeEach(() => {
   localStorage.clear()
   setActivePinia(createPinia())
   vi.clearAllMocks()
+  auth.user.value = null
+  auth.token.value = null
+  auth.loginPublicKey.value = null
+  auth.loggedIn.value = false
 })
 
 afterEach(() => {
@@ -136,6 +152,7 @@ describe("useServerStore", () => {
       expect(store.registry).toBeNull()
       expect(store.status).toBeNull()
       expect(store.capabilities).toBeNull()
+      expect(store.authorizationMatrix).toBeNull()
       expect(store.activeUrl).toBeNull()
       expect(localStorage.getItem(LS_URL_KEY)).toBeNull()
     })
@@ -222,6 +239,106 @@ describe("useServerStore", () => {
 
     it("returns false when capabilities is null", () => {
       expect(useServerStore().requiresAuth("schemes", "read")).toBe(false)
+    })
+  })
+
+  describe("syncAuth", () => {
+    it("pushes login credentials into both registries on connect", async () => {
+      auth.loginPublicKey.value = "PUBLIC_KEY"
+      auth.token.value = "TOKEN"
+      const { reg, mreg } = await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      const credentials = { key: "PUBLIC_KEY", bearerToken: "TOKEN" }
+      expect(reg.setAuth).toHaveBeenCalledWith(credentials)
+      expect(mreg.setAuth).toHaveBeenCalledWith(credentials)
+    })
+
+    it("re-pushes credentials when the token changes after connect", async () => {
+      const { reg } = await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      reg.setAuth.mockClear()
+      auth.token.value = "REFRESHED"
+      await nextTick()
+      expect(reg.setAuth).toHaveBeenCalledWith({
+        key: null,
+        bearerToken: "REFRESHED",
+      })
+    })
+  })
+
+  describe("authorizationMatrix", () => {
+    it("is null before connecting", () => {
+      expect(useServerStore().authorizationMatrix).toBeNull()
+    })
+
+    it("marks an auth-required cell authorized when the user is allowed", async () => {
+      await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      expect(store.authorizationMatrix.mappings.create).toBe(true)
+    })
+
+    it("marks an auth-required cell not authorized when the user is denied", async () => {
+      const { cdk } = await import("cocoda-sdk")
+      const reg = makeRegistry()
+      const mreg = makeRegistry({ isAuthorizedFor: vi.fn(() => false) })
+      cdk.initializeRegistry.mockReturnValueOnce(reg).mockReturnValueOnce(mreg)
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      expect(store.authorizationMatrix.mappings.create).toBe(false)
+    })
+
+    it("has no entry for open (non-auth) cells", async () => {
+      await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      expect(store.authorizationMatrix.schemes).toBeUndefined()
+    })
+
+    it("recomputes when the login state changes after connect", async () => {
+      const { mreg } = await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      expect(store.authorizationMatrix.mappings.create).toBe(true)
+
+      mreg.isAuthorizedFor.mockReturnValue(false)
+      auth.user.value = { uri: "urn:user:other" }
+      await nextTick()
+      expect(store.authorizationMatrix.mappings.create).toBe(false)
+    })
+  })
+
+  describe("isAuthorizedFor(type, action)", () => {
+    it("delegates to the mappings registry for mapping types", async () => {
+      const { mreg } = await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      mreg.isAuthorizedFor.mockClear()
+      store.isAuthorizedFor("mappings", "create")
+      expect(mreg.isAuthorizedFor).toHaveBeenCalledWith({
+        type: "mappings",
+        action: "create",
+        user: null,
+      })
+    })
+
+    it("delegates to the concept registry for non-mapping types", async () => {
+      const { reg } = await setup()
+      const store = useServerStore()
+      await store.connectToServer("http://example.org/")
+      reg.isAuthorizedFor.mockClear()
+      store.isAuthorizedFor("schemes", "update")
+      expect(reg.isAuthorizedFor).toHaveBeenCalledWith({
+        type: "schemes",
+        action: "update",
+        user: null,
+      })
+    })
+
+    it("returns false when not connected", () => {
+      expect(useServerStore().isAuthorizedFor("mappings", "create")).toBe(false)
     })
   })
 })
