@@ -9,6 +9,17 @@ vi.mock("@/composables/useCountUp", () => ({
   useCountUp: vi.fn(),
 }))
 
+const auth = vi.hoisted(() => ({}))
+
+vi.mock("@/composables/useAuth", async () => {
+  const { ref } = await import("vue")
+  auth.user = ref(null)
+  auth.token = ref(null)
+  auth.loginPublicKey = ref(null)
+  auth.loggedIn = ref(false)
+  return { useAuth: () => auth }
+})
+
 function createStubRouter() {
   return createRouter({
     history: createMemoryHistory(),
@@ -47,6 +58,10 @@ beforeEach(() => {
   localStorage.clear()
   setActivePinia(createPinia())
   vi.clearAllMocks()
+  auth.user.value = null
+  auth.token.value = null
+  auth.loginPublicKey.value = null
+  auth.loggedIn.value = false
 })
 
 afterEach(() => {
@@ -54,6 +69,7 @@ afterEach(() => {
 })
 
 const cap = { read: { supported: true, requiresAuth: false } }
+const authCap = { read: { supported: true, requiresAuth: true } }
 
 describe("OverviewView", () => {
   it("renders 'No server connected' message when not connected", () => {
@@ -213,9 +229,11 @@ describe("OverviewView", () => {
       })
       await flushPromises()
       expect(wrapper.findAll(".type-card")).toHaveLength(6)
+      // schemes (rejected) and concepts (no registry method) error; types is
+      // absent from capabilities, so it is unsupported and never fetched.
       expect(
         wrapper.findAll(".count-na").filter((el) => el.text() === "✕"),
-      ).toHaveLength(3)
+      ).toHaveLength(2)
     })
 
     it("does not call registry methods when registry is null", async () => {
@@ -232,6 +250,78 @@ describe("OverviewView", () => {
       })
       await flushPromises()
       expect(mreg.getMappings).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("read authorization", () => {
+    const lockedCaps = {
+      schemes: authCap,
+      concepts: null,
+      concordances: null,
+      mappings: null,
+      annotations: null,
+      registries: null,
+      types: null,
+    }
+
+    it("shows a yellow lock and no link when read requires auth and logged out", async () => {
+      const reg = {
+        getSchemes: vi.fn().mockResolvedValue(makeCountResponse(5)),
+        isAuthorizedFor: () => auth.loggedIn.value,
+      }
+      const wrapper = mountView({
+        activeUrl: "http://example.org/",
+        registry: reg,
+        capabilities: lockedCaps,
+      })
+      await flushPromises()
+
+      const card = wrapper.find(".type-card")
+      expect(card.classes()).toContain("type-card-locked")
+      expect(card.element.tagName).toBe("DIV")
+      expect(card.find(".text-warning").exists()).toBe(true)
+      expect(reg.getSchemes).not.toHaveBeenCalled()
+    })
+
+    it("shows a red lock when logged in but not authorized", async () => {
+      auth.loggedIn.value = true
+      const reg = {
+        getSchemes: vi.fn().mockResolvedValue(makeCountResponse(5)),
+        isAuthorizedFor: () => false,
+      }
+      const wrapper = mountView({
+        activeUrl: "http://example.org/",
+        registry: reg,
+        capabilities: lockedCaps,
+      })
+      await flushPromises()
+
+      const card = wrapper.find(".type-card")
+      expect(card.classes()).toContain("type-card-locked")
+      expect(card.find(".text-danger").exists()).toBe(true)
+      expect(reg.getSchemes).not.toHaveBeenCalled()
+    })
+
+    it("fetches the count once the user signs in and gains access", async () => {
+      const reg = {
+        getSchemes: vi.fn().mockResolvedValue(makeCountResponse(5)),
+        isAuthorizedFor: () => auth.loggedIn.value,
+      }
+      const wrapper = mountView({
+        activeUrl: "http://example.org/",
+        registry: reg,
+        capabilities: lockedCaps,
+      })
+      await flushPromises()
+      expect(reg.getSchemes).not.toHaveBeenCalled()
+
+      auth.loggedIn.value = true
+      await flushPromises()
+
+      expect(reg.getSchemes).toHaveBeenCalledWith({ limit: 0 })
+      const card = wrapper.find(".type-card")
+      expect(card.element.tagName).toBe("A")
+      expect(card.classes()).not.toContain("type-card-locked")
     })
   })
 })
