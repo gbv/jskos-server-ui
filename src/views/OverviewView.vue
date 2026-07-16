@@ -5,72 +5,29 @@ import IconLockFill from "~icons/bi/lock-fill"
 import IconDashCircle from "~icons/bi/dash-circle"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
+import { useTypeAccess } from "@/composables/useTypeAccess"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 import ViewTitle from "@/components/ViewTitle.vue"
 import { useCountUp } from "@/composables/useCountUp"
 
 const store = useServerStore()
 const { loggedIn } = useAuth()
+const { resolveAccess } = useTypeAccess()
 
-const STATS = [
-  {
-    key: "schemes",
-    label: "Terminologies",
-    route: "/terminologies",
-    method: "getSchemes",
-  },
-  {
-    key: "concepts",
-    label: "Concepts",
-    route: "/concepts",
-    method: "getConcepts",
-  },
-  { key: "types", label: "Types", route: "/types", method: "getTypes" },
-  {
-    key: "concordances",
-    label: "Concordances",
-    route: "/concordances",
-    method: "getConcordances",
-  },
-  {
-    key: "mappings",
-    label: "Mappings",
-    route: "/mappings",
-    method: "getMappings",
-  },
-  // TODO: show registries once cocoda-sdk supports it
-  // { key: "registries",   label: "Registries",    route: "/registries", method: "getRegistries" },
-  {
-    key: "annotations",
-    label: "Annotations",
-    route: "/annotations",
-    method: "getAnnotations",
-  },
-]
+const STATS = Object.entries(OBJECT_TYPES)
+  .filter(([, config]) => config.count)
+  .map(([key, config]) => ({
+    key,
+    label: config.label,
+    route: config.route ?? null,
+    method: config.count,
+    registry: config.registry,
+  }))
 
 const counts = ref({})
 const loadingCounts = ref({})
 const errorCounts = ref({})
 const countEls = reactive({})
-
-/**
- * Resolves whether the current user may read a type, as one of four card states.
- * Evaluation order matters: unsupported wins over open, open over the locked states.
- *
- * @param {string} key the capability type key
- * @returns {"unsupported"|"open"|"auth-required"|"denied"} the card's access state
- */
-function resolveAccess(key) {
-  if (!store.isSupported(key, "read")) {
-    return "unsupported"
-  }
-  if (!store.requiresAuth(key, "read")) {
-    return "open"
-  }
-  if (store.isAuthorizedFor(key, "read")) {
-    return "open"
-  }
-  return loggedIn.value ? "denied" : "auth-required"
-}
 
 const access = computed(() =>
   Object.fromEntries(STATS.map((s) => [s.key, resolveAccess(s.key)])),
@@ -111,9 +68,7 @@ async function fetchAllCounts() {
   await Promise.allSettled(
     readable.map(async (s) => {
       try {
-        const reg = ["mappings", "concordances", "annotations"].includes(s.key) // TODO: use one store only
-          ? store.mappingsRegistry
-          : store.registry
+        const reg = store[s.registry]
         const n = (await reg[s.method]({ limit: 0 }))?._totalCount
         if (n !== undefined) counts.value = { ...counts.value, [s.key]: n }
       } catch (e) {
@@ -156,9 +111,9 @@ watch(
     <div class="cards-grid">
       <template v-for="s in STATS" :key="s.key">
         <component
-          :is="access[s.key] === 'open' ? 'router-link' : 'div'"
+          :is="access[s.key] === 'open' && s.route ? 'router-link' : 'div'"
           v-if="store.capabilities?.[s.key] !== null"
-          :to="access[s.key] === 'open' ? s.route : undefined"
+          :to="access[s.key] === 'open' && s.route ? s.route : undefined"
           class="type-card"
           :class="{ 'type-card-locked': access[s.key] !== 'open' }"
           :title="lockTitle(s)"
