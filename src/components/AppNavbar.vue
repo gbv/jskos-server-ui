@@ -44,7 +44,7 @@ const appName = computed(
       placement="end"
       :title="appName"
     >
-      <BNavbarNav class="gap-2">
+      <BNavbarNav>
         <BNavItem
           v-for="link in navLinks"
           :key="link.to"
@@ -55,11 +55,14 @@ const appName = computed(
           {{ link.label }}
         </BNavItem>
         <hr />
-        <div v-if="config.loginEnabled" class="app-navbar-panel">
+        <li class="app-navbar-panel">
+          <div class="app-navbar-panel-label">Preferences</div>
+          <ThemeToggle v-model="theme.dark" label="Appearance" />
+        </li>
+        <li v-if="config.loginEnabled" class="app-navbar-panel">
           <div class="app-navbar-panel-label">Account</div>
           <AccountMenu inline />
-        </div>
-        <ThemeToggle v-model="theme.dark" label="Appearance" />
+        </li>
       </BNavbarNav>
     </BOffcanvas>
 
@@ -80,8 +83,8 @@ const appName = computed(
           style="height: 1.3rem"
         ></div>
       </BNavItem>
-      <AccountMenu v-if="config.loginEnabled" class="py-0" />
       <ThemeToggle v-model="theme.dark" />
+      <AccountMenu v-if="config.loginEnabled" class="py-0" />
     </BNavbarNav>
   </BNavbar>
 </template>
