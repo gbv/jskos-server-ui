@@ -1,12 +1,10 @@
 <script setup>
 import { BCard } from "bootstrap-vue-next"
-import {
-  BIconCheckCircleFill,
-  BIconLockFill,
-  BIconUnlockFill,
-  BIconDashCircle,
-  BIconBoxArrowUpRight,
-} from "bootstrap-icons-vue"
+import IconCheckCircleFill from "~icons/bi/check-circle-fill"
+import IconLockFill from "~icons/bi/lock-fill"
+import IconUnlockFill from "~icons/bi/unlock-fill"
+import IconDashCircle from "~icons/bi/dash-circle"
+import IconBoxArrowUpRight from "~icons/bi/box-arrow-up-right"
 
 defineProps({
   info: Object,
@@ -38,7 +36,7 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
         <dd class="col-sm-8 mb-1">
           <a :href="info.endpoint" target="_blank" rel="noopener">
             <code>{{ info.endpoint }}</code>
-            <BIconBoxArrowUpRight class="ms-1" />
+            <IconBoxArrowUpRight class="ms-1" />
           </a>
         </dd>
 
@@ -83,7 +81,7 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
               class="text-center align-middle"
             >
               <template v-if="info.CAPABILITIES?.[type] === null">
-                <BIconDashCircle
+                <IconDashCircle
                   v-if="action === 'read'"
                   class="text-secondary"
                 />
@@ -91,19 +89,19 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
               <template
                 v-else-if="info.CAPABILITIES?.[type]?.[action] === null"
               >
-                <BIconDashCircle class="text-secondary" />
+                <IconDashCircle class="text-secondary" />
               </template>
               <template
                 v-else-if="info.CAPABILITIES?.[type]?.[action]?.requiresAuth"
               >
-                <BIconLockFill v-if="!isLoggedIn" class="text-warning" />
-                <BIconUnlockFill
+                <IconLockFill v-if="!isLoggedIn" class="text-warning" />
+                <IconUnlockFill
                   v-else-if="authorization?.[type]?.[action]"
                   class="text-success"
                 />
-                <BIconLockFill v-else class="text-danger" />
+                <IconLockFill v-else class="text-danger" />
               </template>
-              <BIconCheckCircleFill v-else class="text-success" />
+              <IconCheckCircleFill v-else class="text-success" />
             </td>
           </tr>
         </tbody>
@@ -111,19 +109,19 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 
       <div class="d-flex gap-3 mt-2 small text-muted">
         <span class="d-inline-flex align-items-center"
-          ><BIconCheckCircleFill class="text-success me-1" />Open</span
+          ><IconCheckCircleFill class="text-success me-1" />Open</span
         >
         <span class="d-inline-flex align-items-center"
-          ><BIconLockFill class="text-warning me-1" />Auth required</span
+          ><IconLockFill class="text-warning me-1" />Auth required</span
         >
         <span v-if="isLoggedIn" class="d-inline-flex align-items-center"
-          ><BIconUnlockFill class="text-success me-1" />Authorized</span
+          ><IconUnlockFill class="text-success me-1" />Authorized</span
         >
         <span v-if="isLoggedIn" class="d-inline-flex align-items-center"
-          ><BIconLockFill class="text-danger me-1" />Not authorized</span
+          ><IconLockFill class="text-danger me-1" />Not authorized</span
         >
         <span class="d-inline-flex align-items-center"
-          ><BIconDashCircle class="text-secondary me-1" />Not supported</span
+          ><IconDashCircle class="text-secondary me-1" />Not supported</span
         >
       </div>
     </div>

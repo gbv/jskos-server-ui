@@ -23,6 +23,7 @@ A Vue 3 application providing a web-based frontend for [jskos-server](https://gi
 - [cocoda-sdk](https://github.com/gbv/cocoda-sdk) for all JSKOS Server API communication
 - [jskos-vue](https://github.com/gbv/jskos-vue) for JSKOS-specific UI components
 - [Bootstrap 5](https://getbootstrap.com/) and [bootstrap-vue-next](https://bootstrap-vue-next.github.io/bootstrap-vue-next/) for basic layout and UI
+- [Bootstrap Icons](https://icons.getbootstrap.com/) via [unplugin-icons](https://github.com/unplugin/unplugin-icons) and [@iconify-json/bi](https://www.npmjs.com/package/@iconify-json/bi) for icons
 
 ## Project structure
 

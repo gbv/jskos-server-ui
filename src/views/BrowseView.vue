@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { BButton } from "bootstrap-vue-next"
-import { BIconArrowLeft, BIconLockFill } from "bootstrap-icons-vue"
+import IconArrowLeft from "~icons/bi/arrow-left"
+import IconLockFill from "~icons/bi/lock-fill"
 import { useRoute, useRouter } from "vue-router"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
@@ -180,7 +181,7 @@ watch(
   </div>
 
   <div v-else-if="!canRead" class="text-muted py-5 text-center">
-    <BIconLockFill class="text-warning me-1" />
+    <IconLockFill class="text-warning me-1" />
     <template v-if="store.requiresAuth(config.capability, 'read') && !loggedIn">
       Sign in to browse {{ config.label }}.
     </template>
@@ -228,7 +229,7 @@ watch(
             class="d-lg-none mb-2 d-inline-flex align-items-center gap-1"
             @click="clearSelection"
           >
-            <BIconArrowLeft aria-hidden="true" />
+            <IconArrowLeft aria-hidden="true" />
             Back
           </BButton>
           <component
