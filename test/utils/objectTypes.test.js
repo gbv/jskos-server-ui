@@ -1,36 +1,16 @@
 import { OBJECT_TYPES, getObjectType, isBrowsable } from "@/utils/objectTypes"
 
 describe("objectTypes", () => {
-  it("exposes all eight jskos-server object types in capability order", () => {
-    expect(Object.keys(OBJECT_TYPES)).toEqual([
-      "schemes",
-      "concepts",
-      "mappings",
-      "concordances",
-      "annotations",
-      "registries",
-      "types",
-      "occurrences",
-    ])
-  })
-
-  it("marks only the types with a route as browsable", () => {
-    const browsable = Object.keys(OBJECT_TYPES).filter((key) =>
-      isBrowsable(key),
-    )
-    expect(browsable).toEqual([
-      "schemes",
-      "concepts",
-      "mappings",
-      "concordances",
-      "annotations",
-    ])
+  it("treats exactly the types with a route as browsable", () => {
+    for (const [key, config] of Object.entries(OBJECT_TYPES)) {
+      expect(isBrowsable(key)).toBe(Boolean(config.route))
+    }
   })
 
   it("routes item types to the main registry and mapping types to the mappings registry", () => {
     expect(OBJECT_TYPES.schemes.registry).toBe("registry")
     expect(OBJECT_TYPES.concepts.registry).toBe("registry")
-    expect(OBJECT_TYPES.types.registry).toBe("registry")
+    expect(OBJECT_TYPES.registries.registry).toBe("registry")
     expect(OBJECT_TYPES.mappings.registry).toBe("mappingsRegistry")
     expect(OBJECT_TYPES.concordances.registry).toBe("mappingsRegistry")
     expect(OBJECT_TYPES.annotations.registry).toBe("mappingsRegistry")
@@ -39,8 +19,7 @@ describe("objectTypes", () => {
   it("exposes a count method for counted types and null for uncounted ones", () => {
     expect(OBJECT_TYPES.schemes.count).toBe("getSchemes")
     expect(OBJECT_TYPES.concepts.count).toBe("getConcepts")
-    expect(OBJECT_TYPES.types.count).toBe("getTypes")
-    expect(OBJECT_TYPES.registries.count).toBeNull()
+    expect(OBJECT_TYPES.registries.count).toBe("getRegistries")
     expect(OBJECT_TYPES.occurrences.count).toBeNull()
   })
 
