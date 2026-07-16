@@ -1,11 +1,9 @@
 import { mount } from "@vue/test-utils"
 import { createBootstrap } from "bootstrap-vue-next"
-import {
-  BIconCheckCircleFill,
-  BIconLockFill,
-  BIconUnlockFill,
-  BIconDashCircle,
-} from "bootstrap-icons-vue"
+import IconCheckCircleFill from "~icons/bi/check-circle-fill"
+import IconLockFill from "~icons/bi/lock-fill"
+import IconUnlockFill from "~icons/bi/unlock-fill"
+import IconDashCircle from "~icons/bi/dash-circle"
 import ServiceInfo from "@/components/ServiceInfo.vue"
 
 function makeInfo(capabilities) {
@@ -50,10 +48,10 @@ describe("ServiceInfo capability matrix", () => {
       isLoggedIn: false,
     })
     const body = wrapper.get("tbody")
-    const locks = body.findAllComponents(BIconLockFill)
+    const locks = body.findAllComponents(IconLockFill)
     expect(locks).toHaveLength(1)
     expect(locks[0].classes()).toContain("text-warning")
-    expect(body.findAllComponents(BIconUnlockFill)).toHaveLength(0)
+    expect(body.findAllComponents(IconUnlockFill)).toHaveLength(0)
   })
 
   it("shows a success unlock when signed in and authorized", () => {
@@ -63,10 +61,10 @@ describe("ServiceInfo capability matrix", () => {
       isLoggedIn: true,
     })
     const body = wrapper.get("tbody")
-    const unlocks = body.findAllComponents(BIconUnlockFill)
+    const unlocks = body.findAllComponents(IconUnlockFill)
     expect(unlocks).toHaveLength(1)
     expect(unlocks[0].classes()).toContain("text-success")
-    expect(body.findAllComponents(BIconLockFill)).toHaveLength(0)
+    expect(body.findAllComponents(IconLockFill)).toHaveLength(0)
   })
 
   it("shows a danger lock when signed in and not authorized", () => {
@@ -76,10 +74,10 @@ describe("ServiceInfo capability matrix", () => {
       isLoggedIn: true,
     })
     const body = wrapper.get("tbody")
-    const locks = body.findAllComponents(BIconLockFill)
+    const locks = body.findAllComponents(IconLockFill)
     expect(locks).toHaveLength(1)
     expect(locks[0].classes()).toContain("text-danger")
-    expect(body.findAllComponents(BIconUnlockFill)).toHaveLength(0)
+    expect(body.findAllComponents(IconUnlockFill)).toHaveLength(0)
   })
 
   it("leaves open and unsupported cells unchanged when signed in", () => {
@@ -89,10 +87,10 @@ describe("ServiceInfo capability matrix", () => {
       isLoggedIn: true,
     })
     const body = wrapper.get("tbody")
-    expect(body.findAllComponents(BIconCheckCircleFill).length).toBeGreaterThan(
+    expect(body.findAllComponents(IconCheckCircleFill).length).toBeGreaterThan(
       0,
     )
-    expect(body.findAllComponents(BIconDashCircle).length).toBeGreaterThan(0)
+    expect(body.findAllComponents(IconDashCircle).length).toBeGreaterThan(0)
   })
 
   it("shows only the base legend entries when signed out", () => {

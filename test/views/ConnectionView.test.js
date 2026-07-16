@@ -77,9 +77,6 @@ function mountView(storeState = {}) {
             '<button class="remove-icon-stub" @click="$emit(\'click\')" />',
         },
         ViewTitle: { template: "<h1><slot /></h1>" },
-        BIconCheckCircleFill: { template: "<span class='icon-check' />" },
-        BIconLockFill: { template: "<span class='icon-lock' />" },
-        BIconDashCircle: { template: "<span class='icon-dash' />" },
       },
     },
   })
@@ -282,9 +279,11 @@ describe("ConnectionView", () => {
 
     it("shows capability matrix with check, lock, and dash icons", () => {
       const wrapper = mountView(connectedState)
-      expect(wrapper.findAll(".icon-check").length).toBeGreaterThan(0)
-      expect(wrapper.findAll(".icon-lock").length).toBeGreaterThan(0)
-      expect(wrapper.findAll(".icon-dash").length).toBeGreaterThan(0)
+      expect(wrapper.findAll("svg.text-success").length).toBeGreaterThan(0)
+      expect(
+        wrapper.findAll("svg.text-warning, svg.text-danger").length,
+      ).toBeGreaterThan(0)
+      expect(wrapper.findAll("svg.text-secondary").length).toBeGreaterThan(0)
     })
 
     it("renders the endpoint URL as an external API link", () => {
