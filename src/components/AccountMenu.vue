@@ -8,7 +8,7 @@ import {
   BDropdownText,
   BSpinner,
 } from "bootstrap-vue-next"
-import IconPersonCircle from "~icons/bi/person-circle"
+import IconPerson from "~icons/bi/person-fill"
 import IconBoxArrowRight from "~icons/bi/box-arrow-right"
 import IconGear from "~icons/bi/gear"
 
@@ -89,16 +89,17 @@ function manageAccount() {
 </script>
 
 <template>
-  <!-- Signed in, inline: flat panel for the offcanvas, no dropdown -->
   <div v-if="isSignedIn && inline" class="account-menu-inline">
-    <div class="account-menu-name">{{ userName }}</div>
+    <div class="account-menu-info">
+      <div class="account-menu-name">{{ userName }}</div>
 
-    <div
-      v-for="identity in identities"
-      :key="identity.providerId"
-      class="account-menu-identity"
-    >
-      Signed in via {{ identity.name }}
+      <div
+        v-for="identity in identities"
+        :key="identity.providerId"
+        class="account-menu-identity"
+      >
+        Signed in via {{ identity.name }}
+      </div>
     </div>
 
     <button type="button" class="account-menu-item" @click="manageAccount">
@@ -118,7 +119,7 @@ function manageAccount() {
     end
   >
     <template #button-content>
-      <IconPersonCircle class="account-menu-icon" aria-hidden="true" />
+      <IconPerson class="account-menu-icon" aria-hidden="true" />
       <span class="visually-hidden">{{ userName }}</span>
     </template>
     <BDropdownText class="account-menu-name">{{ userName }}</BDropdownText>
@@ -140,7 +141,7 @@ function manageAccount() {
     </BDropdownItemButton>
   </BNavItemDropdown>
 
-  <!-- Signed out: a plain nav link -->
+  <!-- Signed out -->
   <BNavItem
     v-else-if="isConnected"
     class="account-menu account-menu-signin"
@@ -150,7 +151,7 @@ function manageAccount() {
     Sign in
   </BNavItem>
 
-  <!-- Connecting or connection error: disabled nav link -->
+  <!-- Connecting or connection error -->
   <BNavItem
     v-else
     class="account-menu account-menu-signin"
