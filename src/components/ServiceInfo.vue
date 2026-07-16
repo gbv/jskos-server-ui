@@ -107,7 +107,9 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
         </tbody>
       </table>
 
-      <div class="d-flex gap-3 mt-2 small text-muted">
+      <div
+        class="d-flex flex-wrap column-gap-3 row-gap-1 mt-2 small text-muted"
+      >
         <span class="d-inline-flex align-items-center"
           ><IconCheckCircleFill class="text-success me-1" />Open</span
         >
