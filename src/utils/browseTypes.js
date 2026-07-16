@@ -4,6 +4,8 @@
  * @typedef {Object} BrowseType
  * @property {string} capability Key used against the server store's capabilities.
  * @property {string} label Human-readable heading.
+ * @property {string} route Router path linking to this type's browse view (e.g. "/terminologies").
+ * @property {string} count Registry method returning the type's total count for the overview card.
  * @property {string} registry Server-store registry to call ("registry" or "mappingsRegistry").
  * @property {?string} list Registry method returning a paginated array (with `_totalCount`), or null when the type has no generic list endpoint (e.g. hierarchical concepts).
  * @property {boolean} hierarchical Whether records form a scheme-bound hierarchy, rendered via ConceptTree instead of a flat list.
@@ -25,6 +27,8 @@ export const BROWSE_TYPES = {
   schemes: {
     capability: "schemes",
     label: "Terminologies",
+    route: "/terminologies",
+    count: "getSchemes",
     registry: "registry",
     list: "getSchemes",
     hierarchical: false,
@@ -35,6 +39,8 @@ export const BROWSE_TYPES = {
   concepts: {
     capability: "concepts",
     label: "Concepts",
+    route: "/concepts",
+    count: "getConcepts",
     registry: "registry",
     list: null,
     hierarchical: true,
@@ -45,6 +51,8 @@ export const BROWSE_TYPES = {
   mappings: {
     capability: "mappings",
     label: "Mappings",
+    route: "/mappings",
+    count: "getMappings",
     registry: "mappingsRegistry",
     list: "getMappings",
     hierarchical: false,
@@ -55,6 +63,8 @@ export const BROWSE_TYPES = {
   concordances: {
     capability: "concordances",
     label: "Concordances",
+    route: "/concordances",
+    count: "getConcordances",
     registry: "mappingsRegistry",
     list: "getConcordances",
     hierarchical: false,
@@ -65,6 +75,8 @@ export const BROWSE_TYPES = {
   annotations: {
     capability: "annotations",
     label: "Annotations",
+    route: "/annotations",
+    count: "getAnnotations",
     registry: "mappingsRegistry",
     list: "getAnnotations",
     hierarchical: false,
