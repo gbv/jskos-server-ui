@@ -37,7 +37,6 @@ const capabilities = {
   concordances: null,
   annotations: null,
   registries: null,
-  types: null,
   occurrences: null,
 }
 

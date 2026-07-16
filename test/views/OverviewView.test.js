@@ -3,6 +3,7 @@ import { setActivePinia, createPinia } from "pinia"
 import { createTestingPinia } from "@pinia/testing"
 import { createRouter, createMemoryHistory } from "vue-router"
 import OverviewView from "@/views/OverviewView.vue"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 import { makeCountResponse } from "../mocks/cdk.js"
 
 vi.mock("@/composables/useCountUp", () => ({
@@ -21,18 +22,18 @@ vi.mock("@/composables/useAuth", async () => {
 })
 
 function createStubRouter() {
+  const typeRoutes = Object.values(OBJECT_TYPES)
+    .filter((config) => config.route)
+    .map((config) => ({
+      path: config.route,
+      component: { template: "<div/>" },
+    }))
   return createRouter({
     history: createMemoryHistory(),
     routes: [
       { path: "/", component: OverviewView },
-      { path: "/concepts", component: { template: "<div/>" } },
-      { path: "/annotations", component: { template: "<div/>" } },
-      { path: "/concordances", component: { template: "<div/>" } },
       { path: "/connection", component: { template: "<div/>" } },
-      { path: "/mappings", component: { template: "<div/>" } },
-      { path: "/occurrences", component: { template: "<div/>" } },
-      { path: "/terminologies", component: { template: "<div/>" } },
-      { path: "/types", component: { template: "<div/>" } },
+      ...typeRoutes,
     ],
   })
 }
@@ -90,7 +91,6 @@ describe("OverviewView", () => {
           annotations: null,
           registries: null,
           occurrences: null,
-          types: null,
         },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(1)
@@ -107,7 +107,6 @@ describe("OverviewView", () => {
           annotations: null,
           registries: null,
           occurrences: null,
-          types: null,
         },
       })
       expect(wrapper.findAll(".type-card")).toHaveLength(0)
@@ -208,7 +207,10 @@ describe("OverviewView", () => {
     })
 
     it("still renders successful cards when only one fetch errors", async () => {
-      const reg = { getSchemes: vi.fn().mockRejectedValue(new Error("fail")) }
+      const reg = {
+        getSchemes: vi.fn().mockRejectedValue(new Error("fail")),
+        getRegistries: vi.fn().mockResolvedValue(makeCountResponse(2)),
+      }
       const mreg = {
         getMappings: vi.fn().mockResolvedValue(makeCountResponse(100)),
         getConcordances: vi.fn().mockResolvedValue(makeCountResponse(3)),
@@ -229,8 +231,6 @@ describe("OverviewView", () => {
       })
       await flushPromises()
       expect(wrapper.findAll(".type-card")).toHaveLength(6)
-      // schemes (rejected) and concepts (no registry method) error; types is
-      // absent from capabilities, so it is unsupported and never fetched.
       expect(
         wrapper.findAll(".count-na").filter((el) => el.text() === "✕"),
       ).toHaveLength(2)
@@ -261,7 +261,6 @@ describe("OverviewView", () => {
       mappings: null,
       annotations: null,
       registries: null,
-      types: null,
     }
 
     it("shows a yellow lock and no link when read requires auth and logged out", async () => {
