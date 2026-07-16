@@ -1,13 +1,6 @@
-const TYPES = [
-  "schemes",
-  "concepts",
-  "mappings",
-  "concordances",
-  "annotations",
-  "registries",
-  "types",
-  "occurrences",
-]
+import { OBJECT_TYPES } from "@/utils/objectTypes"
+
+const TYPES = Object.keys(OBJECT_TYPES)
 const ACTIONS = ["read", "create", "update", "delete"]
 
 /**

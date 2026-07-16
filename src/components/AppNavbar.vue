@@ -10,6 +10,7 @@ import {
 } from "bootstrap-vue-next"
 import ThemeToggle from "./ThemeToggle.vue"
 import AccountMenu from "./AccountMenu.vue"
+import NavbarBrowseMenu from "./NavbarBrowseMenu.vue"
 import { useConfigStore } from "@/stores/config"
 import { useThemeStore } from "@/stores/theme"
 import { useServerStore } from "@/stores/server"
@@ -18,11 +19,6 @@ const store = useServerStore()
 const config = useConfigStore()
 const offcanvasVisible = ref(false)
 const theme = useThemeStore()
-
-const navLinks = [
-  { to: "/", label: "Overview" },
-  { to: "/connection", label: "Connection" },
-]
 
 // Uses the connected server's title when available, otherwise the app name.
 const appName = computed(
@@ -45,14 +41,16 @@ const appName = computed(
       :title="appName"
     >
       <BNavbarNav>
+        <BNavItem to="/" tag="router-link" @click="offcanvasVisible = false">
+          Overview
+        </BNavItem>
+        <NavbarBrowseMenu @navigate="offcanvasVisible = false" />
         <BNavItem
-          v-for="link in navLinks"
-          :key="link.to"
-          :to="link.to"
+          to="/connection"
           tag="router-link"
           @click="offcanvasVisible = false"
         >
-          {{ link.label }}
+          Connection
         </BNavItem>
         <hr />
         <li class="app-navbar-panel">
@@ -69,14 +67,9 @@ const appName = computed(
     <BNavbarNav
       class="gap-2 ms-auto mb-2 mb-md-0 d-none d-md-flex align-items-center"
     >
-      <BNavItem
-        v-for="link in navLinks"
-        :key="link.to"
-        :to="link.to"
-        tag="router-link"
-      >
-        {{ link.label }}
-      </BNavItem>
+      <BNavItem to="/" tag="router-link">Overview</BNavItem>
+      <NavbarBrowseMenu />
+      <BNavItem to="/connection" tag="router-link">Connection</BNavItem>
       <BNavItem class="py-0">
         <div
           class="vr d-none d-md-flex opacity-50"
