@@ -8,11 +8,9 @@ import {
   BDropdownText,
   BSpinner,
 } from "bootstrap-vue-next"
-import {
-  BIconPersonCircle,
-  BIconBoxArrowRight,
-  BIconGear,
-} from "bootstrap-icons-vue"
+import IconPersonCircle from "~icons/bi/person-circle"
+import IconBoxArrowRight from "~icons/bi/box-arrow-right"
+import IconGear from "~icons/bi/gear"
 
 const props = defineProps({
   redirect: { type: Boolean, default: true },
@@ -104,10 +102,10 @@ function manageAccount() {
     </div>
 
     <button type="button" class="account-menu-item" @click="manageAccount">
-      <BIconGear class="me-2" aria-hidden="true" />Manage account
+      <IconGear class="me-2" aria-hidden="true" />Manage account
     </button>
     <button type="button" class="account-menu-item" @click="signOut">
-      <BIconBoxArrowRight class="me-2" aria-hidden="true" />Sign out
+      <IconBoxArrowRight class="me-2" aria-hidden="true" />Sign out
     </button>
   </div>
 
@@ -120,7 +118,7 @@ function manageAccount() {
     end
   >
     <template #button-content>
-      <BIconPersonCircle class="account-menu-icon" aria-hidden="true" />
+      <IconPersonCircle class="account-menu-icon" aria-hidden="true" />
       <span class="visually-hidden">{{ userName }}</span>
     </template>
     <BDropdownText class="account-menu-name">{{ userName }}</BDropdownText>
@@ -135,10 +133,10 @@ function manageAccount() {
 
     <BDropdownDivider />
     <BDropdownItemButton @click="manageAccount">
-      <BIconGear class="me-2" aria-hidden="true" />Manage account
+      <IconGear class="me-2" aria-hidden="true" />Manage account
     </BDropdownItemButton>
     <BDropdownItemButton @click="signOut">
-      <BIconBoxArrowRight class="me-2" aria-hidden="true" />Sign out
+      <IconBoxArrowRight class="me-2" aria-hidden="true" />Sign out
     </BDropdownItemButton>
   </BNavItemDropdown>
 

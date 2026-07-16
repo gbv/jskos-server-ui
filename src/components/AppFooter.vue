@@ -1,5 +1,5 @@
 <script setup>
-import { BIconGithub } from "bootstrap-icons-vue"
+import IconGithub from "~icons/bi/github"
 import { useConfigStore } from "@/stores/config"
 const config = useConfigStore()
 const version = __APP_VERSION__
@@ -24,7 +24,7 @@ const gbvUrl = "https://www.gbv.de"
         class="github-link"
         aria-label="GitHub"
       >
-        <BIconGithub />
+        <IconGithub />
       </a>
       <span class="separator">·</span>
       <a :href="mitUrl" target="_blank" rel="noopener">MIT</a>

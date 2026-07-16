@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
+import Icons from "unplugin-icons/vite"
 import { fileURLToPath, URL } from "node:url"
 import { resolve } from "path"
 import { version } from "./package.json"
@@ -13,21 +14,20 @@ if (process.env.BUILD_MODE === "dist") {
       name: "JskosServerUi",
     },
     rollupOptions: {
-      external: ["vue", "bootstrap-vue-next", "bootstrap-icons-vue", "cocoda-sdk"],
+      external: ["vue", "bootstrap-vue-next", "cocoda-sdk"],
       output: {
         exports: "named",
         globals: {
           vue: "Vue",
           "bootstrap-vue-next": "BootstrapVueNext",
-          "bootstrap-icons-vue": "BoostrapIconsVue",
         },
-      }
+      },
     },
   }
 }
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), Icons({ compiler: "vue3", scale: 1 })],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -37,7 +37,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(version),
   },
   build,
-  base: '',
+  base: "",
   test: {
     globals: true,
     environment: "happy-dom",
