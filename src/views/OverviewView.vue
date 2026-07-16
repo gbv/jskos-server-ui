@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, watch, computed } from "vue"
 import { BSpinner } from "bootstrap-vue-next"
-import { BIconLockFill, BIconDashCircle } from "bootstrap-icons-vue"
+import IconLockFill from "~icons/bi/lock-fill"
+import IconDashCircle from "~icons/bi/dash-circle"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 import ViewTitle from "@/components/ViewTitle.vue"
@@ -176,15 +177,15 @@ watch(
               <span v-else-if="counts[s.key] == null" class="count-na">—</span>
               <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
             </template>
-            <BIconLockFill
+            <IconLockFill
               v-else-if="access[s.key] === 'auth-required'"
               class="text-warning"
             />
-            <BIconLockFill
+            <IconLockFill
               v-else-if="access[s.key] === 'denied'"
               class="text-danger"
             />
-            <BIconDashCircle v-else class="text-secondary" />
+            <IconDashCircle v-else class="text-secondary" />
           </div>
         </component>
       </template>

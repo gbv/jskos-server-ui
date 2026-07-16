@@ -5,11 +5,6 @@ import { BButton, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
 import ServiceInfo from "@/components/ServiceInfo.vue"
 import { RemoveIcon } from "jskos-vue"
-import {
-  BIconCheckCircleFill,
-  BIconLockFill,
-  BIconDashCircle,
-} from "bootstrap-icons-vue"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
 import { useAuth } from "@/composables/useAuth"
