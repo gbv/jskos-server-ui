@@ -6,7 +6,7 @@ import IconDashCircle from "~icons/bi/dash-circle"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 import { useTypeAccess } from "@/composables/useTypeAccess"
-import { BROWSE_TYPES } from "@/utils/browseTypes"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 import ViewTitle from "@/components/ViewTitle.vue"
 import { useCountUp } from "@/composables/useCountUp"
 
@@ -14,17 +14,15 @@ const store = useServerStore()
 const { loggedIn } = useAuth()
 const { resolveAccess } = useTypeAccess()
 
-const STATS = [
-  ...Object.entries(BROWSE_TYPES).map(([key, config]) => ({
+const STATS = Object.entries(OBJECT_TYPES)
+  .filter(([, config]) => config.count)
+  .map(([key, config]) => ({
     key,
     label: config.label,
-    route: config.route,
+    route: config.route ?? null,
     method: config.count,
-  })),
-  { key: "types", label: "Types", route: null, method: "getTypes" },
-  // TODO: show registries once cocoda-sdk supports it
-  // { key: "registries", label: "Registries", route: "/registries", method: "getRegistries" },
-]
+    registry: config.registry,
+  }))
 
 const counts = ref({})
 const loadingCounts = ref({})
@@ -70,9 +68,7 @@ async function fetchAllCounts() {
   await Promise.allSettled(
     readable.map(async (s) => {
       try {
-        const reg = ["mappings", "concordances", "annotations"].includes(s.key) // TODO: use one store only
-          ? store.mappingsRegistry
-          : store.registry
+        const reg = store[s.registry]
         const n = (await reg[s.method]({ limit: 0 }))?._totalCount
         if (n !== undefined) counts.value = { ...counts.value, [s.key]: n }
       } catch (e) {

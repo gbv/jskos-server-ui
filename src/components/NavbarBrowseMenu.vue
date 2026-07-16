@@ -3,7 +3,7 @@ import { computed } from "vue"
 import { useRoute } from "vue-router"
 import { BNavItemDropdown, BDropdownItem } from "bootstrap-vue-next"
 import IconLockFill from "~icons/bi/lock-fill"
-import { BROWSE_TYPES } from "@/utils/browseTypes"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 import { useTypeAccess } from "@/composables/useTypeAccess"
 
 const emit = defineEmits(["navigate"])
@@ -11,13 +11,14 @@ const emit = defineEmits(["navigate"])
 const { resolveAccess } = useTypeAccess()
 const route = useRoute()
 
-const browseRoutes = new Set(
-  Object.values(BROWSE_TYPES).map((config) => config.route),
+const browsableTypes = Object.entries(OBJECT_TYPES).filter(
+  ([, config]) => config.route,
 )
+const browseRoutes = new Set(browsableTypes.map(([, config]) => config.route))
 const isActive = computed(() => browseRoutes.has(route.path))
 
 const items = computed(() =>
-  Object.entries(BROWSE_TYPES)
+  browsableTypes
     .map(([type, config]) => ({
       type,
       label: config.label,

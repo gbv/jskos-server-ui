@@ -34,7 +34,12 @@ export default createRouter({
       component: browse,
       props: { type: "mappings" },
     },
-    { path: "/registries", name: "registries", component: placeholder },
+    {
+      path: "/registries",
+      name: "registries",
+      component: browse,
+      props: { type: "registries" },
+    },
     {
       path: "/annotations",
       name: "annotations",

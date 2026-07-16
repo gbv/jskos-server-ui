@@ -6,7 +6,7 @@ import IconLockFill from "~icons/bi/lock-fill"
 import { useRoute, useRouter } from "vue-router"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
-import { getBrowseType } from "@/utils/browseTypes"
+import { getObjectType } from "@/utils/objectTypes"
 import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
@@ -27,7 +27,7 @@ const { loggedIn } = useAuth()
 const route = useRoute()
 const router = useRouter()
 
-const config = computed(() => getBrowseType(props.type))
+const config = computed(() => getObjectType(props.type))
 
 // Keyed by config.detailComponent, which is also the component's record prop name.
 const detailComponents = {
@@ -43,17 +43,17 @@ const { loadDetail, resolveConceptHierarchy } = useBrowseItemDetail(
 )
 
 const isSupported = computed(
-  () => config.value && store.isSupported(config.value.capability, "read"),
+  () => config.value && store.isSupported(props.type, "read"),
 )
 
 const canRead = computed(() => {
   if (!config.value) {
     return false
   }
-  if (!store.requiresAuth(config.value.capability, "read")) {
+  if (!store.requiresAuth(props.type, "read")) {
     return true
   }
-  return store.isAuthorizedFor(config.value.capability, "read")
+  return store.isAuthorizedFor(props.type, "read")
 })
 
 const selectedItem = ref(null)
@@ -182,7 +182,7 @@ watch(
 
   <div v-else-if="!canRead" class="text-muted py-5 text-center">
     <IconLockFill class="text-warning me-1" />
-    <template v-if="store.requiresAuth(config.capability, 'read') && !loggedIn">
+    <template v-if="store.requiresAuth(type, 'read') && !loggedIn">
       Sign in to browse {{ config.label }}.
     </template>
     <template v-else>

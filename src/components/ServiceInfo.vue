@@ -5,6 +5,7 @@ import IconLockFill from "~icons/bi/lock-fill"
 import IconUnlockFill from "~icons/bi/unlock-fill"
 import IconDashCircle from "~icons/bi/dash-circle"
 import IconBoxArrowUpRight from "~icons/bi/box-arrow-up-right"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 
 defineProps({
   info: Object,
@@ -12,16 +13,7 @@ defineProps({
   isLoggedIn: Boolean,
 })
 
-const CAPABILITY_TYPES = [
-  "schemes",
-  "concepts",
-  "mappings",
-  "concordances",
-  "annotations",
-  "registries",
-  "types",
-  "occurrences",
-]
+const CAPABILITY_TYPES = Object.keys(OBJECT_TYPES)
 const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 </script>
 
