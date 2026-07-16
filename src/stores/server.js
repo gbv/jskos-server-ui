@@ -2,12 +2,11 @@ import { defineStore } from "pinia"
 import { ref, watch } from "vue"
 import { cdk } from "cocoda-sdk"
 import { parseCapabilities } from "@/utils/capabilities"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 import { useAuth } from "@/composables/useAuth"
 
 const LS_URL_KEY = "jskos-server-ui:activeUrl"
 const LS_SERVERS_KEY = "jskos-server-ui:servers"
-
-const MAPPINGS_TYPES = new Set(["mappings", "concordances", "annotations"])
 
 export const useServerStore = defineStore("server", () => {
   const activeUrl = ref(localStorage.getItem(LS_URL_KEY) ?? null)
@@ -23,7 +22,9 @@ export const useServerStore = defineStore("server", () => {
   const { user, token, loginPublicKey } = useAuth()
 
   function registryForType(type) {
-    return MAPPINGS_TYPES.has(type) ? mappingsRegistry.value : registry.value
+    return OBJECT_TYPES[type]?.registry === "mappingsRegistry"
+      ? mappingsRegistry.value
+      : registry.value
   }
 
   /**
