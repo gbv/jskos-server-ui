@@ -81,7 +81,8 @@
   align-items: center;
 }
 
-.app-navbar .account-menu .dropdown-menu {
+.app-navbar .dropdown-menu,
+#nav-offcanvas .dropdown-menu {
   --bs-dropdown-link-hover-bg: var(--color-secondary);
   --bs-dropdown-link-hover-color: var(--color-primary);
   --bs-dropdown-link-active-bg: var(--bs-dropdown-link-hover-bg);
