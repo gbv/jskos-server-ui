@@ -98,7 +98,7 @@ describe("ServiceInfo capability matrix", () => {
       info: makeInfo(capabilities),
       isLoggedIn: false,
     })
-    expect(wrapper.get(".gap-3").findAll("span")).toHaveLength(3)
+    expect(wrapper.get(".column-gap-3").findAll("span")).toHaveLength(3)
   })
 
   it("adds the two authorization legend entries when signed in", () => {
@@ -106,6 +106,6 @@ describe("ServiceInfo capability matrix", () => {
       info: makeInfo(capabilities),
       isLoggedIn: true,
     })
-    expect(wrapper.get(".gap-3").findAll("span")).toHaveLength(5)
+    expect(wrapper.get(".column-gap-3").findAll("span")).toHaveLength(5)
   })
 })
