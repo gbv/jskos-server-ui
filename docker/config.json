@@ -1,5 +1,14 @@
 {
-  "defaultServer": "http://localhost:3000",
+  "services": [
+    {
+      "endpoint": "http://localhost:3000",
+      "api": "http://bartoc.org/api-type/jskos"
+    },
+    {
+      "api": "http://bartoc.org/api-type/jskos",
+      "endpoint": "https://coli-conc-gbv.de/api"
+    }
+  ],
   "footer": {
     "links": [
       {
@@ -15,5 +24,9 @@
         "url": ""
       }
     ]
+  },
+  "login": {
+    "url": "bartoc.org/login/",
+    "ssl": true
   }
 }

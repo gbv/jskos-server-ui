@@ -1,10 +1,10 @@
 .u-flip-horizontal {
   -webkit-transform: scaleX(-1);
-  transform:         scaleX(-1);
+  transform: scaleX(-1);
 }
 .u-flip-vertical {
   -webkit-transform: scaleY(-1);
-  transform:         scaleY(-1);
+  transform: scaleY(-1);
 }
 .u-textBreak {
   word-break: break-all;

@@ -13,7 +13,6 @@
   margin: 0;
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--bs-secondary-color);
 }
@@ -23,10 +22,12 @@
   position: relative;
   display: flex;
   align-items: center;
+  padding-left: 2em;
 }
 
 .theme-switcher .form-check-input {
   margin-top: 0;
+  margin-left: -2em;
   cursor: pointer;
   background-color: var(--bs-tertiary-bg);
   border-color: var(--bs-border-color);
@@ -61,7 +62,7 @@
   position: absolute;
   width: 2em;
   height: 1em;
-  margin-left: -2.5em;
+  margin-left: -2em;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;

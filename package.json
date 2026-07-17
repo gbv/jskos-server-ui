@@ -4,12 +4,19 @@
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/jskos-server-ui.umd.cjs",
+      "import": "./dist/jskos-server.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "BUILD_MODE=dist vite build",
+    "app": "vite build",
     "preview": "vite preview",
     "lint": "eslint src/",
-    "format": "prettier --write src/",
+    "fix": "prettier --write src/; eslint src/ --fix",
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -17,11 +24,10 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
-    "bootstrap-icons": "^1.13.1",
-    "bootstrap-icons-vue": "^1.11.3",
     "bootstrap-vue-next": "^0.44.7",
-    "cocoda-sdk": "^3.6.1",
+    "cocoda-sdk": "^3.7.0",
     "countup.js": "^2.10.0",
+    "gbv-login-client-vue": "^1.0.0",
     "jskos-tools": "^1.2.1",
     "jskos-vue": "^0.5.1",
     "pinia": "^3.0.4",
@@ -40,6 +46,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
+    "@iconify-json/bi": "^1.2.7",
     "@pinia/testing": "^1.0.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vitest/coverage-v8": "^4.1.5",
@@ -53,6 +60,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
+    "unplugin-icons": "^23.0.1",
     "vite": "^8.0.9",
     "vitest": "^4.1.5"
   }

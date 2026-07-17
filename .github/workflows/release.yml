@@ -1,4 +1,4 @@
-name: Release
+name: Release package at npmjs
 
 on:
   push:
@@ -20,6 +20,7 @@ jobs:
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           release-type: node
+          target-branch: main
 
   publish-npm:
     name: Publish to npm
@@ -35,7 +36,9 @@ jobs:
           cache: npm
           registry-url: https://registry.npmjs.org
 
-      - run: npm ci
+      - run: |
+          npm ci
+          npm run build
 
       - run: npm publish
         env:

@@ -1,27 +1,56 @@
 <script setup>
 import { ref, reactive, watch, computed } from "vue"
 import { BSpinner } from "bootstrap-vue-next"
+import IconLockFill from "~icons/bi/lock-fill"
+import IconDashCircle from "~icons/bi/dash-circle"
 import { useServerStore } from "@/stores/server"
+import { useAuth } from "@/composables/useAuth"
+import { useTypeAccess } from "@/composables/useTypeAccess"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 import ViewTitle from "@/components/ViewTitle.vue"
 import { useCountUp } from "@/composables/useCountUp"
 
 const store = useServerStore()
+const { loggedIn } = useAuth()
+const { resolveAccess } = useTypeAccess()
 
-const STATS = [
-  { key: "schemes",      label: "Terminologies", route: "/terminologies" },
-  { key: "concordances", label: "Concordances",  route: "/concordances"  },
-  { key: "mappings",     label: "Mappings",      route: "/mappings"      },
-  { key: "annotations",  label: "Annotations",   route: "/annotations"   },
-  // TODO: show concepts once cocoda-sdk supports it
-  // { key: "concepts",     label: "Concepts",      route: "/concepts",     unknownCount: true },
-  // TODO: show registries once cocoda-sdk supports it
-  // { key: "registries",   label: "Registries",    route: "/registries",   unknownCount: true },
-]
+const STATS = Object.entries(OBJECT_TYPES)
+  .filter(([, config]) => config.count)
+  .map(([key, config]) => ({
+    key,
+    label: config.label,
+    route: config.route ?? null,
+    method: config.count,
+    registry: config.registry,
+  }))
 
 const counts = ref({})
 const loadingCounts = ref({})
 const errorCounts = ref({})
 const countEls = reactive({})
+
+const access = computed(() =>
+  Object.fromEntries(STATS.map((s) => [s.key, resolveAccess(s.key)])),
+)
+
+/**
+ * Returns the tooltip text explaining why a locked card is not navigable.
+ *
+ * @param {{key: string, label: string}} stat the stat definition
+ * @returns {?string} the tooltip text, or undefined for an open card
+ */
+function lockTitle(stat) {
+  switch (access.value[stat.key]) {
+    case "auth-required":
+      return `Sign in to view ${stat.label}`
+    case "denied":
+      return `Not authorized to read ${stat.label}`
+    case "unsupported":
+      return `${stat.label} not offered by this server`
+    default:
+      return undefined
+  }
+}
 
 // One useCountUp per stat — watches its own el + value ref
 for (const s of STATS) {
@@ -30,45 +59,18 @@ for (const s of STATS) {
   useCountUp(elRef, valRef)
 }
 
-async function fetchCount(key) {
-  const reg = store.registry
-  const mreg = store.mappingsRegistry
-
-  if (key === "schemes") {
-    const r = await reg.getSchemes({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "mappings") {
-    const r = await mreg.getMappings({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "concordances") {
-    const r = await mreg.getConcordances({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "annotations") {
-    const r = await mreg.getAnnotations({ limit: 0 })
-    return r._totalCount ?? 0
-  }
-  if (key === "concepts") {
-    return null   // mreg.getConcepts throws InvalidOrMissingParameterError; needs 'uri'
-  }
-  if (key === "registries") {
-    return null // mreg.getRegistries throws MethodNotImplementedError
-  }
-  return null
-}
-
 async function fetchAllCounts() {
   counts.value = {}
   errorCounts.value = {}
-  loadingCounts.value = Object.fromEntries(STATS.map((s) => [s.key, true]))
+  const readable = STATS.filter((s) => access.value[s.key] === "open")
+  loadingCounts.value = Object.fromEntries(readable.map((s) => [s.key, true]))
 
   await Promise.allSettled(
-    STATS.filter((s) => store.capabilities?.[s.key] !== null).map(async (s) => {
+    readable.map(async (s) => {
       try {
-        const n = await fetchCount(s.key)
-        if (n != null) counts.value = { ...counts.value, [s.key]: n }
+        const reg = store[s.registry]
+        const n = (await reg[s.method]({ limit: 0 }))?._totalCount
+        if (n !== undefined) counts.value = { ...counts.value, [s.key]: n }
       } catch (e) {
         errorCounts.value = { ...errorCounts.value, [s.key]: true }
       } finally {
@@ -79,10 +81,11 @@ async function fetchAllCounts() {
 }
 
 watch(
-  () => store.registry,
-  (reg) => {
-    if (reg) fetchAllCounts()
-    else {
+  [() => store.registry, () => store.authorizationMatrix, loggedIn],
+  () => {
+    if (store.registry) {
+      fetchAllCounts()
+    } else {
       counts.value = {}
       loadingCounts.value = {}
       errorCounts.value = {}
@@ -107,25 +110,39 @@ watch(
 
     <div class="cards-grid">
       <template v-for="s in STATS" :key="s.key">
-        <router-link
+        <component
+          :is="access[s.key] === 'open' && s.route ? 'router-link' : 'div'"
           v-if="store.capabilities?.[s.key] !== null"
-          :to="s.route"
+          :to="access[s.key] === 'open' && s.route ? s.route : undefined"
           class="type-card"
+          :class="{ 'type-card-locked': access[s.key] !== 'open' }"
+          :title="lockTitle(s)"
         >
-        <div class="card-label">{{ s.label }}</div>
-        <div class="card-count">
-          <BSpinner v-if="loadingCounts[s.key]" small />
-          <span
-            v-else-if="errorCounts[s.key]"
-            class="count-na"
-            title="Failed to load"
-            >✕</span
-          >
+          <div class="card-label">{{ s.label }}</div>
+          <div class="card-count">
+            <template v-if="access[s.key] === 'open'">
+              <BSpinner v-if="loadingCounts[s.key]" small />
+              <span
+                v-else-if="errorCounts[s.key]"
+                class="count-na"
+                title="Failed to load"
+                >✕</span
+              >
 
-          <span v-else-if="counts[s.key] == null" class="count-na">—</span>
-          <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
-        </div>
-        </router-link>
+              <span v-else-if="counts[s.key] == null" class="count-na">—</span>
+              <span v-else :ref="(el) => (countEls[s.key] = el)"></span>
+            </template>
+            <IconLockFill
+              v-else-if="access[s.key] === 'auth-required'"
+              class="text-warning"
+            />
+            <IconLockFill
+              v-else-if="access[s.key] === 'denied'"
+              class="text-danger"
+            />
+            <IconDashCircle v-else class="text-secondary" />
+          </div>
+        </component>
       </template>
     </div>
   </div>

@@ -23,6 +23,7 @@ A Vue 3 application providing a web-based frontend for [jskos-server](https://gi
 - [cocoda-sdk](https://github.com/gbv/cocoda-sdk) for all JSKOS Server API communication
 - [jskos-vue](https://github.com/gbv/jskos-vue) for JSKOS-specific UI components
 - [Bootstrap 5](https://getbootstrap.com/) and [bootstrap-vue-next](https://bootstrap-vue-next.github.io/bootstrap-vue-next/) for basic layout and UI
+- [Bootstrap Icons](https://icons.getbootstrap.com/) via [unplugin-icons](https://github.com/unplugin/unplugin-icons) and [@iconify-json/bi](https://www.npmjs.com/package/@iconify-json/bi) for icons
 
 ## Project structure
 
@@ -50,6 +51,14 @@ Requires Node.js 22 or higher.
 npm install
 ```
 
+## Components
+
+This package is in a very early state of development so its components are not fixed yet. Some preliminary components may also be moved to [jskos-vue](https://www.npmjs.com/package/jskos-vue).
+
+### ServiceInfo
+
+Shows basic metadata and capabilities of a [JSKOS Service](https://gbv.github.io/jskos/#service). This component does not interact with the service.
+
 ## Development
 
 ```bash
@@ -70,11 +79,17 @@ Coverage is reported to [Codecov](https://codecov.io/gh/gbv/jskos-server-ui) on 
 
 ## Build
 
+Build the application to `app/`:
+
+```bash
+npm run app
+```
+
+Build the library to `dist/`:
+
 ```bash
 npm run build
 ```
-
-The production build is written to `dist/`.
 
 ## Configuration
 
@@ -82,21 +97,36 @@ Runtime configuration is loaded from `public/config.json` at startup. This file 
 
 ```json
 {
-  "defaultServer": "http://localhost:3000",
+  "services": [
+    {
+      "api": "http://bartoc.org/api-type/jskos",
+      "endpoint": "http://localhost:3000"
+    }
+  ],
   "footer": {
     "links": [
       { "label": "Imprint", "url": "https://example.org/imprint" },
       { "label": "Privacy", "url": "https://example.org/privacy" },
       { "label": "Accessibility", "url": "https://example.org/accessibility" }
     ]
+  },
+  "login": {
+    "url": "login.example.org/",
+    "ssl": true
   }
 }
 ```
 
-| Property        | Type   | Description                               |
-| --------------- | ------ | ----------------------------------------- |
-| `defaultServer` | string | JSKOS Server URL loaded on startup        |
-| `footer.links`  | array  | Footer navigation links (`label` + `url`) |
+| Property       | Type    | Description                                                   |
+| -------------- | ------- | ------------------------------------------------------------- |
+| `services`     | array   | [JSKOS Service] objects to choose from                        |
+| `footer.links` | array   | Footer navigation links (`label` + `url`)                     |
+| `login`        | object  | Optional [login-server] connection; omit to disable login     |
+| `login.url`    | string  | Login server URL without protocol (e.g. `login.example.org/`) |
+| `login.ssl`    | boolean | Connect via HTTPS/WSS (default: `true`)                       |
+
+[JSKOS Service]: https://gbv.github.io/jskos/#service
+[login-server]: https://github.com/gbv/login-server
 
 ## Deployment
 
@@ -118,7 +148,12 @@ The UI is then available at `http://localhost:8080`, jskos-server at `http://loc
 
 ```json
 {
-  "defaultServer": "http://localhost:3000",
+  "services": [
+    {
+      "api": "http://bartoc.org/api-type/jskos",
+      "endpoint": "http://localhost:3000"
+    }
+  ],
   "footer": {
     "links": [{ "label": "Imprint", "url": "https://example.org/imprint" }]
   }
@@ -155,4 +190,3 @@ Releases are automated via [semantic-release](https://semantic-release.gitbook.i
 ## License
 
 MIT, see [LICENSE](LICENSE) for details.
-
