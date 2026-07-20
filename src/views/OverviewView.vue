@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, watch, computed } from "vue"
-import { BSpinner } from "bootstrap-vue-next"
+import { BSpinner, vBTooltip } from "bootstrap-vue-next"
 import IconLockFill from "~icons/bi/lock-fill"
 import IconDashCircle from "~icons/bi/dash-circle"
 import { useServerStore } from "@/stores/server"
@@ -116,7 +116,7 @@ watch(
           :to="access[s.key] === 'open' && s.route ? s.route : undefined"
           class="type-card"
           :class="{ 'type-card-locked': access[s.key] !== 'open' }"
-          :title="lockTitle(s)"
+          v-b-tooltip.body="lockTitle(s)"
         >
           <div class="card-label">{{ s.label }}</div>
           <div class="card-count">
@@ -125,7 +125,7 @@ watch(
               <span
                 v-else-if="errorCounts[s.key]"
                 class="count-na"
-                title="Failed to load"
+                v-b-tooltip.body="'Failed to load'"
                 >✕</span
               >
 

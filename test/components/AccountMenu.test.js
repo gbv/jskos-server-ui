@@ -176,8 +176,9 @@ describe("AccountMenu", () => {
     expect(wrapper.find(".account-menu-signin a").classes()).toContain(
       "disabled",
     )
-    expect(wrapper.find("[title]").attributes("title")).toBe(
-      "The login server is currently unreachable.",
-    )
+    const tooltipTexts = [
+      ...document.body.querySelectorAll(".tooltip-inner"),
+    ].map((element) => element.textContent)
+    expect(tooltipTexts).toContain("The login server is currently unreachable.")
   })
 })
