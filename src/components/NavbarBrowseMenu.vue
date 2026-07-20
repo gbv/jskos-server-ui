@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue"
 import { useRoute } from "vue-router"
-import { BNavItemDropdown, BDropdownItem } from "bootstrap-vue-next"
+import { BNavItemDropdown, BDropdownItem, vBTooltip } from "bootstrap-vue-next"
 import IconLockFill from "~icons/bi/lock-fill"
 import { OBJECT_TYPES } from "@/utils/objectTypes"
 import { useTypeAccess } from "@/composables/useTypeAccess"
@@ -56,7 +56,7 @@ function lockTitle(item) {
       :key="item.type"
       :to="item.access === 'open' ? item.route : undefined"
       :disabled="item.access !== 'open'"
-      :title="lockTitle(item)"
+      v-b-tooltip.body="lockTitle(item)"
       class="d-flex align-items-center gap-2"
       @click="item.access === 'open' && emit('navigate')"
     >
