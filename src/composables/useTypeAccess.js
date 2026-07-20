@@ -2,32 +2,31 @@ import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 
 /**
- * Provides read-access resolution for a jskos-server object type, shared by the
- * overview cards and the navbar browse menu.
+ * Provides access resolution for actions on a jskos-server object type.
  *
- * @returns {{resolveAccess: function(string): ("unsupported"|"open"|"auth-required"|"denied")}}
- *     Resolver for a type's read-access state.
+ * @returns {{resolveAccess: function(string, string=): ("unsupported"|"open"|"auth-required"|"denied")}}
+ *     Resolver for a type's access state per action.
  */
 export function useTypeAccess() {
   const store = useServerStore()
   const { loggedIn } = useAuth()
 
   /**
-   * Resolves whether the current user may read a type, as one of four states.
-   * Evaluation order matters: unsupported wins over open, open over the locked
-   * states.
+   * Resolves whether the current user may perform an action on a type.
    *
    * @param {string} type the capability type key
+   * @param {string} [action="read"] the capability action (`"read"`,
+   *     `"create"`, `"update"`, or `"delete"`)
    * @returns {"unsupported"|"open"|"auth-required"|"denied"} the access state
    */
-  function resolveAccess(type) {
-    if (!store.isSupported(type, "read")) {
+  function resolveAccess(type, action = "read") {
+    if (!store.isSupported(type, action)) {
       return "unsupported"
     }
-    if (!store.requiresAuth(type, "read")) {
+    if (!store.requiresAuth(type, action)) {
       return "open"
     }
-    if (store.isAuthorizedFor(type, "read")) {
+    if (store.isAuthorizedFor(type, action)) {
       return "open"
     }
     return loggedIn.value ? "denied" : "auth-required"

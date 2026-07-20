@@ -266,6 +266,54 @@ describe("BrowseList browsing", () => {
     expect(wrapper.find(".stub-mappinglist").exists()).toBe(false)
   })
 
+  it("refetches the current page via the exposed reload()", async () => {
+    const result = Object.assign([{ uri: "urn:a" }], { _totalCount: 1 })
+    const getSchemes = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getSchemes })
+    await flushPromises()
+    expect(getSchemes).toHaveBeenCalledTimes(1)
+
+    await wrapper.vm.reload()
+
+    expect(getSchemes).toHaveBeenCalledTimes(2)
+    expect(getSchemes).toHaveBeenLastCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+  })
+
+  it("steps back one page when a reload finds the current page empty", async () => {
+    const fullPage = Array.from({ length: 20 }, (_, i) => ({
+      uri: `urn:m${i}`,
+    }))
+    const getMappings = vi
+      .fn()
+      .mockResolvedValueOnce(Object.assign([...fullPage], { _totalCount: 21 }))
+      .mockResolvedValueOnce(
+        Object.assign([{ uri: "urn:m20" }], { _totalCount: 21 }),
+      )
+      .mockResolvedValueOnce(Object.assign([], { _totalCount: 20 }))
+      .mockResolvedValueOnce(Object.assign([...fullPage], { _totalCount: 20 }))
+    const wrapper = mountList({ getMappings }, mappingsConfig)
+    await flushPromises()
+
+    wrapper
+      .findComponent({ name: "BPagination" })
+      .vm.$emit("update:modelValue", 2)
+    await flushPromises()
+    expect(getMappings).toHaveBeenLastCalledWith({
+      params: { limit: 20, offset: 20 },
+    })
+
+    await wrapper.vm.reload()
+    await flushPromises()
+
+    expect(getMappings).toHaveBeenCalledTimes(4)
+    expect(getMappings).toHaveBeenLastCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+    expect(wrapper.text()).toContain("Showing 1–20 of 20")
+  })
+
   it("emits scheme-change when the user picks another scheme", async () => {
     const schemes = [{ uri: "urn:scheme-1" }, { uri: "urn:scheme-2" }]
     const getSchemes = vi.fn().mockResolvedValue(schemes)
