@@ -232,6 +232,22 @@ function load() {
 }
 
 /**
+ * Reloads the current page, moving back one page if it ends up empty.
+ */
+async function reload() {
+  if (props.config.hierarchical) {
+    return
+  }
+  await fetchList()
+  if (!items.value.length && page.value > 1) {
+    page.value -= 1
+    await fetchList()
+  }
+}
+
+defineExpose({ reload })
+
+/**
  * Handles a scheme picked in the dropdown: applies it locally and reports the
  * change so the route (?scheme=) becomes the source of truth.
  *

@@ -10,6 +10,7 @@ import { getObjectType } from "@/utils/objectTypes"
 import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
+import DetailActionBar from "@/components/browse/DetailActionBar.vue"
 import BrowseDetail from "@/components/browse/BrowseDetail.vue"
 import MappingDetail from "@/components/browse/MappingDetail.vue"
 import ConcordanceDetail from "@/components/browse/ConcordanceDetail.vue"
@@ -56,6 +57,7 @@ const canRead = computed(() => {
   return store.isAuthorizedFor(props.type, "read")
 })
 
+const browseListRef = ref(null)
 const selectedItem = ref(null)
 const selectedMemoryRecord = ref(null)
 const selectedUri = computed(() => route.query.uri ?? null)
@@ -126,6 +128,14 @@ function clearSelection() {
   if (config.value?.selection === "url") {
     setUri(undefined)
   }
+}
+
+/**
+ * Handles a record deletion from the detail pane.
+ */
+function onDeleted() {
+  clearSelection()
+  browseListRef.value?.reload()
 }
 
 watch(
@@ -205,6 +215,7 @@ watch(
           :class="{ 'browse-list-pane-active': hasSelection }"
         >
           <BrowseList
+            ref="browseListRef"
             :config="config"
             :selected-uri="selectedUri"
             :selected-record="selectedRecord"
@@ -242,6 +253,12 @@ watch(
             Select an entry to see its details.
           </p>
         </div>
+        <DetailActionBar
+          v-if="hasSelection"
+          :type="type"
+          :record="selectedRecord"
+          @deleted="onDeleted"
+        />
       </div>
     </div>
   </div>
