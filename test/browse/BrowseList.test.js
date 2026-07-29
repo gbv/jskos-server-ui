@@ -126,6 +126,23 @@ describe("BrowseList browsing", () => {
     })
     expect(wrapper.findAll(".stub-itemlist li")).toHaveLength(2)
     expect(wrapper.text()).toContain("Showing 1–2 of 42")
+    expect(wrapper.find("ul.browse-list-pagination").exists()).toBe(true)
+  })
+
+  it("renders the count above the list and hides pagination on a single page", async () => {
+    const result = Object.assign([{ uri: "urn:a" }, { uri: "urn:b" }], {
+      _totalCount: 2,
+    })
+    const getSchemes = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getSchemes })
+    await flushPromises()
+
+    const html = wrapper.html()
+    expect(html.indexOf("browse-list-count")).toBeLessThan(
+      html.indexOf("browse-list-scroll"),
+    )
+    expect(wrapper.find(".browse-list-count").text()).toBe("2 results")
+    expect(wrapper.find(".browse-list-pagination").exists()).toBe(false)
   })
 
   it("shows an explicit empty state when a type has no records", async () => {
@@ -188,7 +205,7 @@ describe("BrowseList browsing", () => {
     })
     expect(wrapper.find(".stub-itemlist").exists()).toBe(false)
     expect(wrapper.findAll(".stub-mappinglist li")).toHaveLength(2)
-    expect(wrapper.text()).toContain("Showing 1–2 of 5")
+    expect(wrapper.find(".browse-list-count").text()).toBe("5 results")
 
     await wrapper.findAll(".stub-mappinglist li")[0].trigger("click")
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
@@ -208,7 +225,7 @@ describe("BrowseList browsing", () => {
       params: { limit: 20, offset: 0 },
     })
     expect(wrapper.findAll(".stub-concordancelist li")).toHaveLength(2)
-    expect(wrapper.text()).toContain("Showing 1–2 of 7")
+    expect(wrapper.find(".browse-list-count").text()).toBe("7 results")
 
     await wrapper.findAll(".stub-concordancelist li")[0].trigger("click")
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
@@ -228,7 +245,7 @@ describe("BrowseList browsing", () => {
       params: { limit: 20, offset: 0 },
     })
     expect(wrapper.findAll(".stub-annotationlist li")).toHaveLength(2)
-    expect(wrapper.text()).toContain("Showing 1–2 of 3")
+    expect(wrapper.find(".browse-list-count").text()).toBe("3 results")
 
     await wrapper.findAll(".stub-annotationlist li")[0].trigger("click")
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
@@ -279,6 +296,7 @@ describe("BrowseList browsing", () => {
     expect(getSchemes).toHaveBeenLastCalledWith({
       params: { limit: 20, offset: 0 },
     })
+    expect(wrapper.find(".browse-list-count").text()).toBe("1 result")
   })
 
   it("steps back one page when a reload finds the current page empty", async () => {
@@ -311,7 +329,7 @@ describe("BrowseList browsing", () => {
     expect(getMappings).toHaveBeenLastCalledWith({
       params: { limit: 20, offset: 0 },
     })
-    expect(wrapper.text()).toContain("Showing 1–20 of 20")
+    expect(wrapper.find(".browse-list-count").text()).toBe("20 results")
   })
 
   it("emits scheme-change when the user picks another scheme", async () => {
