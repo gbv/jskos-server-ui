@@ -395,6 +395,8 @@ function onFlatSelect(payload) {
       size="sm"
       :limit="5"
       align="center"
+      first-number
+      last-number
       class="browse-list-pagination mb-0"
       @update:model-value="goToPage"
     />

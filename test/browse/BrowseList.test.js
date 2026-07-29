@@ -145,6 +145,21 @@ describe("BrowseList browsing", () => {
     expect(wrapper.find(".browse-list-pagination").exists()).toBe(false)
   })
 
+  it("offers the first and last page number when pages are truncated", async () => {
+    const result = Object.assign([{ uri: "urn:a" }, { uri: "urn:b" }], {
+      _totalCount: 420,
+    })
+    const getSchemes = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getSchemes })
+    await flushPromises()
+
+    const pages = wrapper
+      .findAll("ul.browse-list-pagination li")
+      .map((li) => li.text())
+    expect(pages).toContain("1")
+    expect(pages).toContain("21")
+  })
+
   it("shows an explicit empty state when a type has no records", async () => {
     const getSchemes = vi.fn().mockResolvedValue(Object.assign([], {}))
     const wrapper = mountList({ getSchemes })
