@@ -104,8 +104,8 @@ describe("MappingList", () => {
     ).toBe("exact match")
   })
 
-  it("builds a Cocoda-style title from the type label and definition", () => {
-    const wrapper = mountList(
+  it("builds a Cocoda-style tooltip from the type label and definition", () => {
+    mountList(
       [
         makeMapping({
           from: [{ uri: "urn:a" }],
@@ -115,9 +115,10 @@ describe("MappingList", () => {
       ],
       { language: "en" },
     )
-    expect(
-      wrapper.find(".jskos-vue-mappingList-arrow").attributes("title"),
-    ).toBe("exact match: same meaning")
+    const tooltipTexts = [
+      ...document.body.querySelectorAll(".tooltip-inner"),
+    ].map((element) => element.textContent)
+    expect(tooltipTexts).toContain("exact match: same meaning")
   })
 
   it("falls back to the arrow connector when showType is false", () => {

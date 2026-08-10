@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue"
+import { vBTooltip } from "bootstrap-vue-next"
 import * as jskos from "jskos-tools"
 import { ItemName, Arrow } from "jskos-vue"
 
@@ -141,7 +142,7 @@ function onSelect(mapping) {
         </span>
       </div>
 
-      <div class="jskos-vue-mappingList-arrow" :title="row.typeTitle">
+      <div class="jskos-vue-mappingList-arrow" v-b-tooltip.body="row.typeTitle">
         <span
           v-if="showType && row.typeNotation"
           class="jskos-vue-mappingList-type"

@@ -28,6 +28,16 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      -
+        name: Determine RC Version
+        id: app-version
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          latest_tag=$(git tag --list 'v*' --sort=-version:refname | head -n1)
+          IFS=. read -r major minor patch <<< "${latest_tag#v}"
+          echo "version=${major}.${minor}.$((patch + 1))-rc.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
       -
         name: Docker Meta
         id: meta
@@ -53,3 +63,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ steps.app-version.outputs.version }}

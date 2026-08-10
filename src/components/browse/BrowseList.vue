@@ -60,9 +60,19 @@ const formattedTotalCount = computed(() =>
   totalCount.value != null ? totalCount.value.toLocaleString() : "",
 )
 
-const isPaginationVisible = computed(
+const isCountVisible = computed(
   () =>
     !props.config.hierarchical && totalCount.value != null && !isEmpty.value,
+)
+
+const isPaginationVisible = computed(
+  () => isCountVisible.value && totalCount.value > PAGE_SIZE,
+)
+
+const countLabel = computed(() =>
+  isPaginationVisible.value
+    ? `Showing ${rangeStart.value}–${rangeEnd.value} of ${formattedTotalCount.value}`
+    : `${formattedTotalCount.value} ${totalCount.value === 1 ? "result" : "results"}`,
 )
 
 const isEmpty = computed(() => {
@@ -232,6 +242,22 @@ function load() {
 }
 
 /**
+ * Reloads the current page, moving back one page if it ends up empty.
+ */
+async function reload() {
+  if (props.config.hierarchical) {
+    return
+  }
+  await fetchList()
+  if (!items.value.length && page.value > 1) {
+    page.value -= 1
+    await fetchList()
+  }
+}
+
+defineExpose({ reload })
+
+/**
  * Handles a scheme picked in the dropdown: applies it locally and reports the
  * change so the route (?scheme=) becomes the source of truth.
  *
@@ -321,6 +347,10 @@ function onFlatSelect(payload) {
       />
     </div>
 
+    <div v-if="isCountVisible" class="browse-list-count text-muted small mb-2">
+      {{ countLabel }}
+    </div>
+
     <div class="browse-list-scroll">
       <div
         v-if="isLoading"
@@ -357,23 +387,18 @@ function onFlatSelect(payload) {
       </template>
     </div>
 
-    <div
+    <BPagination
       v-if="isPaginationVisible"
-      class="browse-list-pagination d-flex flex-wrap align-items-center justify-content-between gap-2"
-    >
-      <div class="browse-list-count text-muted small">
-        Showing {{ rangeStart }}–{{ rangeEnd }} of {{ formattedTotalCount }}
-      </div>
-      <BPagination
-        v-if="totalCount > PAGE_SIZE"
-        :model-value="page"
-        :total-rows="totalCount"
-        :per-page="PAGE_SIZE"
-        size="sm"
-        :limit="5"
-        class="mb-0"
-        @update:model-value="goToPage"
-      />
-    </div>
+      :model-value="page"
+      :total-rows="totalCount"
+      :per-page="PAGE_SIZE"
+      size="sm"
+      :limit="5"
+      align="center"
+      first-number
+      last-number
+      class="browse-list-pagination mb-0"
+      @update:model-value="goToPage"
+    />
   </div>
 </template>

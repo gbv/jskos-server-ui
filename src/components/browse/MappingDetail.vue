@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue"
+import { vBTooltip } from "bootstrap-vue-next"
 import * as jskos from "jskos-tools"
 import { ItemName, AutoLink, utils } from "jskos-vue"
 
@@ -137,7 +138,10 @@ function schemeLabel(scheme) {
         </span>
       </div>
 
-      <div class="jskos-vue-mappingDetail-connector" :title="details.typeTitle">
+      <div
+        class="jskos-vue-mappingDetail-connector"
+        v-b-tooltip.body="details.typeTitle"
+      >
         <span
           class="jskos-vue-mappingDetail-type"
           :aria-label="details.typeLabel"

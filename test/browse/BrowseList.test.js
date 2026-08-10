@@ -126,6 +126,38 @@ describe("BrowseList browsing", () => {
     })
     expect(wrapper.findAll(".stub-itemlist li")).toHaveLength(2)
     expect(wrapper.text()).toContain("Showing 1–2 of 42")
+    expect(wrapper.find("ul.browse-list-pagination").exists()).toBe(true)
+  })
+
+  it("renders the count above the list and hides pagination on a single page", async () => {
+    const result = Object.assign([{ uri: "urn:a" }, { uri: "urn:b" }], {
+      _totalCount: 2,
+    })
+    const getSchemes = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getSchemes })
+    await flushPromises()
+
+    const html = wrapper.html()
+    expect(html.indexOf("browse-list-count")).toBeLessThan(
+      html.indexOf("browse-list-scroll"),
+    )
+    expect(wrapper.find(".browse-list-count").text()).toBe("2 results")
+    expect(wrapper.find(".browse-list-pagination").exists()).toBe(false)
+  })
+
+  it("offers the first and last page number when pages are truncated", async () => {
+    const result = Object.assign([{ uri: "urn:a" }, { uri: "urn:b" }], {
+      _totalCount: 420,
+    })
+    const getSchemes = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getSchemes })
+    await flushPromises()
+
+    const pages = wrapper
+      .findAll("ul.browse-list-pagination li")
+      .map((li) => li.text())
+    expect(pages).toContain("1")
+    expect(pages).toContain("21")
   })
 
   it("shows an explicit empty state when a type has no records", async () => {
@@ -188,7 +220,7 @@ describe("BrowseList browsing", () => {
     })
     expect(wrapper.find(".stub-itemlist").exists()).toBe(false)
     expect(wrapper.findAll(".stub-mappinglist li")).toHaveLength(2)
-    expect(wrapper.text()).toContain("Showing 1–2 of 5")
+    expect(wrapper.find(".browse-list-count").text()).toBe("5 results")
 
     await wrapper.findAll(".stub-mappinglist li")[0].trigger("click")
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
@@ -208,7 +240,7 @@ describe("BrowseList browsing", () => {
       params: { limit: 20, offset: 0 },
     })
     expect(wrapper.findAll(".stub-concordancelist li")).toHaveLength(2)
-    expect(wrapper.text()).toContain("Showing 1–2 of 7")
+    expect(wrapper.find(".browse-list-count").text()).toBe("7 results")
 
     await wrapper.findAll(".stub-concordancelist li")[0].trigger("click")
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
@@ -228,7 +260,7 @@ describe("BrowseList browsing", () => {
       params: { limit: 20, offset: 0 },
     })
     expect(wrapper.findAll(".stub-annotationlist li")).toHaveLength(2)
-    expect(wrapper.text()).toContain("Showing 1–2 of 3")
+    expect(wrapper.find(".browse-list-count").text()).toBe("3 results")
 
     await wrapper.findAll(".stub-annotationlist li")[0].trigger("click")
     expect(wrapper.emitted("select")?.at(-1)).toEqual([
@@ -264,6 +296,55 @@ describe("BrowseList browsing", () => {
     expect(wrapper.find(".browse-list-empty").exists()).toBe(true)
     expect(wrapper.text()).toContain("This server has no mappings.")
     expect(wrapper.find(".stub-mappinglist").exists()).toBe(false)
+  })
+
+  it("refetches the current page via the exposed reload()", async () => {
+    const result = Object.assign([{ uri: "urn:a" }], { _totalCount: 1 })
+    const getSchemes = vi.fn().mockResolvedValue(result)
+    const wrapper = mountList({ getSchemes })
+    await flushPromises()
+    expect(getSchemes).toHaveBeenCalledTimes(1)
+
+    await wrapper.vm.reload()
+
+    expect(getSchemes).toHaveBeenCalledTimes(2)
+    expect(getSchemes).toHaveBeenLastCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+    expect(wrapper.find(".browse-list-count").text()).toBe("1 result")
+  })
+
+  it("steps back one page when a reload finds the current page empty", async () => {
+    const fullPage = Array.from({ length: 20 }, (_, i) => ({
+      uri: `urn:m${i}`,
+    }))
+    const getMappings = vi
+      .fn()
+      .mockResolvedValueOnce(Object.assign([...fullPage], { _totalCount: 21 }))
+      .mockResolvedValueOnce(
+        Object.assign([{ uri: "urn:m20" }], { _totalCount: 21 }),
+      )
+      .mockResolvedValueOnce(Object.assign([], { _totalCount: 20 }))
+      .mockResolvedValueOnce(Object.assign([...fullPage], { _totalCount: 20 }))
+    const wrapper = mountList({ getMappings }, mappingsConfig)
+    await flushPromises()
+
+    wrapper
+      .findComponent({ name: "BPagination" })
+      .vm.$emit("update:modelValue", 2)
+    await flushPromises()
+    expect(getMappings).toHaveBeenLastCalledWith({
+      params: { limit: 20, offset: 20 },
+    })
+
+    await wrapper.vm.reload()
+    await flushPromises()
+
+    expect(getMappings).toHaveBeenCalledTimes(4)
+    expect(getMappings).toHaveBeenLastCalledWith({
+      params: { limit: 20, offset: 0 },
+    })
+    expect(wrapper.find(".browse-list-count").text()).toBe("20 results")
   })
 
   it("emits scheme-change when the user picks another scheme", async () => {

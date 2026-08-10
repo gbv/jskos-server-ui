@@ -54,6 +54,24 @@ describe("objectTypes", () => {
     expect(OBJECT_TYPES.annotations.selection).toBe("memory")
   })
 
+  it("configures delete actions only for types with SDK delete support", () => {
+    expect(OBJECT_TYPES.mappings.actions.delete).toEqual({
+      method: "deleteMapping",
+      recordKey: "mapping",
+    })
+    expect(OBJECT_TYPES.concordances.actions.delete).toEqual({
+      method: "deleteConcordance",
+      recordKey: "concordance",
+    })
+    expect(OBJECT_TYPES.annotations.actions.delete).toEqual({
+      method: "deleteAnnotation",
+      recordKey: "annotation",
+    })
+    expect(OBJECT_TYPES.schemes.actions).toBeUndefined()
+    expect(OBJECT_TYPES.concepts.actions).toBeUndefined()
+    expect(OBJECT_TYPES.registries.actions).toBeUndefined()
+  })
+
   it("returns the entry or null via getObjectType", () => {
     expect(getObjectType("nope")).toBeNull()
     expect(getObjectType("schemes")).toBe(OBJECT_TYPES.schemes)

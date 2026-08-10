@@ -51,6 +51,7 @@ const annotationFixture = {
 
 const schemeFixture = { uri: "urn:scheme:1" }
 
+const browseListReload = vi.fn()
 const BrowseListStub = {
   emits: ["select", "scheme-change"],
   data: () => ({
@@ -66,6 +67,16 @@ const BrowseListStub = {
     "<button class='stub-emit-concordance' @click=\"$emit('select', { record: concordance })\">c</button>" +
     "<button class='stub-emit-annotation' @click=\"$emit('select', { record: annotation })\">a</button>" +
     "</div>",
+  setup(_, { expose }) {
+    expose({ reload: browseListReload })
+  },
+}
+
+const DetailActionBarStub = {
+  props: ["type", "record"],
+  emits: ["deleted"],
+  template:
+    "<button class='stub-delete' @click=\"$emit('deleted', { record })\">delete</button>",
 }
 
 async function mountView(storeState = {}, type = "schemes", { query } = {}) {
@@ -86,6 +97,7 @@ async function mountView(storeState = {}, type = "schemes", { query } = {}) {
         ViewTitle: { template: "<h1><slot /></h1>" },
         BrowseList: BrowseListStub,
         BrowseDetail: { template: "<div class='stub-detail'/>" },
+        DetailActionBar: DetailActionBarStub,
       },
     },
   })
@@ -102,6 +114,7 @@ beforeEach(() => {
   localStorage.clear()
   setActivePinia(createPinia())
   vi.clearAllMocks()
+  browseListReload.mockClear()
   auth.user.value = null
   auth.token.value = null
   auth.loginPublicKey.value = null
@@ -220,6 +233,25 @@ describe("BrowseView", () => {
     await wrapper.find(".stub-emit-annotation").trigger("click")
 
     expect(wrapper.find(".jskos-vue-annotationDetail").exists()).toBe(true)
+  })
+
+  it("clears the selection and reloads the list after a deletion", async () => {
+    const wrapper = await mountView(
+      {
+        activeUrl: "http://example.org/",
+        capabilities: { mappings: cap },
+      },
+      "mappings",
+    )
+    await wrapper.find(".stub-emit-mapping").trigger("click")
+    expect(wrapper.find(".jskos-vue-mappingDetail").exists()).toBe(true)
+
+    await wrapper.find(".stub-delete").trigger("click")
+    await flushPromises()
+
+    expect(wrapper.find(".jskos-vue-mappingDetail").exists()).toBe(false)
+    expect(wrapper.text()).toContain("Select an entry to see its details.")
+    expect(browseListReload).toHaveBeenCalledTimes(1)
   })
 
   it("resolves the narrower placeholder of a deep-linked concept", async () => {

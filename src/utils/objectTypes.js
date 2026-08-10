@@ -11,6 +11,7 @@
  * @property {string} [listComponent] Key selecting the flat list renderer, doubling as its collection prop name (e.g. `"items"` for ItemList). Ignored for hierarchical types.
  * @property {?string} [detailComponent] Key selecting the detail renderer, doubling as its record prop name (e.g. `"item"` for BrowseDetail), or null when the type has no detail pane.
  * @property {"url"|"memory"} [selection] Where the current selection lives: `"url"` for URI-resolvable JSKOS items (deep-linkable via the route), `"memory"` for records only available from the loaded list (mappings, concordances).
+ * @property {Object<string, {method: string, recordKey: string}>} [actions] Registry write actions keyed by capability action name (e.g. `"delete"`). `method` is the registry method to call, `recordKey` the parameter name the record is passed as. Absent when the type has no write actions in the UI.
  */
 
 /**
@@ -52,6 +53,9 @@ export const OBJECT_TYPES = {
     listComponent: "mappings",
     detailComponent: "mapping",
     selection: "memory",
+    actions: {
+      delete: { method: "deleteMapping", recordKey: "mapping" },
+    },
   },
   concordances: {
     label: "Concordances",
@@ -63,6 +67,9 @@ export const OBJECT_TYPES = {
     listComponent: "concordances",
     detailComponent: "concordance",
     selection: "memory",
+    actions: {
+      delete: { method: "deleteConcordance", recordKey: "concordance" },
+    },
   },
   annotations: {
     label: "Annotations",
@@ -74,6 +81,9 @@ export const OBJECT_TYPES = {
     listComponent: "annotations",
     detailComponent: "annotation",
     selection: "memory",
+    actions: {
+      delete: { method: "deleteAnnotation", recordKey: "annotation" },
+    },
   },
   registries: {
     label: "Registries",

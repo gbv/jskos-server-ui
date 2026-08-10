@@ -7,6 +7,7 @@ import {
   BDropdownItemButton,
   BDropdownText,
   BSpinner,
+  vBTooltip,
 } from "bootstrap-vue-next"
 import IconPerson from "~icons/bi/person-fill"
 import IconBoxArrowRight from "~icons/bi/box-arrow-right"
@@ -42,11 +43,11 @@ const identities = computed(() => {
  * Map the current connection error to a human-readable hint for the disabled
  * link.
  *
- * @returns {?string} Hint text, or null when there is no error.
+ * @returns {string|undefined} Hint text, or undefined when there is no error.
  */
 const connectionError = computed(() => {
   const error = login.lastError
-  if (!error) return null
+  if (!error) return undefined
   const errors = login.errors ?? {}
   if (
     errors.NoInternetConnectionError &&
@@ -156,7 +157,7 @@ function manageAccount() {
     v-else
     class="account-menu account-menu-signin"
     disabled
-    :title="connectionError"
+    v-b-tooltip.body="connectionError"
   >
     <BSpinner v-if="isConnecting" small class="me-1" />Sign in
   </BNavItem>
