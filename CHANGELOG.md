@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/gbv/jskos-server-ui/compare/v0.2.0...v0.3.0) (2026-08-10)
+
+
+### Features
+
+* add delete button for entries in browse views ([42f381b](https://github.com/gbv/jskos-server-ui/commit/42f381bdaedeb79278bea1077aaf96d2d46246c2)), closes [#62](https://github.com/gbv/jskos-server-ui/issues/62)
+* add delete button for entries in browse views ([#65](https://github.com/gbv/jskos-server-ui/issues/65)) ([4aad21c](https://github.com/gbv/jskos-server-ui/commit/4aad21cf6070bb2e53272e4957cba70b65e3e31a))
+
+
+### Bug Fixes
+
+* resolve CVE-2026-18446 in fast-uri ([124e167](https://github.com/gbv/jskos-server-ui/commit/124e167f8918164e0637cb6fc1dfc22d96b811fb))
+* resolve CVE-2026-18446 in fast-uri ([#77](https://github.com/gbv/jskos-server-ui/issues/77)) ([b3be040](https://github.com/gbv/jskos-server-ui/commit/b3be0400526b4e88db043ba8ca2ddaabc1a231d9))
+
 ## [0.2.0](https://github.com/gbv/jskos-server-ui/compare/v0.1.0...v0.2.0) (2026-07-17)
 
 
