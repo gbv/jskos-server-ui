@@ -3,6 +3,8 @@ import { ref, computed, watch, nextTick } from "vue"
 import { BSpinner, BFormSelect, BPagination } from "bootstrap-vue-next"
 import { ItemList, ConceptTree } from "jskos-vue"
 import * as jskos from "jskos-tools"
+import IconInbox from "~icons/bi/inbox"
+import EmptyState from "@/components/EmptyState.vue"
 import MappingList from "@/components/browse/MappingList.vue"
 import ConcordanceList from "@/components/browse/ConcordanceList.vue"
 import AnnotationList from "@/components/browse/AnnotationList.vue"
@@ -360,12 +362,10 @@ function onFlatSelect(payload) {
       </div>
 
       <template v-else>
-        <p
-          v-if="isEmpty"
-          class="browse-list-empty text-muted text-center py-5 mb-0"
-        >
+        <EmptyState v-if="isEmpty" class="browse-list-empty">
+          <template #icon><IconInbox aria-hidden="true" /></template>
           {{ emptyMessage }}
-        </p>
+        </EmptyState>
 
         <ConceptTree
           v-else-if="config.hierarchical"

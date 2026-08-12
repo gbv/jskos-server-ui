@@ -3,11 +3,13 @@ import { ref, reactive, watch, computed } from "vue"
 import { BSpinner, vBTooltip } from "bootstrap-vue-next"
 import IconLockFill from "~icons/bi/lock-fill"
 import IconDashCircle from "~icons/bi/dash-circle"
+import IconPlug from "~icons/bi/plug"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 import { useTypeAccess } from "@/composables/useTypeAccess"
 import { OBJECT_TYPES } from "@/utils/objectTypes"
 import ViewTitle from "@/components/ViewTitle.vue"
+import EmptyState from "@/components/EmptyState.vue"
 import { useCountUp } from "@/composables/useCountUp"
 
 const store = useServerStore()
@@ -96,14 +98,12 @@ watch(
 </script>
 
 <template>
-  <div
-    v-if="!store.activeUrl"
-    class="not-connected text-center py-5 text-muted"
-  >
+  <EmptyState v-if="!store.activeUrl" class="not-connected">
+    <template #icon><IconPlug aria-hidden="true" /></template>
     No server connected.
     <router-link to="/connection">Connect to a jskos-server</router-link>
     to see the dashboard.
-  </div>
+  </EmptyState>
 
   <div v-else>
     <ViewTitle>Overview</ViewTitle>

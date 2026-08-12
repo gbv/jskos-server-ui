@@ -3,12 +3,14 @@ import { ref, computed, watch } from "vue"
 import { BButton } from "bootstrap-vue-next"
 import IconArrowLeft from "~icons/bi/arrow-left"
 import IconLockFill from "~icons/bi/lock-fill"
+import IconPlug from "~icons/bi/plug"
 import { useRoute, useRouter } from "vue-router"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 import { getObjectType } from "@/utils/objectTypes"
 import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
+import EmptyState from "@/components/EmptyState.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
 import DetailActionBar from "@/components/browse/DetailActionBar.vue"
 import BrowseDetail from "@/components/browse/BrowseDetail.vue"
@@ -173,14 +175,12 @@ watch(
 </script>
 
 <template>
-  <div
-    v-if="!store.activeUrl"
-    class="not-connected text-center py-5 text-muted"
-  >
+  <EmptyState v-if="!store.activeUrl" class="not-connected">
+    <template #icon><IconPlug aria-hidden="true" /></template>
     No server connected.
     <router-link to="/connection">Connect to a jskos-server</router-link>
     to browse its content.
-  </div>
+  </EmptyState>
 
   <div v-else-if="!config" class="text-muted py-5 text-center">
     Unknown content type.
