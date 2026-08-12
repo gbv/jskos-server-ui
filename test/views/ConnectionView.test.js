@@ -129,12 +129,6 @@ describe("ConnectionView", () => {
       expect(store.connectToServer).toHaveBeenCalledWith("http://example.org/")
     })
 
-    it("shows store.error in an alert", () => {
-      expect(mountView({ error: "Connection refused" }).text()).toContain(
-        "Connection refused",
-      )
-    })
-
     it("renders a list item per URL in store.servers", () => {
       const wrapper = mountView({ servers: ["http://a.org/", "http://b.org/"] })
       expect(wrapper.findAll(".list-group-item")).toHaveLength(2)

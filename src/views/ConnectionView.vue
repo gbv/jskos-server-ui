@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
-import { BButton, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
+import { BButton, BSpinner, BCard } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
 import ServiceInfo from "@/components/ServiceInfo.vue"
 import { RemoveIcon } from "jskos-vue"
@@ -70,10 +70,6 @@ const serviceInfo = computed(() => {
 
     <!-- Disconnected state -->
     <template v-else>
-      <BAlert v-if="store.error" variant="danger" class="mb-3">
-        {{ store.error }}
-      </BAlert>
-
       <div class="input-group mb-2">
         <input
           v-model="urlInput"
