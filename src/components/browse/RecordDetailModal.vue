@@ -42,15 +42,7 @@ const title = computed(
 </script>
 
 <template>
-  <BModal
-    v-model="isVisible"
-    :title="title"
-    size="lg"
-    scrollable
-    ok-only
-    ok-title="Close"
-    ok-variant="secondary"
-  >
+  <BModal v-model="isVisible" :title="title" size="lg" scrollable no-footer>
     <component
       :is="detailComponent"
       v-if="hasDetail"
