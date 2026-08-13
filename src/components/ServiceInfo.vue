@@ -13,7 +13,10 @@ defineProps({
   isLoggedIn: Boolean,
 })
 
-const CAPABILITY_TYPES = Object.keys(OBJECT_TYPES)
+const CAPABILITY_TYPES = Object.entries(OBJECT_TYPES).map(([type, config]) => ({
+  type,
+  label: config.label,
+}))
 const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 </script>
 
@@ -72,8 +75,8 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
           </tr>
         </thead>
         <tbody>
-          <tr v-for="type in CAPABILITY_TYPES" :key="type">
-            <td class="text-capitalize ps-0 align-middle">{{ type }}</td>
+          <tr v-for="{ type, label } in CAPABILITY_TYPES" :key="type">
+            <td class="ps-0 align-middle">{{ label }}</td>
             <td
               v-for="action in CAPABILITY_ACTIONS"
               :key="action"

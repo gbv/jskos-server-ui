@@ -5,6 +5,7 @@ import IconLockFill from "~icons/bi/lock-fill"
 import IconUnlockFill from "~icons/bi/unlock-fill"
 import IconDashCircle from "~icons/bi/dash-circle"
 import ServiceInfo from "@/components/ServiceInfo.vue"
+import { OBJECT_TYPES } from "@/utils/objectTypes"
 
 function makeInfo(capabilities) {
   return {
@@ -73,6 +74,15 @@ describe("ServiceInfo header", () => {
 })
 
 describe("ServiceInfo capability matrix", () => {
+  it("labels the rows with the object type display labels", () => {
+    const wrapper = mountInfo({ info: makeInfo(capabilities) })
+    const labels = wrapper
+      .findAll("tbody tr td:first-child")
+      .map((cell) => cell.text())
+    expect(labels).toEqual(Object.values(OBJECT_TYPES).map((c) => c.label))
+    expect(labels).toContain("Terminologies")
+  })
+
   it("shows a warning lock for auth-required cells when signed out", () => {
     const wrapper = mountInfo({
       info: makeInfo(capabilities),
