@@ -19,9 +19,10 @@ function makeInfo(capabilities) {
   }
 }
 
-function mountInfo(props) {
+function mountInfo(props, slots) {
   return mount(ServiceInfo, {
     props,
+    slots,
     global: { plugins: [createBootstrap()] },
   })
 }
@@ -39,6 +40,37 @@ const capabilities = {
   registries: null,
   occurrences: null,
 }
+
+describe("ServiceInfo header", () => {
+  it("shows the service label as card header", () => {
+    const wrapper = mountInfo({ info: makeInfo(capabilities) })
+    expect(wrapper.get(".card-header").text()).toContain("Test Server")
+  })
+
+  it("falls back to the endpoint when there is no label", () => {
+    const info = makeInfo(capabilities)
+    delete info.prefLabel
+    expect(mountInfo({ info }).get(".card-header").text()).toContain(
+      "http://example.org/",
+    )
+  })
+
+  it("labels the two card body sections", () => {
+    const wrapper = mountInfo({ info: makeInfo(capabilities) })
+    expect(wrapper.findAll(".card-body h3").map((h) => h.text())).toEqual([
+      "General information",
+      "Capabilities",
+    ])
+  })
+
+  it("renders the actions slot in the header", () => {
+    const wrapper = mountInfo(
+      { info: makeInfo(capabilities) },
+      { actions: '<button class="action-stub">Disconnect</button>' },
+    )
+    expect(wrapper.get(".card-header .action-stub").exists()).toBe(true)
+  })
+})
 
 describe("ServiceInfo capability matrix", () => {
   it("shows a warning lock for auth-required cells when signed out", () => {

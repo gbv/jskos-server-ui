@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
-import { BButton, BSpinner, BCard } from "bootstrap-vue-next"
+import { BButton, BSpinner } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
 import ServiceInfo from "@/components/ServiceInfo.vue"
 import { RemoveIcon } from "jskos-vue"
+import IconPlug from "~icons/bi/plug"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
 import { useAuth } from "@/composables/useAuth"
@@ -56,16 +57,23 @@ const serviceInfo = computed(() => {
 
     <!-- Connected state -->
     <template v-if="store.activeUrl">
-      <div class="d-flex justify-content-end mb-2">
-        <BButton variant="outline-danger" size="sm" @click="handleDisconnect">
-          Disconnect
-        </BButton>
-      </div>
       <ServiceInfo
         :info="serviceInfo"
         :authorization="store.authorizationMatrix"
         :is-logged-in="loggedIn"
-      />
+      >
+        <template #actions>
+          <BButton
+            variant="outline-secondary"
+            size="sm"
+            class="d-inline-flex align-items-center gap-1"
+            @click="handleDisconnect"
+          >
+            <IconPlug />
+            Disconnect
+          </BButton>
+        </template>
+      </ServiceInfo>
     </template>
 
     <!-- Disconnected state -->
