@@ -28,6 +28,9 @@ defineProps({
 }
 
 .empty-state-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
   font-size: 3rem;
   line-height: 1;
   color: var(--empty-state-icon-color, var(--bs-secondary-color));
