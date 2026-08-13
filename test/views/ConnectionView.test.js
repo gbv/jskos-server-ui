@@ -72,10 +72,6 @@ function mountView(storeState = {}) {
         createStubRouter(),
       ],
       stubs: {
-        RemoveIcon: {
-          template:
-            '<button class="remove-icon-stub" @click="$emit(\'click\')" />',
-        },
         ViewTitle: { template: "<h1><slot /></h1>" },
       },
     },
@@ -130,8 +126,27 @@ describe("ConnectionView", () => {
     })
 
     it("renders a list item per URL in store.servers", () => {
-      const wrapper = mountView({ servers: ["http://a.org/", "http://b.org/"] })
-      expect(wrapper.findAll(".list-group-item")).toHaveLength(2)
+      const wrapper = mountView({
+        servers: [{ url: "http://a.org/" }, { url: "http://b.org/" }],
+      })
+      expect(wrapper.findAll(".server-card")).toHaveLength(2)
+    })
+
+    it("shows the server title and its environment badge", () => {
+      const wrapper = mountView({
+        servers: [{ url: "http://a.org/", title: "My Server", env: "test" }],
+      })
+      const item = wrapper.get(".server-card")
+      expect(item.text()).toContain("My Server")
+      expect(item.text()).toContain("http://a.org/")
+      expect(item.get(".badge").text()).toBe("test")
+    })
+
+    it("falls back to the URL when a server has no title", () => {
+      const wrapper = mountView({ servers: [{ url: "http://a.org/" }] })
+      const item = wrapper.get(".server-card")
+      expect(item.text()).toContain("http://a.org/")
+      expect(item.find(".badge").exists()).toBe(false)
     })
 
     it("clicking a history URL calls store.connectToServer", async () => {
@@ -140,21 +155,21 @@ describe("ConnectionView", () => {
         .mockReturnValueOnce(makeRegistry())
         .mockReturnValueOnce(makeRegistry())
 
-      const wrapper = mountView({ servers: ["http://a.org/"] })
+      const wrapper = mountView({ servers: [{ url: "http://a.org/" }] })
       const store = useServerStore()
       vi.spyOn(store, "connectToServer")
 
-      await wrapper.find(".list-group-item button.btn-link").trigger("click")
+      await wrapper.find(".server-card button.stretched-link").trigger("click")
       await flushPromises()
 
       expect(store.connectToServer).toHaveBeenCalledWith("http://a.org/")
     })
 
-    it("clicking RemoveIcon calls store.removeServer", async () => {
-      const wrapper = mountView({ servers: ["http://a.org/"] })
+    it("clicking the remove button calls store.removeServer", async () => {
+      const wrapper = mountView({ servers: [{ url: "http://a.org/" }] })
       const store = useServerStore()
       vi.spyOn(store, "removeServer")
-      await wrapper.find(".remove-icon-stub").trigger("click")
+      await wrapper.find("button.server-remove").trigger("click")
       expect(store.removeServer).toHaveBeenCalledWith("http://a.org/")
     })
 

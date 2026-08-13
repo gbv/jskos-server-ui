@@ -93,7 +93,7 @@ describe("OverviewView", () => {
           occurrences: null,
         },
       })
-      expect(wrapper.findAll(".type-card")).toHaveLength(1)
+      expect(wrapper.findAll(".app-card")).toHaveLength(1)
     })
 
     it("hides a card for a capability type that is null", () => {
@@ -109,7 +109,7 @@ describe("OverviewView", () => {
           occurrences: null,
         },
       })
-      expect(wrapper.findAll(".type-card")).toHaveLength(0)
+      expect(wrapper.findAll(".app-card")).toHaveLength(0)
     })
 
     it("renders all five cards when all capabilities are set", () => {
@@ -124,7 +124,7 @@ describe("OverviewView", () => {
           registries: cap,
         },
       })
-      expect(wrapper.findAll(".type-card")).toHaveLength(6)
+      expect(wrapper.findAll(".app-card")).toHaveLength(6)
     })
   })
 
@@ -174,7 +174,7 @@ describe("OverviewView", () => {
         },
       })
       await flushPromises()
-      const card = wrapper.find(".type-card")
+      const card = wrapper.find(".app-card")
       expect(card.exists()).toBe(true)
       expect(card.find(".spinner-border").exists()).toBe(false)
     })
@@ -230,7 +230,7 @@ describe("OverviewView", () => {
         },
       })
       await flushPromises()
-      expect(wrapper.findAll(".type-card")).toHaveLength(6)
+      expect(wrapper.findAll(".app-card")).toHaveLength(6)
       expect(
         wrapper.findAll(".count-na").filter((el) => el.text() === "✕"),
       ).toHaveLength(2)
@@ -275,8 +275,8 @@ describe("OverviewView", () => {
       })
       await flushPromises()
 
-      const card = wrapper.find(".type-card")
-      expect(card.classes()).toContain("type-card-locked")
+      const card = wrapper.find(".app-card")
+      expect(card.classes()).toContain("app-card-locked")
       expect(card.element.tagName).toBe("DIV")
       expect(card.find(".text-warning").exists()).toBe(true)
       expect(reg.getSchemes).not.toHaveBeenCalled()
@@ -295,8 +295,8 @@ describe("OverviewView", () => {
       })
       await flushPromises()
 
-      const card = wrapper.find(".type-card")
-      expect(card.classes()).toContain("type-card-locked")
+      const card = wrapper.find(".app-card")
+      expect(card.classes()).toContain("app-card-locked")
       expect(card.find(".text-danger").exists()).toBe(true)
       expect(reg.getSchemes).not.toHaveBeenCalled()
     })
@@ -318,9 +318,9 @@ describe("OverviewView", () => {
       await flushPromises()
 
       expect(reg.getSchemes).toHaveBeenCalledWith({ limit: 0 })
-      const card = wrapper.find(".type-card")
+      const card = wrapper.find(".app-card")
       expect(card.element.tagName).toBe("A")
-      expect(card.classes()).not.toContain("type-card-locked")
+      expect(card.classes()).not.toContain("app-card-locked")
     })
   })
 })

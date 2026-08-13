@@ -114,8 +114,8 @@ watch(
           :is="access[s.key] === 'open' && s.route ? 'router-link' : 'div'"
           v-if="store.capabilities?.[s.key] !== null"
           :to="access[s.key] === 'open' && s.route ? s.route : undefined"
-          class="type-card"
-          :class="{ 'type-card-locked': access[s.key] !== 'open' }"
+          class="app-card"
+          :class="{ 'app-card-locked': access[s.key] !== 'open' }"
           v-b-tooltip.body="lockTitle(s)"
         >
           <div class="card-label">{{ s.label }}</div>
