@@ -28,8 +28,8 @@ license: MIT
 #   - type: doi
 #     value: 10.5281/zenodo.XXXXXXX
 #     description: Concept DOI representing all versions of this software
-version: 0.3.0 # updated by release-please
-date-released: "2026-08-10" # updated by release-please
+version: 0.3.0 # x-release-please-version (literal marker, do not reword)
+date-released: "2026-08-10" # x-release-please-date (literal marker, do not reword)
 keywords:
   - JSKOS
   - knowledge organization systems
