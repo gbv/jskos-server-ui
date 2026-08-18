@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/gbv/jskos-server-ui/compare/v0.3.0...v0.4.0) (2026-08-18)
+
+
+### Features
+
+* make the project citable via CITATION.cff ([5416bf6](https://github.com/gbv/jskos-server-ui/commit/5416bf67041b72bef8f8f8eb69ce76ba54a2bbd7))
+* make the project citable via CITATION.cff ([#82](https://github.com/gbv/jskos-server-ui/issues/82)) ([9e4b2d6](https://github.com/gbv/jskos-server-ui/commit/9e4b2d6494abeb4474043ea7248868d4d38bab43))
+
+
+### Bug Fixes
+
+* restore tag format and CITATION.cff updates in release config ([0f9c43c](https://github.com/gbv/jskos-server-ui/commit/0f9c43c2edc879f4fc4177f1d07cbd261176d1bb))
+* restore tag format and CITATION.cff updates in release config ([#85](https://github.com/gbv/jskos-server-ui/issues/85)) ([54593ee](https://github.com/gbv/jskos-server-ui/commit/54593ee087eacc3ed6c8c630539b900cb8107f08))
+
 ## [0.3.0](https://github.com/gbv/jskos-server-ui/compare/v0.2.0...v0.3.0) (2026-08-10)
 
 
