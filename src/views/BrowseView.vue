@@ -232,33 +232,35 @@ watch(
         class="col-12 col-lg-6"
         :class="{ 'd-none d-lg-block': !hasSelection }"
       >
-        <div class="browse-pane browse-detail-pane browse-pane-body">
-          <BButton
+        <div class="browse-detail-column">
+          <div class="browse-pane browse-detail-pane browse-pane-body">
+            <BButton
+              v-if="hasSelection"
+              variant="secondary"
+              size="sm"
+              class="d-lg-none mb-2 d-inline-flex align-items-center gap-1"
+              @click="clearSelection"
+            >
+              <IconArrowLeft aria-hidden="true" />
+              Back
+            </BButton>
+            <component
+              :is="detailComponent"
+              v-if="hasSelection"
+              v-bind="detailProps"
+              @select="onSelect"
+            />
+            <p v-else class="text-muted py-4 text-center">
+              Select an entry to see its details.
+            </p>
+          </div>
+          <DetailActionBar
             v-if="hasSelection"
-            variant="secondary"
-            size="sm"
-            class="d-lg-none mb-2 d-inline-flex align-items-center gap-1"
-            @click="clearSelection"
-          >
-            <IconArrowLeft aria-hidden="true" />
-            Back
-          </BButton>
-          <component
-            :is="detailComponent"
-            v-if="hasSelection"
-            v-bind="detailProps"
-            @select="onSelect"
+            :type="type"
+            :record="selectedRecord"
+            @deleted="onDeleted"
           />
-          <p v-else class="text-muted py-4 text-center">
-            Select an entry to see its details.
-          </p>
         </div>
-        <DetailActionBar
-          v-if="hasSelection"
-          :type="type"
-          :record="selectedRecord"
-          @deleted="onDeleted"
-        />
       </div>
     </div>
   </div>

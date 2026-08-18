@@ -392,7 +392,6 @@ function onFlatSelect(payload) {
       :model-value="page"
       :total-rows="totalCount"
       :per-page="PAGE_SIZE"
-      size="sm"
       :limit="5"
       align="center"
       first-number
