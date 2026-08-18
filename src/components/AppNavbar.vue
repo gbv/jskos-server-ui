@@ -27,12 +27,21 @@ const appName = computed(
 </script>
 
 <template>
-  <BNavbar toggleable="md" class="app-navbar px-3">
-    <BNavbarBrand :to="{ name: 'overview' }" tag="router-link">
+  <BNavbar toggleable="md" class="app-navbar px-3 flex-nowrap">
+    <BNavbarBrand
+      :to="{ name: 'overview' }"
+      tag="router-link"
+      class="text-truncate"
+      :title="appName"
+    >
       {{ appName }}
     </BNavbarBrand>
 
-    <BNavbarToggle target="nav-offcanvas" @click="offcanvasVisible = true" />
+    <BNavbarToggle
+      target="nav-offcanvas"
+      class="flex-shrink-0"
+      @click="offcanvasVisible = true"
+    />
 
     <BOffcanvas
       id="nav-offcanvas"
