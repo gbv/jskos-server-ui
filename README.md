@@ -5,6 +5,7 @@
 **A web-based frontend for [jskos-server](https://github.com/gbv/jskos-server) instances.**
 
 [![npm version](https://img.shields.io/npm/v/jskos-server-ui?logo=npm&logoColor=white)](https://www.npmjs.com/package/jskos-server-ui)
+[![Docker image](https://img.shields.io/badge/ghcr.io-jskos--server--ui-2496ED?logo=docker&logoColor=white)](https://github.com/gbv/jskos-server-ui/pkgs/container/jskos-server-ui)
 [![CI status](https://img.shields.io/github/actions/workflow/status/gbv/jskos-server-ui/test.yml?style=flat&label=CI&logo=github&logoColor=white)](https://github.com/gbv/jskos-server-ui/actions/workflows/test.yml)
 [![codecov coverage](https://codecov.io/gh/gbv/jskos-server-ui/graph/badge.svg)](https://codecov.io/gh/gbv/jskos-server-ui)
 [![license](https://img.shields.io/npm/l/jskos-server-ui)](LICENSE)
