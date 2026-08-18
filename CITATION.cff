@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+title: JSKOS Server UI
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+abstract: >-
+  A web-based frontend for jskos-server instances, providing browsing and management of JSKOS data.
+authors:
+  - given-names: Markus
+    family-names: Matoni
+    email: markus.matoni@gbv.de
+    orcid: https://orcid.org/0000-0003-4389-5871
+    affiliation: Verbundzentrale des GBV (VZG)
+  - given-names: Jakob
+    family-names: Voß
+    email: jakob.voss@gbv.de
+    orcid: https://orcid.org/0000-0002-7613-4123
+    affiliation: Verbundzentrale des GBV (VZG)
+  - given-names: Rodolfo
+    family-names: Marraffa
+    email: rodolfo.marraffa@gbv.de
+    orcid: https://orcid.org/0009-0006-6578-8443
+    affiliation: Verbundzentrale des GBV (VZG)
+repository-code: https://github.com/gbv/jskos-server-ui
+url: https://coli-conc.gbv.de/jskos-server-ui/
+license: MIT
+# Fill in concept DOI after the first Zenodo release:
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: Concept DOI representing all versions of this software
+version: 0.3.0 # updated by release-please
+date-released: "2026-08-10" # updated by release-please
+keywords:
+  - JSKOS
+  - knowledge organization systems
+  - controlled vocabularies
+  - terminology services
+  - concordances
+  - Vue
