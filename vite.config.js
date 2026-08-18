@@ -1,9 +1,37 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import Icons from "unplugin-icons/vite"
+import { execSync } from "node:child_process"
 import { fileURLToPath, URL } from "node:url"
 import { resolve } from "path"
 import { version } from "./package.json"
+
+/**
+ * Determines the version to display in the application.
+ *
+ * Priority: APP_VERSION -> git tag -> commit
+ *
+ * @returns {string} the version from APP_VERSION, git, or package.json
+ */
+function resolveAppVersion() {
+  if (process.env.APP_VERSION) {
+    return process.env.APP_VERSION
+  }
+  try {
+    const git = (command) =>
+      execSync(command, { stdio: ["ignore", "pipe", "ignore"] })
+        .toString()
+        .trim()
+    const latestTag = git("git tag --list 'v*' --sort=-version:refname")
+      .split("\n")[0]
+      .replace(/^v/, "")
+    const commit = git("git rev-parse --short HEAD")
+    const isDirty = git("git status --porcelain") !== ""
+    return `${latestTag || version}+${commit}${isDirty ? ".dirty" : ""}`
+  } catch {
+    return version
+  }
+}
 
 var build = { outDir: "app" }
 
@@ -34,7 +62,7 @@ export default defineConfig({
     },
   },
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.APP_VERSION || version),
+    __APP_VERSION__: JSON.stringify(resolveAppVersion()),
   },
   build,
   base: "",
