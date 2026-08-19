@@ -19,9 +19,9 @@
 
 ## Features
 
-- **Browse:** terminologies, concepts, concordances, mappings, registries, annotations
-- **Import:** upload JSKOS data from a file or a URL
-- Connect to any jskos-server instance at runtime
+- **Browse** terminologies, concepts, concordances, mappings, registries, annotations
+- **Import** JSKOS data from a file or a URL
+- **Connect** to any jskos-server instance at runtime
 
 Built with [Vue 3](https://vuejs.org/) and [Vite](https://vitejs.dev/), using
 [cocoda-sdk](https://github.com/gbv/cocoda-sdk) for all API communication,
@@ -30,13 +30,13 @@ Built with [Vue 3](https://vuejs.org/) and [Vite](https://vitejs.dev/), using
 
 ## Usage
 
-The application can be deployed as a Docker container or as a static build. It uses hash-based
-routing, so it can be served from any path without server-side rewrites. Its components can
-also be used as a Vue library.
+The application can be deployed as a Docker container or as a static build.
+Its components can also be used as a Vue library.
 
 ### Docker Compose (recommended for production)
 
-A ready-to-use `docker-compose.yml` is included in the root of this repository. It starts jskos-server-ui, [jskos-server](https://github.com/gbv/jskos-server), and MongoDB.
+A ready-to-use `docker-compose.yml` is included in the root of this repository.
+It starts jskos-server-ui, [jskos-server](https://github.com/gbv/jskos-server), and MongoDB.
 
 ```bash
 docker compose up -d
@@ -53,7 +53,8 @@ To run only the UI against an existing jskos-server instance:
 docker run -p 8080:80 ghcr.io/gbv/jskos-server-ui:latest
 ```
 
-The image ships with a default `config.json`. To point the UI at your own services, mount a replacement over it:
+The image ships with a default `config.json`.
+To point the UI at your own services, mount a replacement over it:
 
 ```bash
 docker run -p 8080:80 \
@@ -90,7 +91,8 @@ The set of exported components is not stable yet, and some of them may move to j
 
 ## Configuration
 
-Runtime configuration is loaded from `public/config.json` at startup. This file is not bundled into the application and can be replaced at deploy time without rebuilding.
+Runtime configuration is loaded from `public/config.json` at startup.
+This file is not bundled into the application and can be replaced at deploy time without rebuilding.
 
 ```json
 {
