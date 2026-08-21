@@ -89,7 +89,7 @@ async function performDelete() {
 </script>
 
 <template>
-  <div v-if="isDeleteVisible" class="detail-action-bar row g-2 mt-2">
+  <div v-if="isDeleteVisible" class="detail-action-bar row g-2">
     <!-- TODO: Add Edit button -->
     <div class="col-6 ms-auto" v-b-tooltip.body="lockedHint">
       <BButton

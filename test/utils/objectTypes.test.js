@@ -1,4 +1,9 @@
-import { OBJECT_TYPES, getObjectType, isBrowsable } from "@/utils/objectTypes"
+import {
+  OBJECT_TYPES,
+  getObjectType,
+  isBrowsable,
+  resolveRecordRoute,
+} from "@/utils/objectTypes"
 
 describe("objectTypes", () => {
   it("treats exactly the types with a route as browsable", () => {
@@ -75,5 +80,55 @@ describe("objectTypes", () => {
   it("returns the entry or null via getObjectType", () => {
     expect(getObjectType("nope")).toBeNull()
     expect(getObjectType("schemes")).toBe(OBJECT_TYPES.schemes)
+  })
+})
+
+describe("resolveRecordRoute", () => {
+  it("addresses a flat record by its URI", () => {
+    expect(resolveRecordRoute("schemes", { uri: "urn:test:scheme" })).toEqual({
+      path: "/terminologies",
+      query: { uri: "urn:test:scheme" },
+    })
+  })
+
+  it("addresses a concept within its scheme", () => {
+    expect(
+      resolveRecordRoute("concepts", {
+        uri: "urn:test:concept",
+        inScheme: [{ uri: "urn:test:scheme" }],
+      }),
+    ).toEqual({
+      path: "/concepts",
+      query: { scheme: "urn:test:scheme", uri: "urn:test:concept" },
+    })
+  })
+
+  it("falls back to the scheme a top concept belongs to", () => {
+    expect(
+      resolveRecordRoute("concepts", {
+        uri: "urn:test:concept",
+        topConceptOf: [{ uri: "urn:test:scheme" }],
+      }).query.scheme,
+    ).toBe("urn:test:scheme")
+  })
+
+  it("has no route for a concept without a scheme", () => {
+    expect(
+      resolveRecordRoute("concepts", { uri: "urn:test:concept" }),
+    ).toBeNull()
+  })
+
+  it("has no route for types the browse view keeps in memory", () => {
+    expect(
+      resolveRecordRoute("mappings", { uri: "urn:test:mapping" }),
+    ).toBeNull()
+    expect(
+      resolveRecordRoute("annotations", { uri: "urn:test:annotation" }),
+    ).toBeNull()
+  })
+
+  it("has no route without a URI or for an unknown type", () => {
+    expect(resolveRecordRoute("schemes", {})).toBeNull()
+    expect(resolveRecordRoute("nonsense", { uri: "urn:test" })).toBeNull()
   })
 })

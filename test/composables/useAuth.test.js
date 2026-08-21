@@ -8,11 +8,15 @@ vi.mock("gbv-login-client-vue/login", async () => {
   mock.token = ref(null)
   mock.loggedIn = ref(false)
   mock.about = ref(null)
+  mock.connected = ref(false)
+  mock.openLoginWindow = vi.fn()
   return {
     user: mock.user,
     token: mock.token,
     loggedIn: mock.loggedIn,
     about: mock.about,
+    connected: mock.connected,
+    openLoginWindow: mock.openLoginWindow,
   }
 })
 
@@ -42,5 +46,10 @@ describe("useAuth", () => {
 
   it("returns null loginPublicKey when about is not loaded", () => {
     expect(useAuth().loginPublicKey.value).toBeNull()
+  })
+
+  it("signs in through the login window, returning to the current page", () => {
+    useAuth().signIn()
+    expect(mock.openLoginWindow).toHaveBeenCalledWith({ redirect: true })
   })
 })

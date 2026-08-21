@@ -10,7 +10,11 @@ const LS_SERVERS_KEY = "jskos-server-ui:servers"
 
 export const useServerStore = defineStore("server", () => {
   const activeUrl = ref(localStorage.getItem(LS_URL_KEY) ?? null)
-  const servers = ref(JSON.parse(localStorage.getItem(LS_SERVERS_KEY) ?? "[]"))
+  const servers = ref(
+    JSON.parse(localStorage.getItem(LS_SERVERS_KEY) ?? "[]").map((entry) =>
+      typeof entry === "string" ? { url: entry } : entry,
+    ),
+  )
   const registry = ref(null)
   const mappingsRegistry = ref(null)
   const status = ref(null)
@@ -97,12 +101,8 @@ export const useServerStore = defineStore("server", () => {
       syncAuth()
       activeUrl.value = url
       localStorage.setItem(LS_URL_KEY, url)
-      if (!servers.value.includes(url)) {
-        servers.value = [...servers.value, url]
-        localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(servers.value))
-      }
-      if (status.value) {
-        const cfg = status.value
+      const cfg = status.value
+      if (cfg) {
         service.value = {
           prefLabel: cfg.title ? { en: cfg.title } : null,
           version: cfg.serverVersion,
@@ -114,6 +114,11 @@ export const useServerStore = defineStore("server", () => {
           CAPABILITIES: capabilities,
         }
       }
+      servers.value = [
+        { url, title: cfg?.title, env: cfg?.env },
+        ...servers.value.filter((entry) => entry.url !== url),
+      ]
+      localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(servers.value))
     } catch (e) {
       error.value = e?.message ?? String(e)
       activeUrl.value = null
@@ -134,7 +139,7 @@ export const useServerStore = defineStore("server", () => {
   }
 
   function removeServer(url) {
-    servers.value = servers.value.filter((s) => s !== url)
+    servers.value = servers.value.filter((entry) => entry.url !== url)
     localStorage.setItem(LS_SERVERS_KEY, JSON.stringify(servers.value))
     if (activeUrl.value === url) {
       disconnectServer()

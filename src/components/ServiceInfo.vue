@@ -1,5 +1,5 @@
 <script setup>
-import { BCard } from "bootstrap-vue-next"
+import { BCard, BCardHeader } from "bootstrap-vue-next"
 import IconCheckCircleFill from "~icons/bi/check-circle-fill"
 import IconLockFill from "~icons/bi/lock-fill"
 import IconUnlockFill from "~icons/bi/unlock-fill"
@@ -13,17 +13,28 @@ defineProps({
   isLoggedIn: Boolean,
 })
 
-const CAPABILITY_TYPES = Object.keys(OBJECT_TYPES)
+const CAPABILITY_TYPES = Object.entries(OBJECT_TYPES).map(([type, config]) => ({
+  type,
+  label: config.label,
+}))
 const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
 </script>
 
 <template>
   <BCard v-if="info" no-body>
+    <BCardHeader
+      class="d-flex align-items-center justify-content-between gap-2"
+    >
+      <span class="fw-semibold text-truncate">
+        {{ info.prefLabel?.en ?? info.endpoint ?? "—" }}
+      </span>
+      <span class="flex-shrink-0">
+        <slot name="actions" />
+      </span>
+    </BCardHeader>
     <div class="card-body">
+      <h3 class="h6 text-muted mb-2">General information</h3>
       <dl class="row small mb-0">
-        <dt class="col-sm-4 text-muted">Title</dt>
-        <dd class="col-sm-8 mb-1">{{ info.prefLabel?.en ?? "—" }}</dd>
-
         <dt class="col-sm-4 text-muted">URL</dt>
         <dd class="col-sm-8 mb-1">
           <a :href="info.endpoint" target="_blank" rel="noopener">
@@ -49,8 +60,7 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
         </dd>
       </dl>
 
-      <hr class="my-3" />
-
+      <h3 class="h6 text-muted mt-4 mb-2">Capabilities</h3>
       <table class="table table-sm table-borderless small mb-0">
         <thead>
           <tr>
@@ -65,8 +75,8 @@ const CAPABILITY_ACTIONS = ["read", "create", "update", "delete"]
           </tr>
         </thead>
         <tbody>
-          <tr v-for="type in CAPABILITY_TYPES" :key="type">
-            <td class="text-capitalize ps-0 align-middle">{{ type }}</td>
+          <tr v-for="{ type, label } in CAPABILITY_TYPES" :key="type">
+            <td class="ps-0 align-middle">{{ label }}</td>
             <td
               v-for="action in CAPABILITY_ACTIONS"
               :key="action"

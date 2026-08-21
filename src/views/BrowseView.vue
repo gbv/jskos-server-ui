@@ -3,12 +3,14 @@ import { ref, computed, watch } from "vue"
 import { BButton } from "bootstrap-vue-next"
 import IconArrowLeft from "~icons/bi/arrow-left"
 import IconLockFill from "~icons/bi/lock-fill"
+import IconPlug from "~icons/bi/plug"
 import { useRoute, useRouter } from "vue-router"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 import { getObjectType } from "@/utils/objectTypes"
 import { useBrowseItemDetail } from "@/composables/useBrowseItemDetail"
 import ViewTitle from "@/components/ViewTitle.vue"
+import EmptyState from "@/components/EmptyState.vue"
 import BrowseList from "@/components/browse/BrowseList.vue"
 import DetailActionBar from "@/components/browse/DetailActionBar.vue"
 import BrowseDetail from "@/components/browse/BrowseDetail.vue"
@@ -173,14 +175,12 @@ watch(
 </script>
 
 <template>
-  <div
-    v-if="!store.activeUrl"
-    class="not-connected text-center py-5 text-muted"
-  >
+  <EmptyState v-if="!store.activeUrl" class="not-connected">
+    <template #icon><IconPlug aria-hidden="true" /></template>
     No server connected.
     <router-link to="/connection">Connect to a jskos-server</router-link>
     to browse its content.
-  </div>
+  </EmptyState>
 
   <div v-else-if="!config" class="text-muted py-5 text-center">
     Unknown content type.
@@ -232,33 +232,35 @@ watch(
         class="col-12 col-lg-6"
         :class="{ 'd-none d-lg-block': !hasSelection }"
       >
-        <div class="browse-pane browse-detail-pane browse-pane-body">
-          <BButton
+        <div class="browse-detail-column">
+          <div class="browse-pane browse-detail-pane browse-pane-body">
+            <BButton
+              v-if="hasSelection"
+              variant="secondary"
+              size="sm"
+              class="d-lg-none mb-2 d-inline-flex align-items-center gap-1"
+              @click="clearSelection"
+            >
+              <IconArrowLeft aria-hidden="true" />
+              Back
+            </BButton>
+            <component
+              :is="detailComponent"
+              v-if="hasSelection"
+              v-bind="detailProps"
+              @select="onSelect"
+            />
+            <p v-else class="text-muted py-4 text-center">
+              Select an entry to see its details.
+            </p>
+          </div>
+          <DetailActionBar
             v-if="hasSelection"
-            variant="secondary"
-            size="sm"
-            class="d-lg-none mb-2 d-inline-flex align-items-center gap-1"
-            @click="clearSelection"
-          >
-            <IconArrowLeft aria-hidden="true" />
-            Back
-          </BButton>
-          <component
-            :is="detailComponent"
-            v-if="hasSelection"
-            v-bind="detailProps"
-            @select="onSelect"
+            :type="type"
+            :record="selectedRecord"
+            @deleted="onDeleted"
           />
-          <p v-else class="text-muted py-4 text-center">
-            Select an entry to see its details.
-          </p>
         </div>
-        <DetailActionBar
-          v-if="hasSelection"
-          :type="type"
-          :record="selectedRecord"
-          @deleted="onDeleted"
-        />
       </div>
     </div>
   </div>

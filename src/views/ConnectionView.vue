@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed } from "vue"
 import { useRouter } from "vue-router"
-import { BButton, BSpinner, BCard, BAlert } from "bootstrap-vue-next"
+import { BButton, BSpinner, BBadge } from "bootstrap-vue-next"
 import ViewTitle from "@/components/ViewTitle.vue"
 import ServiceInfo from "@/components/ServiceInfo.vue"
-import { RemoveIcon } from "jskos-vue"
+import IconPlug from "~icons/bi/plug"
+import IconXLg from "~icons/bi/x-lg"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
 import { useAuth } from "@/composables/useAuth"
@@ -56,24 +57,27 @@ const serviceInfo = computed(() => {
 
     <!-- Connected state -->
     <template v-if="store.activeUrl">
-      <div class="d-flex justify-content-end mb-2">
-        <BButton variant="outline-danger" size="sm" @click="handleDisconnect">
-          Disconnect
-        </BButton>
-      </div>
       <ServiceInfo
         :info="serviceInfo"
         :authorization="store.authorizationMatrix"
         :is-logged-in="loggedIn"
-      />
+      >
+        <template #actions>
+          <BButton
+            variant="outline-secondary"
+            size="sm"
+            class="d-inline-flex align-items-center gap-1"
+            @click="handleDisconnect"
+          >
+            <IconPlug />
+            Disconnect
+          </BButton>
+        </template>
+      </ServiceInfo>
     </template>
 
     <!-- Disconnected state -->
     <template v-else>
-      <BAlert v-if="store.error" variant="danger" class="mb-3">
-        {{ store.error }}
-      </BAlert>
-
       <div class="input-group mb-2">
         <input
           v-model="urlInput"
@@ -95,25 +99,81 @@ const serviceInfo = computed(() => {
 
       <div v-if="store.servers.length" class="mt-4">
         <h3 class="h6 text-muted mb-2">Select previous servers</h3>
-        <ul class="list-group">
+        <ul class="list-unstyled d-grid gap-2 mb-0">
           <li
-            v-for="url in store.servers"
-            :key="url"
-            class="list-group-item d-flex align-items-center gap-2"
+            v-for="server in store.servers"
+            :key="server.url"
+            class="server-card app-card position-relative d-flex align-items-center gap-2"
           >
-            <button
-              class="btn btn-link text-start p-0 flex-grow-1 text-truncate link-primary-color"
-              @click="connectFromHistory(url)"
+            <div class="flex-grow-1 overflow-hidden">
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  class="stretched-link border-0 bg-transparent p-0 text-start text-truncate fw-semibold"
+                  @click="connectFromHistory(server.url)"
+                >
+                  {{ server.title ?? server.url }}
+                </button>
+                <BBadge
+                  v-if="server.env"
+                  variant="secondary"
+                  class="flex-shrink-0"
+                >
+                  {{ server.env }}
+                </BBadge>
+              </div>
+              <code class="d-block small text-muted text-truncate">{{
+                server.url
+              }}</code>
+            </div>
+            <BButton
+              variant="link"
+              class="server-remove position-relative z-2 flex-shrink-0 p-2 lh-1 text-decoration-none"
+              aria-label="Remove server"
+              @click="store.removeServer(server.url)"
             >
-              {{ url }}
-            </button>
-            <RemoveIcon
-              aria-label="Remove URL"
-              @click="store.removeServer(url)"
-            />
+              <IconXLg />
+            </BButton>
           </li>
         </ul>
       </div>
     </template>
   </div>
 </template>
+
+<style scoped>
+.server-card {
+  padding: 0.75rem 1rem;
+}
+
+.server-card button {
+  cursor: pointer;
+}
+
+.server-card .stretched-link:active {
+  transform: none;
+}
+
+.server-remove {
+  color: var(--bs-body-color);
+  opacity: 0.5;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+}
+
+.server-card:hover .server-remove {
+  opacity: 1;
+}
+
+.server-remove:hover,
+.server-remove:focus-visible {
+  opacity: 1;
+  color: var(--bs-danger);
+}
+
+@media (hover: none) {
+  .server-remove {
+    opacity: 1;
+  }
+}
+</style>
