@@ -24,6 +24,14 @@ a:hover {
   color: var(--color-primary-light);
 }
 
+.section-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));

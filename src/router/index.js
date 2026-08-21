@@ -4,6 +4,7 @@ import ConnectionView from "../views/ConnectionView.vue"
 
 const placeholder = () => import("../views/PlaceholderView.vue")
 const browse = () => import("../views/BrowseView.vue")
+const importView = () => import("../views/ImportView.vue")
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -46,5 +47,6 @@ export default createRouter({
       component: browse,
       props: { type: "annotations" },
     },
+    { path: "/import", name: "import", component: importView },
   ],
 })

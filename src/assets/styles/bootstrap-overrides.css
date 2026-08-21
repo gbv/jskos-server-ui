@@ -14,10 +14,15 @@
   --bs-body-bg-rgb: 246, 243, 243;
   --bs-link-color: var(--color-link);
   --bs-link-hover-color: var(--color-link-hover);
+  --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
 
   /* Toast/Alert variant colors */
   --bs-warning-rgb: 178, 69, 17;
   --bs-info-rgb: 244, 240, 240;
+
+  --bs-warning-bg-subtle: hsl(40, 80%, 94%);
+  --bs-warning-border-subtle: hsl(40, 74%, 80%);
+  --bs-warning-text-emphasis: hsl(40, 85%, 26%);
 }
 
 :root[data-bs-theme="dark"] {
@@ -30,6 +35,9 @@
   --bs-body-bg-rgb: 30, 26, 26;
   --bs-warning-rgb: 190, 120, 80;
   --bs-info-rgb: 26, 26, 30;
+  --bs-warning-bg-subtle: hsl(40, 40%, 12%);
+  --bs-warning-border-subtle: hsl(40, 45%, 30%);
+  --bs-warning-text-emphasis: hsl(40, 70%, 66%);
 }
 
 /* Toasts */
@@ -59,6 +67,7 @@
 .btn-primary {
   --bs-btn-bg: var(--color-primary);
   --bs-btn-border-color: var(--color-primary);
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
   --bs-btn-hover-bg: var(--color-primary-dark);
   --bs-btn-hover-border-color: var(--color-primary-dark);
   --bs-btn-active-bg: var(--color-primary-dark);
@@ -85,11 +94,20 @@
 .form-select:focus,
 .form-check-input:focus {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
 }
 
 .form-check-input:checked {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
+}
+
+.form-switch .form-check-input:focus:not(:checked) {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+}
+
+[data-bs-theme="dark"] .form-switch .form-check-input:focus:not(:checked) {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 255, 255, 0.25%29'/%3e%3c/svg%3e");
 }
 
 /* Pagination */

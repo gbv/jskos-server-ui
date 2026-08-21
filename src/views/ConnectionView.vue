@@ -149,6 +149,10 @@ const serviceInfo = computed(() => {
   cursor: pointer;
 }
 
+.server-card .stretched-link:active {
+  transform: none;
+}
+
 .server-remove {
   color: var(--bs-body-color);
   opacity: 0.5;

@@ -55,6 +55,13 @@ const appName = computed(
         </BNavItem>
         <NavbarBrowseMenu @navigate="offcanvasVisible = false" />
         <BNavItem
+          to="/import"
+          tag="router-link"
+          @click="offcanvasVisible = false"
+        >
+          Import
+        </BNavItem>
+        <BNavItem
           to="/connection"
           tag="router-link"
           @click="offcanvasVisible = false"
@@ -78,6 +85,7 @@ const appName = computed(
     >
       <BNavItem to="/" tag="router-link">Overview</BNavItem>
       <NavbarBrowseMenu />
+      <BNavItem to="/import" tag="router-link">Import</BNavItem>
       <BNavItem to="/connection" tag="router-link">Connection</BNavItem>
       <BNavItem class="py-0">
         <div

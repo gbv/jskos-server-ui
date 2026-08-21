@@ -10,6 +10,7 @@ import ConcordanceList from "@/components/browse/ConcordanceList.vue"
 import AnnotationList from "@/components/browse/AnnotationList.vue"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
+import { formatCount } from "@/utils/format"
 
 const PAGE_SIZE = 20
 
@@ -58,9 +59,7 @@ const rangeEnd = computed(
   () => (page.value - 1) * PAGE_SIZE + items.value.length,
 )
 
-const formattedTotalCount = computed(() =>
-  totalCount.value != null ? totalCount.value.toLocaleString() : "",
-)
+const formattedTotalCount = computed(() => formatCount(totalCount.value))
 
 const isCountVisible = computed(
   () =>
