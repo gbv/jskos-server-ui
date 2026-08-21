@@ -68,10 +68,22 @@ describe("useServerStore", () => {
     it("reads servers list from localStorage on store creation", () => {
       localStorage.setItem(
         LS_SERVERS_KEY,
+        JSON.stringify([{ url: "http://a.org/", title: "A" }]),
+      )
+      const store = useServerStore()
+      expect(store.servers).toEqual([{ url: "http://a.org/", title: "A" }])
+    })
+
+    it("normalizes servers stored as plain URL strings", () => {
+      localStorage.setItem(
+        LS_SERVERS_KEY,
         JSON.stringify(["http://a.org/", "http://b.org/"]),
       )
       const store = useServerStore()
-      expect(store.servers).toEqual(["http://a.org/", "http://b.org/"])
+      expect(store.servers).toEqual([
+        { url: "http://a.org/" },
+        { url: "http://b.org/" },
+      ])
     })
   })
 
@@ -90,22 +102,26 @@ describe("useServerStore", () => {
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
       expect(localStorage.getItem(LS_URL_KEY)).toBe("http://example.org/")
-      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).toContain(
-        "http://example.org/",
-      )
+      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).toEqual([
+        { url: "http://example.org/", title: "Test Server", env: "test" },
+      ])
     })
 
-    it("does not duplicate a URL already in servers", async () => {
+    it("moves a known server to the front and refreshes its title", async () => {
       localStorage.setItem(
         LS_SERVERS_KEY,
-        JSON.stringify(["http://example.org/"]),
+        JSON.stringify([
+          { url: "http://a.org/", title: "A" },
+          { url: "http://example.org/", title: "Outdated" },
+        ]),
       )
       await setup()
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
-      expect(
-        store.servers.filter((u) => u === "http://example.org/"),
-      ).toHaveLength(1)
+      expect(store.servers).toEqual([
+        { url: "http://example.org/", title: "Test Server", env: "test" },
+        { url: "http://a.org/", title: "A" },
+      ])
     })
 
     it("clears error after a successful reconnect", async () => {
@@ -170,14 +186,14 @@ describe("useServerStore", () => {
     it("removes URL from list and persists", () => {
       localStorage.setItem(
         LS_SERVERS_KEY,
-        JSON.stringify(["http://a.org/", "http://b.org/"]),
+        JSON.stringify([{ url: "http://a.org/" }, { url: "http://b.org/" }]),
       )
       const store = useServerStore()
       store.removeServer("http://a.org/")
-      expect(store.servers).not.toContain("http://a.org/")
-      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).not.toContain(
-        "http://a.org/",
-      )
+      expect(store.servers).toEqual([{ url: "http://b.org/" }])
+      expect(JSON.parse(localStorage.getItem(LS_SERVERS_KEY))).toEqual([
+        { url: "http://b.org/" },
+      ])
     })
 
     it("disconnects when the active URL is removed", async () => {

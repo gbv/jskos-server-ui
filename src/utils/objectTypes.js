@@ -5,6 +5,7 @@
  * @property {string} label Human-readable heading.
  * @property {string} registry Server-store registry to call ("registry" or "mappingsRegistry").
  * @property {?string} count Registry method returning the type's total count of objects.
+ * @property {string} [importPath] Path of the type's write endpoint, relative to the server's base URL. Absent when the type cannot be imported.
  * @property {string} [route] Router path linking to this type's browse view.
  * @property {?string} [list] Registry method returning a paginated array (with `_totalCount`), or null when the type has no generic list endpoint (e.g. hierarchical concepts).
  * @property {boolean} [hierarchical] Whether records form a scheme-bound hierarchy, rendered via ConceptTree instead of a flat list.
@@ -25,6 +26,7 @@ export const OBJECT_TYPES = {
     label: "Terminologies",
     registry: "registry",
     count: "getSchemes",
+    importPath: "voc",
     route: "/terminologies",
     list: "getSchemes",
     hierarchical: false,
@@ -36,6 +38,7 @@ export const OBJECT_TYPES = {
     label: "Concepts",
     registry: "registry",
     count: "getConcepts",
+    importPath: "concepts",
     route: "/concepts",
     list: null,
     hierarchical: true,
@@ -47,6 +50,7 @@ export const OBJECT_TYPES = {
     label: "Mappings",
     registry: "mappingsRegistry",
     count: "getMappings",
+    importPath: "mappings",
     route: "/mappings",
     list: "getMappings",
     hierarchical: false,
@@ -61,6 +65,7 @@ export const OBJECT_TYPES = {
     label: "Concordances",
     registry: "mappingsRegistry",
     count: "getConcordances",
+    importPath: "concordances",
     route: "/concordances",
     list: "getConcordances",
     hierarchical: false,
@@ -75,6 +80,7 @@ export const OBJECT_TYPES = {
     label: "Annotations",
     registry: "mappingsRegistry",
     count: "getAnnotations",
+    importPath: "annotations",
     route: "/annotations",
     list: "getAnnotations",
     hierarchical: false,
@@ -89,6 +95,7 @@ export const OBJECT_TYPES = {
     label: "Registries",
     registry: "registry",
     count: "getRegistries",
+    importPath: "registries",
     route: "/registries",
     list: "getRegistries",
     hierarchical: false,
@@ -121,4 +128,27 @@ export function getObjectType(type) {
  */
 export function isBrowsable(type) {
   return Boolean(OBJECT_TYPES[type]?.route)
+}
+
+/**
+ * Builds the browse-view location showing a single record.
+ *
+ * @param {string} type The object type key.
+ * @param {?Object} record A JSKOS record of that type.
+ * @returns {?Object} A vue-router location, or null when the type's browse view
+ *     cannot address single records.
+ */
+export function resolveRecordRoute(type, record) {
+  const config = getObjectType(type)
+  if (!config?.route || config.selection !== "url" || !record?.uri) {
+    return null
+  }
+  if (!config.hierarchical) {
+    return { path: config.route, query: { uri: record.uri } }
+  }
+  const schemeUri = (record.inScheme ?? record.topConceptOf ?? [])[0]?.uri
+  if (!schemeUri) {
+    return null
+  }
+  return { path: config.route, query: { scheme: schemeUri, uri: record.uri } }
 }

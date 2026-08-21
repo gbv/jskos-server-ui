@@ -75,10 +75,14 @@ describe("App.vue — startup sequence", () => {
   })
 
   it("auto-connects with default service when no activeUrl", async () => {
-    mockFetchSuccess({ services: [{
-      endpoint:"http://default.org/",
-      api: "http://bartoc.org/api-type/jskos"
-    }]})
+    mockFetchSuccess({
+      services: [
+        {
+          endpoint: "http://default.org/",
+          api: "http://bartoc.org/api-type/jskos",
+        },
+      ],
+    })
     const { cdk } = await import("cocoda-sdk")
     const { makeRegistry } = await import("./mocks/cdk.js")
     cdk.initializeRegistry.mockReturnValue(makeRegistry())

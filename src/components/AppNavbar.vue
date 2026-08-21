@@ -27,12 +27,21 @@ const appName = computed(
 </script>
 
 <template>
-  <BNavbar toggleable="md" class="app-navbar px-3">
-    <BNavbarBrand :to="{ name: 'overview' }" tag="router-link">
+  <BNavbar toggleable="md" class="app-navbar px-3 flex-nowrap">
+    <BNavbarBrand
+      :to="{ name: 'overview' }"
+      tag="router-link"
+      class="text-truncate"
+      :title="appName"
+    >
       {{ appName }}
     </BNavbarBrand>
 
-    <BNavbarToggle target="nav-offcanvas" @click="offcanvasVisible = true" />
+    <BNavbarToggle
+      target="nav-offcanvas"
+      class="flex-shrink-0"
+      @click="offcanvasVisible = true"
+    />
 
     <BOffcanvas
       id="nav-offcanvas"
@@ -45,6 +54,13 @@ const appName = computed(
           Overview
         </BNavItem>
         <NavbarBrowseMenu @navigate="offcanvasVisible = false" />
+        <BNavItem
+          to="/import"
+          tag="router-link"
+          @click="offcanvasVisible = false"
+        >
+          Import
+        </BNavItem>
         <BNavItem
           to="/connection"
           tag="router-link"
@@ -69,6 +85,7 @@ const appName = computed(
     >
       <BNavItem to="/" tag="router-link">Overview</BNavItem>
       <NavbarBrowseMenu />
+      <BNavItem to="/import" tag="router-link">Import</BNavItem>
       <BNavItem to="/connection" tag="router-link">Connection</BNavItem>
       <BNavItem class="py-0">
         <div

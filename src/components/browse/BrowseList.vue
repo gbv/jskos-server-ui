@@ -3,11 +3,14 @@ import { ref, computed, watch, nextTick } from "vue"
 import { BSpinner, BFormSelect, BPagination } from "bootstrap-vue-next"
 import { ItemList, ConceptTree } from "jskos-vue"
 import * as jskos from "jskos-tools"
+import IconInbox from "~icons/bi/inbox"
+import EmptyState from "@/components/EmptyState.vue"
 import MappingList from "@/components/browse/MappingList.vue"
 import ConcordanceList from "@/components/browse/ConcordanceList.vue"
 import AnnotationList from "@/components/browse/AnnotationList.vue"
 import { useServerStore } from "@/stores/server"
 import { useNotify } from "@/composables/useNotify"
+import { formatCount } from "@/utils/format"
 
 const PAGE_SIZE = 20
 
@@ -56,9 +59,7 @@ const rangeEnd = computed(
   () => (page.value - 1) * PAGE_SIZE + items.value.length,
 )
 
-const formattedTotalCount = computed(() =>
-  totalCount.value != null ? totalCount.value.toLocaleString() : "",
-)
+const formattedTotalCount = computed(() => formatCount(totalCount.value))
 
 const isCountVisible = computed(
   () =>
@@ -360,12 +361,10 @@ function onFlatSelect(payload) {
       </div>
 
       <template v-else>
-        <p
-          v-if="isEmpty"
-          class="browse-list-empty text-muted text-center py-5 mb-0"
-        >
+        <EmptyState v-if="isEmpty" class="browse-list-empty">
+          <template #icon><IconInbox aria-hidden="true" /></template>
           {{ emptyMessage }}
-        </p>
+        </EmptyState>
 
         <ConceptTree
           v-else-if="config.hierarchical"
@@ -392,7 +391,6 @@ function onFlatSelect(payload) {
       :model-value="page"
       :total-rows="totalCount"
       :per-page="PAGE_SIZE"
-      size="sm"
       :limit="5"
       align="center"
       first-number

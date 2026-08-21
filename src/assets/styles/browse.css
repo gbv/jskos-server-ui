@@ -67,7 +67,12 @@
   scrollbar-gutter: stable;
 }
 
-/* Pagination */
+/* Bottom controls */
+.detail-action-bar {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
 .browse-list-pagination {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
@@ -83,4 +88,17 @@
 .browse-list-pagination .page-link:focus-visible {
   box-shadow: 0 0 0 0.2rem var(--color-primary-opacity);
   outline: 0;
+}
+
+/* Pin the action bar to the bottom so it lines up with the list pagination */
+@media (min-width: 992px) {
+  .browse-detail-column {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 16rem);
+  }
+
+  .detail-action-bar {
+    margin-top: auto;
+  }
 }
