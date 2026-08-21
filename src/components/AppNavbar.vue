@@ -7,7 +7,9 @@ import {
   BNavbarNav,
   BNavItem,
   BOffcanvas,
+  vBTooltip,
 } from "bootstrap-vue-next"
+import IconBoxArrowUpRight from "~icons/bi/box-arrow-up-right"
 import ThemeToggle from "./ThemeToggle.vue"
 import AccountMenu from "./AccountMenu.vue"
 import NavbarBrowseMenu from "./NavbarBrowseMenu.vue"
@@ -24,10 +26,12 @@ const theme = useThemeStore()
 const appName = computed(
   () => store.service?.prefLabel?.en ?? "JSKOS Server UI",
 )
+
+const apiUrl = computed(() => store.service?.endpoint ?? store.activeUrl)
 </script>
 
 <template>
-  <BNavbar toggleable="md" class="app-navbar px-3 flex-nowrap">
+  <BNavbar toggleable="lg" class="app-navbar px-3 flex-nowrap">
     <BNavbarBrand
       :to="{ name: 'overview' }"
       tag="router-link"
@@ -36,6 +40,18 @@ const appName = computed(
     >
       {{ appName }}
     </BNavbarBrand>
+
+    <a
+      v-if="apiUrl"
+      v-b-tooltip.body="apiUrl"
+      :href="apiUrl"
+      target="_blank"
+      rel="noopener"
+      class="app-navbar-api-link flex-shrink-0 ms-2 me-auto"
+      aria-label="Open API endpoint in a new tab"
+    >
+      <IconBoxArrowUpRight />
+    </a>
 
     <BNavbarToggle
       target="nav-offcanvas"
@@ -50,6 +66,12 @@ const appName = computed(
       :title="appName"
     >
       <BNavbarNav>
+        <li v-if="apiUrl" class="app-navbar-api-url">
+          <a :href="apiUrl" target="_blank" rel="noopener">
+            {{ apiUrl }}
+            <IconBoxArrowUpRight />
+          </a>
+        </li>
         <BNavItem to="/" tag="router-link" @click="offcanvasVisible = false">
           Overview
         </BNavItem>
@@ -81,7 +103,7 @@ const appName = computed(
     </BOffcanvas>
 
     <BNavbarNav
-      class="gap-2 ms-auto mb-2 mb-md-0 d-none d-md-flex align-items-center"
+      class="gap-2 ms-auto mb-2 mb-lg-0 d-none d-lg-flex align-items-center"
     >
       <BNavItem to="/" tag="router-link">Overview</BNavItem>
       <NavbarBrowseMenu />
@@ -89,7 +111,7 @@ const appName = computed(
       <BNavItem to="/connection" tag="router-link">Connection</BNavItem>
       <BNavItem class="py-0">
         <div
-          class="vr d-none d-md-flex opacity-50"
+          class="vr d-none d-lg-flex opacity-50"
           style="height: 1.3rem"
         ></div>
       </BNavItem>

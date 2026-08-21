@@ -68,6 +68,35 @@ describe("AppNavbar", () => {
     expect(wrapper.find(".navbar-brand").text()).toContain("My Server")
   })
 
+  it("links to the API endpoint of the connected server", () => {
+    const wrapper = mountNavbar({
+      activeUrl: "http://example.org/",
+      service: {
+        prefLabel: { en: "My Server" },
+        endpoint: "http://example.org/api/",
+      },
+    })
+    const link = wrapper.find(".app-navbar-api-link")
+    expect(link.exists()).toBe(true)
+    expect(link.attributes("href")).toBe("http://example.org/api/")
+    expect(link.attributes("target")).toBe("_blank")
+    expect(link.attributes("aria-label")).toBeTruthy()
+  })
+
+  it("falls back to the active URL when the service has no endpoint", () => {
+    const wrapper = mountNavbar({
+      activeUrl: "http://example.org/",
+      service: { prefLabel: { en: "My Server" } },
+    })
+    expect(wrapper.find(".app-navbar-api-link").attributes("href")).toBe(
+      "http://example.org/",
+    )
+  })
+
+  it("renders no API link when no server is connected", () => {
+    expect(mountNavbar().find(".app-navbar-api-link").exists()).toBe(false)
+  })
+
   it("does not render a Disconnect button", () => {
     const wrapper = mountNavbar({
       activeUrl: "http://example.org/",
