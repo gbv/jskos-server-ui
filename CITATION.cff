@@ -27,8 +27,8 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.21994464
     description: Concept DOI representing all versions of this software
-version: 0.4.0 # x-release-please-version (literal marker, do not reword)
-date-released: "2026-08-18" # x-release-please-date (literal marker, do not reword)
+version: 0.5.0 # x-release-please-version (literal marker, do not reword)
+date-released: "2026-08-21" # x-release-please-date (literal marker, do not reword)
 keywords:
   - JSKOS
   - knowledge organization systems

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/gbv/jskos-server-ui/compare/v0.4.0...v0.5.0) (2026-08-21)
+
+
+### Features
+
+* add import view to import json and ndjson data for all object types ([9ae8615](https://github.com/gbv/jskos-server-ui/commit/9ae86151b810ceb493c44d5e62ee5577b2e5e63f))
+
 ## [0.4.0](https://github.com/gbv/jskos-server-ui/compare/v0.3.0...v0.4.0) (2026-08-18)
 
 ### Features
