@@ -7,7 +7,9 @@ import {
   BNavbarNav,
   BNavItem,
   BOffcanvas,
+  vBTooltip,
 } from "bootstrap-vue-next"
+import IconBoxArrowUpRight from "~icons/bi/box-arrow-up-right"
 import ThemeToggle from "./ThemeToggle.vue"
 import AccountMenu from "./AccountMenu.vue"
 import NavbarBrowseMenu from "./NavbarBrowseMenu.vue"
@@ -24,6 +26,8 @@ const theme = useThemeStore()
 const appName = computed(
   () => store.service?.prefLabel?.en ?? "JSKOS Server UI",
 )
+
+const apiUrl = computed(() => store.service?.endpoint ?? store.activeUrl)
 </script>
 
 <template>
@@ -36,6 +40,18 @@ const appName = computed(
     >
       {{ appName }}
     </BNavbarBrand>
+
+    <a
+      v-if="apiUrl"
+      v-b-tooltip.body="apiUrl"
+      :href="apiUrl"
+      target="_blank"
+      rel="noopener"
+      class="app-navbar-api-link flex-shrink-0 ms-2 me-auto"
+      aria-label="Open API endpoint in a new tab"
+    >
+      <IconBoxArrowUpRight />
+    </a>
 
     <BNavbarToggle
       target="nav-offcanvas"
@@ -50,6 +66,12 @@ const appName = computed(
       :title="appName"
     >
       <BNavbarNav>
+        <li v-if="apiUrl" class="app-navbar-api-url">
+          <a :href="apiUrl" target="_blank" rel="noopener">
+            {{ apiUrl }}
+            <IconBoxArrowUpRight />
+          </a>
+        </li>
         <BNavItem to="/" tag="router-link" @click="offcanvasVisible = false">
           Overview
         </BNavItem>

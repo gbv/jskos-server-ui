@@ -108,7 +108,7 @@ export const useServerStore = defineStore("server", () => {
           version: cfg.serverVersion,
           API_VERSION: cfg.version,
           api: "http://bartoc.org/api-type/jskos",
-          endpoint: cfg.baseUrl ?? activeUrl,
+          endpoint: cfg.baseUrl ?? activeUrl.value,
           ENV: cfg.env,
           AUTH: cfg.auth === true,
           CAPABILITIES: capabilities,
