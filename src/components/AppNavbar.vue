@@ -31,7 +31,7 @@ const apiUrl = computed(() => store.service?.endpoint ?? store.activeUrl)
 </script>
 
 <template>
-  <BNavbar toggleable="md" class="app-navbar px-3 flex-nowrap">
+  <BNavbar toggleable="lg" class="app-navbar px-3 flex-nowrap">
     <BNavbarBrand
       :to="{ name: 'overview' }"
       tag="router-link"
@@ -103,7 +103,7 @@ const apiUrl = computed(() => store.service?.endpoint ?? store.activeUrl)
     </BOffcanvas>
 
     <BNavbarNav
-      class="gap-2 ms-auto mb-2 mb-md-0 d-none d-md-flex align-items-center"
+      class="gap-2 ms-auto mb-2 mb-lg-0 d-none d-lg-flex align-items-center"
     >
       <BNavItem to="/" tag="router-link">Overview</BNavItem>
       <NavbarBrowseMenu />
@@ -111,7 +111,7 @@ const apiUrl = computed(() => store.service?.endpoint ?? store.activeUrl)
       <BNavItem to="/connection" tag="router-link">Connection</BNavItem>
       <BNavItem class="py-0">
         <div
-          class="vr d-none d-md-flex opacity-50"
+          class="vr d-none d-lg-flex opacity-50"
           style="height: 1.3rem"
         ></div>
       </BNavItem>
