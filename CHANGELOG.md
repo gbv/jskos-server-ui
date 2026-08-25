@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.0](https://github.com/gbv/jskos-server-ui/compare/v0.5.0...v0.6.0) (2026-08-25)
+
+
+### Features
+
+* link to the API endpoint from the navbar ([95db59a](https://github.com/gbv/jskos-server-ui/commit/95db59ab9fb27961b03a2a6738a0d7cab780874b))
+* link to the API endpoint from the navbar ([#92](https://github.com/gbv/jskos-server-ui/issues/92)) ([95c507c](https://github.com/gbv/jskos-server-ui/commit/95c507c5fd2de9d5807dcb06360465fc8a56ee9c))
+* support SSSOM/TSV mapping files in the import view ([515ea7a](https://github.com/gbv/jskos-server-ui/commit/515ea7a670298661c3c76358e7d39f5584c6a17c))
+
+
+### Bug Fixes
+
+* collapse the navbar into the menu below lg instead of md ([d4ee6bb](https://github.com/gbv/jskos-server-ui/commit/d4ee6bb99732f5c95c03e57103b3e9e6835fe6a4))
+
 ## [0.5.0](https://github.com/gbv/jskos-server-ui/compare/v0.4.0...v0.5.0) (2026-08-21)
 
 
