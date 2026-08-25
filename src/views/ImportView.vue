@@ -238,7 +238,7 @@ const canSignInForType = computed(
                 id="import-bulk"
                 v-model="isBulk"
                 :disabled="isUploading"
-                class="import-bulk-switch"
+                class="import-option-switch"
                 switch
               />
             </ImportOptionRow>
@@ -302,7 +302,7 @@ const canSignInForType = computed(
   margin: 2rem 0;
 }
 
-.import-bulk-switch {
+.import-option-switch {
   font-size: 1.25rem;
 }
 

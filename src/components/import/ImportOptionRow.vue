@@ -1,4 +1,6 @@
 <script setup>
+import ImportOptionInfo from "@/components/import/ImportOptionInfo.vue"
+
 defineProps({
   label: {
     type: String,
@@ -6,16 +8,25 @@ defineProps({
   },
   labelFor: {
     type: String,
-    required: true,
+    default: null,
+  },
+  labelId: {
+    type: String,
+    default: null,
   },
 })
 </script>
 
 <template>
   <div class="import-option-row">
-    <div>
-      <label class="import-option-label" :for="labelFor">{{ label }}</label>
-      <p class="import-option-description"><slot name="description" /></p>
+    <div class="import-option-heading">
+      <label v-if="labelFor" class="import-option-label" :for="labelFor">{{
+        label
+      }}</label>
+      <span v-else :id="labelId" class="import-option-label">{{ label }}</span>
+      <ImportOptionInfo :label="label"
+        ><slot name="description"
+      /></ImportOptionInfo>
     </div>
     <div class="import-option-control">
       <slot />
@@ -38,20 +49,19 @@ defineProps({
 @media (min-width: 768px) {
   .import-option-row {
     grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
-    align-items: start;
+    align-items: center;
     gap: 1.5rem;
   }
 }
 
-.import-option-label {
-  display: block;
-  font-weight: 600;
+.import-option-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
-.import-option-description {
-  margin-bottom: 0;
-  font-size: 0.875rem;
-  color: var(--bs-secondary-color);
+.import-option-label {
+  font-weight: 600;
 }
 
 .import-option-control {

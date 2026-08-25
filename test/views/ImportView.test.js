@@ -264,7 +264,7 @@ describe("ImportView", () => {
       .findAll(".import-option-row")
       .find((row) => row.find("#import-bulk").exists())
 
-    expect(bulkRow.find(".import-option-description").text()).toMatch(
+    expect(bulkRow.find(".tooltip-inner").text()).toMatch(
       /replaces records with the same URI/,
     )
   })
