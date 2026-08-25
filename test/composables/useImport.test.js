@@ -1,3 +1,4 @@
+import { toRaw } from "vue"
 import { flushPromises } from "@vue/test-utils"
 import { createTestingPinia } from "@pinia/testing"
 import { setActivePinia } from "pinia"
@@ -62,6 +63,12 @@ function makeFile(content, name) {
 const schemeLine =
   '{"uri":"urn:test:scheme","type":["http://www.w3.org/2004/02/skos/core#ConceptScheme"]}'
 
+const sssomLines = [
+  "#mapping_set_id: urn:test:set",
+  "subject_id\tpredicate_id\tobject_id\tmapping_justification",
+  "EX:1\tskos:exactMatch\tEX:2\tsemapv:ManualMappingCuration",
+].join("\n")
+
 beforeEach(() => {
   notify.mockClear()
 })
@@ -88,6 +95,46 @@ describe("source selection", () => {
     await flushPromises()
 
     expect(queue.selectedType.value).toBe("schemes")
+  })
+
+  it("adds an SSSOM/TSV file as mappings without reading it", async () => {
+    const { queue } = setup()
+    const file = makeFile(sssomLines, "mappings.sssom.tsv")
+    // A read would be the only reason to touch the file's contents.
+    const text = vi.spyOn(file, "text")
+    queue.addFile(file)
+    await flushPromises()
+
+    expect(queue.source.value).toMatchObject({
+      kind: "file",
+      format: "sssom",
+      detectedType: "mappings",
+      status: "pending",
+    })
+    expect(queue.selectedType.value).toBe("mappings")
+    expect(text).not.toHaveBeenCalled()
+  })
+
+  it("leaves a type the user chose for an SSSOM/TSV file alone", async () => {
+    const { queue } = setup()
+    queue.addFile(makeFile(sssomLines, "mappings.tsv"))
+    await flushPromises()
+
+    queue.selectedType.value = "schemes"
+
+    expect(queue.hasTypeMismatch.value).toBe(true)
+    expect(queue.blockedReason.value).toBe(null)
+  })
+
+  it("rejects an SSSOM/TSV URL, which the server cannot fetch", () => {
+    const { queue } = setup()
+    queue.addUrl("https://example.org/mappings.sssom.tsv")
+
+    expect(queue.source.value).toBe(null)
+    expect(notify).toHaveBeenCalledWith(
+      expect.stringMatching(/mappings\.sssom\.tsv.*as a file/i),
+      "warning",
+    )
   })
 
   it("leaves the type unset when it cannot be guessed", async () => {
@@ -235,10 +282,10 @@ describe("source selection", () => {
 
   it("reports a file rejected by the file input", () => {
     const { queue } = setup()
-    queue.reportRejectedFile("data.tsv")
+    queue.reportRejectedFile("data.csv")
 
     expect(notify).toHaveBeenCalledWith(
-      expect.stringMatching(/data\.tsv.*JSON and NDJSON/i),
+      expect.stringMatching(/data\.csv.*\.json, \.ndjson, or \.tsv/i),
       "warning",
     )
   })
@@ -332,6 +379,101 @@ describe("the import request", () => {
     expect(request.data).toBeInstanceOf(FormData)
     expect(request.data.get("data")).toBeInstanceOf(File)
     expect(request.data.get("data").name).toBe("vocabulary.ndjson")
+  })
+
+  it("posts an SSSOM/TSV file raw, declaring it by content type", async () => {
+    const { queue, mappingsMock } = setup()
+    const file = makeFile(sssomLines, "mappings.sssom.tsv")
+    queue.addFile(file)
+    await flushPromises()
+
+    await queue.startImport()
+
+    const request = mappingsMock.axios.mock.calls[0][0]
+    expect(request.url).toBe("http://localhost:3000/mappings")
+    // happy-dom's File lacks Symbol.toStringTag, so Vue wraps it in a reactive
+    // proxy here. Browsers tag it as [object File], which Vue leaves alone.
+    expect(toRaw(request.data)).toBe(file)
+    expect(request.headers).toEqual({
+      "Content-Type": "application/sssom+tsv",
+    })
+  })
+
+  it("leaves the content type of multipart bodies to axios", async () => {
+    const { queue, registryMock } = setup()
+    queue.addFile(makeFile(schemeLine, "vocabulary.ndjson"))
+    await flushPromises()
+
+    await queue.startImport()
+
+    expect(registryMock.axios.mock.calls[0][0].headers).toEqual({})
+  })
+
+  it("sends bulk mode for an SSSOM/TSV file as well", async () => {
+    const { queue, mappingsMock } = setup()
+    queue.addFile(makeFile(sssomLines, "mappings.tsv"))
+    await flushPromises()
+    queue.isBulk.value = true
+
+    await queue.startImport()
+
+    expect(mappingsMock.axios.mock.calls[0][0].params.bulk).toBe(true)
+  })
+
+  it("starts at the scheme mode the server applies by default", async () => {
+    const { queue, mappingsMock } = setup()
+    queue.addFile(makeFile(sssomLines, "mappings.tsv"))
+    await flushPromises()
+
+    expect(queue.schemeMode.value).toBe("given")
+
+    await queue.startImport()
+
+    expect(mappingsMock.axios.mock.calls[0][0].params.scheme).toBe("given")
+  })
+
+  it("sends the selected scheme mode for an SSSOM/TSV file", async () => {
+    const { queue, mappingsMock } = setup()
+    queue.addFile(makeFile(sssomLines, "mappings.tsv"))
+    await flushPromises()
+    queue.schemeMode.value = "lookup"
+
+    await queue.startImport()
+
+    expect(mappingsMock.axios.mock.calls[0][0].params.scheme).toBe("lookup")
+  })
+
+  it("keeps exactly one scheme mode selected", () => {
+    const { queue } = setup()
+
+    queue.schemeMode.value = "lookup"
+    expect(queue.schemeMode.value).toBe("lookup")
+
+    queue.schemeMode.value = "ignore"
+    expect(queue.schemeMode.value).toBe("ignore")
+  })
+
+  it("offers the scheme modes for SSSOM/TSV files only", async () => {
+    const { queue } = setup()
+    queue.addFile(makeFile(schemeLine, "vocabulary.ndjson"))
+    await flushPromises()
+    expect(queue.hasSchemeOptions.value).toBe(false)
+
+    queue.addFile(makeFile(sssomLines, "mappings.tsv"))
+    await flushPromises()
+    expect(queue.hasSchemeOptions.value).toBe(true)
+  })
+
+  it("omits the scheme mode for formats it does not apply to", async () => {
+    const { queue, mappingsMock } = setup()
+    queue.schemeMode.value = "ignore"
+    queue.addFile(makeFile(schemeLine, "vocabulary.ndjson"))
+    await flushPromises()
+    queue.selectedType.value = "mappings"
+
+    await queue.startImport()
+
+    expect(mappingsMock.axios.mock.calls[0][0].params.scheme).toBeUndefined()
   })
 
   it("routes concepts to /concepts rather than /voc/concepts", async () => {

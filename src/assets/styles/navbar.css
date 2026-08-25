@@ -36,6 +36,23 @@
   height: 55px;
 }
 
+.app-navbar-api-link {
+  color: var(--bs-secondary-color);
+  display: inline-flex;
+  line-height: 1;
+}
+
+.app-navbar-api-link:hover,
+.app-navbar-api-link:focus {
+  color: var(--color-primary);
+}
+
+.app-navbar-api-url {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+  padding-block: 0.5rem;
+}
+
 .app-navbar-panel {
   display: flex;
   flex-direction: column;

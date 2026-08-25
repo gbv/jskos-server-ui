@@ -13,7 +13,7 @@ describe("ImportDropzone", () => {
   it("offers the accepted file types on the file input", () => {
     const wrapper = mountDropzone()
     expect(wrapper.find("input[type=file]").attributes("accept")).toBe(
-      ".json,.ndjson",
+      ".json,.ndjson,.tsv",
     )
   })
 
@@ -33,14 +33,16 @@ describe("ImportDropzone", () => {
   })
 
   it("names the accepted extensions", () => {
-    expect(mountDropzone().text()).toMatch(/\.json or \.ndjson/)
+    expect(mountDropzone().text()).toMatch(/\.json, \.ndjson, or \.tsv/)
   })
 
   it("describes the select button with the accepted extensions", () => {
     const wrapper = mountDropzone()
     const describedBy = wrapper.find("button").attributes("aria-describedby")
 
-    expect(wrapper.find(`#${describedBy}`).text()).toBe(".json or .ndjson")
+    expect(wrapper.find(`#${describedBy}`).text()).toBe(
+      ".json, .ndjson, or .tsv",
+    )
   })
 
   it("disables the select button while an import is running", () => {
@@ -79,10 +81,10 @@ describe("ImportDropzone", () => {
     const wrapper = mountDropzone()
 
     await wrapper.trigger("drop", {
-      dataTransfer: { files: [new File(["x"], "data.tsv")] },
+      dataTransfer: { files: [new File(["x"], "data.csv")] },
     })
 
-    expect(wrapper.emitted("reject")).toEqual([["data.tsv"]])
+    expect(wrapper.emitted("reject")).toEqual([["data.csv"]])
   })
 
   it("reports a drop of more than one file", async () => {
@@ -108,11 +110,21 @@ describe("ImportDropzone", () => {
     expect(wrapper.emitted("reject")).toBeUndefined()
   })
 
+  it("accepts a dropped SSSOM/TSV file", async () => {
+    const wrapper = mountDropzone()
+
+    await wrapper.trigger("drop", {
+      dataTransfer: { files: [new File(["a\tb"], "mappings.sssom.tsv")] },
+    })
+
+    expect(wrapper.emitted("reject")).toBeUndefined()
+  })
+
   it("ignores drops while an import is running", async () => {
     const wrapper = mountDropzone({ disabled: true })
 
     await wrapper.trigger("drop", {
-      dataTransfer: { files: [new File(["x"], "data.tsv")] },
+      dataTransfer: { files: [new File(["x"], "data.csv")] },
     })
 
     expect(wrapper.emitted("reject")).toBeUndefined()
