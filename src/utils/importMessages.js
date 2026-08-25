@@ -82,12 +82,35 @@ export function importEmptyMessage(isBulk) {
 }
 
 /**
+ * Explains a missing concept scheme in terms of the SSSOM source, which
+ * jskos-server's own message does not mention.
+ *
+ * @const {string}
+ */
+const SSSOM_SCHEME_HINT =
+  "The SSSOM file declares no `subject_source` or `object_source`."
+
+/**
+ * Returns whether a rejection is about concept schemes missing from an SSSOM
+ * source, which jskos-server reports without naming SSSOM.
+ *
+ * @param {string} message The rejection message returned by the server.
+ * @param {?string} format The import format of the rejected source.
+ * @returns {boolean} True when the message needs the SSSOM hint.
+ */
+function needsSssomSchemeHint(message, format) {
+  return format === "sssom" && /`(from|to)Scheme`/.test(message)
+}
+
+/**
  * Classifies a failed import and builds its user-facing message.
  *
  * @param {!Error} error The error thrown by the request.
+ * @param {?string} [format] The import format of the source, as detected by
+ *     `detectFormat`.
  * @returns {{kind: string, message: string}} Failure kind and its message.
  */
-export function describeImportError(error) {
+export function describeImportError(error, format = null) {
   const status = error.response?.status
   if (status === 401 || status === 403) {
     return {
@@ -105,9 +128,12 @@ export function describeImportError(error) {
   // jskos-server errors
   const message = error.response.data?.message ?? error.message
   if (status === 400 || status === 422) {
+    const hint = needsSssomSchemeHint(message, format)
+      ? ` ${SSSOM_SCHEME_HINT}`
+      : ""
     return {
       kind: "rejected",
-      message: `The server rejected the data: ${message}`,
+      message: `The server rejected the data: ${message}${hint}`,
     }
   }
   return { kind: "other", message }

@@ -4,7 +4,10 @@ import { useNotify } from "@/composables/useNotify"
 import { useTypeAccess } from "@/composables/useTypeAccess"
 import { getObjectType } from "@/utils/objectTypes"
 import {
+  ACCEPTED_FILE_TYPES_HINT,
   IMPORTABLE_TYPES,
+  SCHEME_MODES,
+  SSSOM_CONTENT_TYPE,
   detectFormat,
   extractFirstObject,
   guessType,
@@ -52,6 +55,7 @@ export function useImport() {
 
   const source = ref(null)
   const isBulk = ref(false)
+  const schemeMode = ref(SCHEME_MODES[0].value)
   const selectedType = ref(null)
 
   let abortController = null
@@ -104,6 +108,12 @@ export function useImport() {
   const isUploading = computed(() => source.value?.status === "uploading")
 
   /**
+   * Whether the source is an SSSOM/TSV file, the only format whose import the
+   * scheme handling applies to.
+   */
+  const hasSchemeOptions = computed(() => source.value?.format === "sssom")
+
+  /**
    * What a finished import wrote, or null while none succeeded.
    */
   const result = computed(() =>
@@ -143,14 +153,19 @@ export function useImport() {
     if (inspected.kind !== "file") {
       return
     }
-    try {
-      const sample = await readSample(inspected.file, inspected.format)
-      inspected.detectedType = guessType(
-        extractFirstObject(sample, inspected.format),
-      )
-    } catch (error) {
-      notify(`Could not read ${inspected.name}: ${error.message}`, "warning")
-      return
+    if (inspected.format === "sssom") {
+      // SSSOM/TSV holds mappings by definition, and is not JSON to sample.
+      inspected.detectedType = "mappings"
+    } else {
+      try {
+        const sample = await readSample(inspected.file, inspected.format)
+        inspected.detectedType = guessType(
+          extractFirstObject(sample, inspected.format),
+        )
+      } catch (error) {
+        notify(`Could not read ${inspected.name}: ${error.message}`, "warning")
+        return
+      }
     }
     if (
       inspected.detectedType &&
@@ -185,6 +200,13 @@ export function useImport() {
     if (!trimmed) {
       return
     }
+    if (detectFormat(trimmed) === "sssom") {
+      notify(
+        `Cannot import ${trimmed}. The server cannot fetch SSSOM/TSV, so it has to be imported as a file.`,
+        "warning",
+      )
+      return
+    }
     setSource(createSource({ kind: "url", url: trimmed }))
   }
 
@@ -216,7 +238,7 @@ export function useImport() {
    */
   function reportRejectedFile(name) {
     notify(
-      `Cannot import ${name} — only JSON and NDJSON are supported.`,
+      `Cannot import ${name}. Only ${ACCEPTED_FILE_TYPES_HINT} are supported.`,
       "warning",
     )
   }
@@ -231,8 +253,8 @@ export function useImport() {
   /**
    * Builds the request parameters.
    *
-   * A URL is handed to the server, which fetches it itself.
-   * A file is streamed as multipart form data.
+   * A URL is handed to the server, which fetches it itself. A file is sent as
+   * the request body, see {@link buildBody}.
    *
    * @param {!ImportSource} imported The source to import.
    * @returns {!Object} The request parameters.
@@ -241,6 +263,9 @@ export function useImport() {
     const params = {}
     if (isBulk.value) {
       params.bulk = true
+    }
+    if (hasSchemeOptions.value) {
+      params.scheme = schemeMode.value
     }
     if (imported.kind === "url") {
       params.url = imported.url
@@ -254,16 +279,38 @@ export function useImport() {
   /**
    * Builds the request body.
    *
+   * SSSOM/TSV is sent raw, because the server recognizes it by the request's
+   * content type. Other formats are streamed as multipart form data.
+   *
    * @param {!ImportSource} imported The source to import.
-   * @returns {?FormData} The body, or null when the server fetches the data.
+   * @returns {?FormData|!File} The body, or null when the server fetches the
+   *     data.
    */
   function buildBody(imported) {
     if (imported.kind !== "file") {
       return null
     }
+    if (imported.format === "sssom") {
+      return imported.file
+    }
     const body = new FormData()
     body.append("data", imported.file, imported.file.name)
     return body
+  }
+
+  /**
+   * Builds the request headers.
+   *
+   * @param {!ImportSource} imported The source to import.
+   * @returns {!Object<string, string>} The headers, empty unless the format has
+   *     to be declared. Multipart bodies are left to axios, which adds the
+   *     boundary to their content type.
+   */
+  function buildHeaders(imported) {
+    if (imported.kind !== "file" || imported.format !== "sssom") {
+      return {}
+    }
+    return { "Content-Type": SSSOM_CONTENT_TYPE }
   }
 
   /**
@@ -304,6 +351,7 @@ export function useImport() {
         method: "post",
         url: resolveImportUrl(store.activeUrl, type),
         params: buildParams(imported),
+        headers: buildHeaders(imported),
         data: buildBody(imported),
         signal: abortController.signal,
       })
@@ -321,7 +369,7 @@ export function useImport() {
         imported.errorKind = "canceled"
         return
       }
-      const { kind, message } = describeImportError(error)
+      const { kind, message } = describeImportError(error, imported.format)
       imported.status = "failed"
       imported.errorKind = kind
       imported.error = message
@@ -354,12 +402,14 @@ export function useImport() {
   return {
     source,
     isBulk,
+    schemeMode,
     selectedType,
     canImport,
     typeAccess,
     unavailableReason,
     blockedReason,
     hasTypeMismatch,
+    hasSchemeOptions,
     isUploading,
     result,
     addFile,

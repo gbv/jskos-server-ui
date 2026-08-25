@@ -1,5 +1,6 @@
 import {
   IMPORTABLE_TYPES,
+  SCHEME_MODES,
   ACCEPTED_FILE_TYPES,
   ACCEPTED_FILE_TYPES_HINT,
   resolveImportUrl,
@@ -119,8 +120,14 @@ describe("detectFormat", () => {
     expect(detectFormat("concepts.ndjson")).toBe("ndjson")
   })
 
+  it("detects sssom from the tsv extension", () => {
+    expect(detectFormat("mappings.tsv")).toBe("sssom")
+    expect(detectFormat("mappings.sssom.tsv")).toBe("sssom")
+  })
+
   it("is case insensitive", () => {
     expect(detectFormat("VOCABULARY.JSON")).toBe("json")
+    expect(detectFormat("MAPPINGS.TSV")).toBe("sssom")
   })
 
   it("ignores query strings and fragments on URLs", () => {
@@ -129,7 +136,7 @@ describe("detectFormat", () => {
   })
 
   it("returns null for unknown or missing extensions", () => {
-    expect(detectFormat("data.tsv")).toBe(null)
+    expect(detectFormat("data.csv")).toBe(null)
     expect(detectFormat("https://example.org/api/voc")).toBe(null)
     expect(detectFormat("")).toBe(null)
   })
@@ -149,7 +156,7 @@ describe("ACCEPTED_FILE_TYPES_HINT", () => {
   })
 
   it("joins the extensions into a readable list", () => {
-    expect(ACCEPTED_FILE_TYPES_HINT).toBe(".json or .ndjson")
+    expect(ACCEPTED_FILE_TYPES_HINT).toBe(".json, .ndjson, or .tsv")
   })
 })
 
@@ -314,5 +321,22 @@ describe("isCanceled", () => {
 
   it("leaves other failures alone", () => {
     expect(isCanceled(new Error("Network Error"))).toBe(false)
+  })
+})
+
+describe("SCHEME_MODES", () => {
+  it("names the values jskos-server accepts for its scheme parameter", () => {
+    expect(SCHEME_MODES.map((mode) => mode.value)).toEqual([
+      "given",
+      "lookup",
+      "ignore",
+    ])
+  })
+
+  it("labels and describes every mode", () => {
+    for (const mode of SCHEME_MODES) {
+      expect(mode.label).toBeTruthy()
+      expect(mode.description).toBeTruthy()
+    }
   })
 })
