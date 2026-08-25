@@ -3,7 +3,7 @@ import { ref } from "vue"
 import { createTestingPinia } from "@pinia/testing"
 import { createRouter, createMemoryHistory } from "vue-router"
 import ImportView from "@/views/ImportView.vue"
-import { IMPORTABLE_TYPES } from "@/utils/import"
+import { IMPORTABLE_TYPES, SCHEME_MODES } from "@/utils/import"
 
 const notify = vi.hoisted(() => vi.fn())
 
@@ -45,6 +45,7 @@ function setQueue(overrides = {}) {
       result: null,
     }),
     isBulk: ref(false),
+    schemeMode: ref("given"),
     selectedType: ref("schemes"),
     canImport: ref(true),
     typeAccess: ref(
@@ -53,6 +54,7 @@ function setQueue(overrides = {}) {
     unavailableReason: ref(null),
     blockedReason: ref(null),
     hasTypeMismatch: ref(false),
+    hasSchemeOptions: ref(false),
     isUploading: ref(false),
     result: ref(null),
     addFile: vi.fn(),
@@ -267,6 +269,90 @@ describe("ImportView", () => {
     expect(bulkRow.find(".tooltip-inner").text()).toMatch(
       /replaces records with the same URI/,
     )
+  })
+
+  it("hides the scheme handling for formats other than SSSOM/TSV", () => {
+    const rows = mountView().findAll(".import-option-row")
+
+    expect(rows).toHaveLength(2)
+    expect(mountView().find("#import-scheme-given").exists()).toBe(false)
+  })
+
+  it("keeps the scheme modes together in a single row", () => {
+    setQueue({ hasSchemeOptions: ref(true) })
+    const wrapper = mountView()
+    const rows = wrapper.findAll(".import-option-row")
+
+    expect(rows).toHaveLength(3)
+    const schemeRow = rows.find((row) =>
+      row.find("#import-scheme-given").exists(),
+    )
+    for (const mode of SCHEME_MODES) {
+      expect(schemeRow.find(`#import-scheme-${mode.value}`).exists()).toBe(true)
+    }
+  })
+
+  it("labels each scheme mode and explains it in its own tooltip", () => {
+    setQueue({ hasSchemeOptions: ref(true) })
+    const wrapper = mountView()
+
+    for (const mode of SCHEME_MODES) {
+      const option = wrapper
+        .findAll(".import-scheme-option")
+        .find((candidate) =>
+          candidate.find(`#import-scheme-${mode.value}`).exists(),
+        )
+      expect(option.find("label").text()).toBe(mode.label)
+      expect(option.find(".tooltip-inner").text()).toBe(mode.description)
+    }
+  })
+
+  it("names the scheme row without pointing at a single mode", () => {
+    setQueue({ hasSchemeOptions: ref(true) })
+    const wrapper = mountView()
+    const heading = wrapper.find("#import-scheme-label")
+
+    expect(heading.text()).toBe("Schemes")
+    expect(heading.element.tagName).toBe("SPAN")
+    expect(
+      wrapper.find('[role="radiogroup"]').attributes("aria-labelledby"),
+    ).toBe("import-scheme-label")
+  })
+
+  it("marks only the selected scheme mode as switched on", () => {
+    setQueue({ hasSchemeOptions: ref(true), schemeMode: ref("lookup") })
+    const wrapper = mountView()
+
+    expect(wrapper.find("#import-scheme-lookup").element.checked).toBe(true)
+    expect(wrapper.find("#import-scheme-given").element.checked).toBe(false)
+    expect(wrapper.find("#import-scheme-ignore").element.checked).toBe(false)
+  })
+
+  it("switches on the default scheme mode without being asked to", () => {
+    setQueue({ hasSchemeOptions: ref(true) })
+    const wrapper = mountView()
+
+    expect(wrapper.find("#import-scheme-given").element.checked).toBe(true)
+  })
+
+  it("selects the scheme mode that was clicked", async () => {
+    setQueue({ hasSchemeOptions: ref(true) })
+    const wrapper = mountView()
+
+    await wrapper.find("#import-scheme-ignore").setValue()
+
+    expect(queue.schemeMode.value).toBe("ignore")
+  })
+
+  it("makes the scheme modes one radio group, so one always applies", () => {
+    setQueue({ hasSchemeOptions: ref(true) })
+    const wrapper = mountView()
+
+    for (const mode of SCHEME_MODES) {
+      const input = wrapper.find(`#import-scheme-${mode.value}`)
+      expect(input.attributes("type")).toBe("radio")
+      expect(input.attributes("name")).toBe("import-scheme")
+    }
   })
 
   it("shows no confirmation before an import succeeded", () => {

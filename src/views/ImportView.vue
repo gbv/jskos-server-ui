@@ -3,6 +3,7 @@ import { computed, ref, useTemplateRef, watch } from "vue"
 import {
   BButton,
   BFormCheckbox,
+  BFormRadio,
   BFormSelect,
   BSpinner,
 } from "bootstrap-vue-next"
@@ -16,7 +17,7 @@ import IconUpload from "~icons/bi/upload"
 import { useServerStore } from "@/stores/server"
 import { useAuth } from "@/composables/useAuth"
 import { useImport } from "@/composables/useImport"
-import { IMPORTABLE_TYPES } from "@/utils/import"
+import { IMPORTABLE_TYPES, SCHEME_MODES } from "@/utils/import"
 import { importTypeOptionLabel } from "@/utils/importMessages"
 import { getObjectType } from "@/utils/objectTypes"
 import ViewTitle from "@/components/ViewTitle.vue"
@@ -25,6 +26,7 @@ import ImportDropzone from "@/components/import/ImportDropzone.vue"
 import ImportUrlInput from "@/components/import/ImportUrlInput.vue"
 import ImportSourceSummary from "@/components/import/ImportSourceSummary.vue"
 import ImportOptionRow from "@/components/import/ImportOptionRow.vue"
+import ImportOptionInfo from "@/components/import/ImportOptionInfo.vue"
 import ImportNote from "@/components/import/ImportNote.vue"
 import ImportSuccess from "@/components/import/ImportSuccess.vue"
 
@@ -33,12 +35,14 @@ const { isLoginConnected, signIn } = useAuth()
 const {
   source,
   isBulk,
+  schemeMode,
   selectedType,
   canImport,
   typeAccess,
   unavailableReason,
   blockedReason,
   hasTypeMismatch,
+  hasSchemeOptions,
   isUploading,
   result,
   addFile,
@@ -242,6 +246,36 @@ const canSignInForType = computed(
                 switch
               />
             </ImportOptionRow>
+
+            <ImportOptionRow
+              v-if="hasSchemeOptions"
+              label="Schemes"
+              label-id="import-scheme-label"
+            >
+              <template #description>
+                How the server determines the schemes of imported mappings.
+              </template>
+              <div role="radiogroup" aria-labelledby="import-scheme-label">
+                <div
+                  v-for="mode in SCHEME_MODES"
+                  :key="mode.value"
+                  class="import-scheme-option"
+                >
+                  <BFormRadio
+                    :id="`import-scheme-${mode.value}`"
+                    v-model="schemeMode"
+                    name="import-scheme"
+                    :value="mode.value"
+                    :disabled="isUploading"
+                  >
+                    {{ mode.label }}
+                  </BFormRadio>
+                  <ImportOptionInfo :label="mode.label">
+                    {{ mode.description }}
+                  </ImportOptionInfo>
+                </div>
+              </div>
+            </ImportOptionRow>
           </div>
         </section>
 
@@ -304,6 +338,12 @@ const canSignInForType = computed(
 
 .import-option-switch {
   font-size: 1.25rem;
+}
+
+.import-scheme-option {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .import-note-action {

@@ -141,6 +141,54 @@ describe("describeImportError", () => {
     expect(described.message).toMatch(/Invalid JSKOS entity\./)
   })
 
+  it("explains a missing scheme on an SSSOM source", () => {
+    const described = describeImportError(
+      {
+        response: {
+          status: 422,
+          data: { message: "Property `fromScheme` is missing." },
+        },
+      },
+      "sssom",
+    )
+
+    expect(described.kind).toBe("rejected")
+    expect(described.message).toMatch(/Property `fromScheme` is missing\./)
+    expect(described.message).toMatch(/subject_source/)
+  })
+
+  it("leaves the same rejection alone for JSKOS sources", () => {
+    const described = describeImportError(
+      {
+        response: {
+          status: 422,
+          data: { message: "Property `fromScheme` is missing." },
+        },
+      },
+      "ndjson",
+    )
+
+    expect(described.message).toBe(
+      "The server rejected the data: Property `fromScheme` is missing.",
+    )
+  })
+
+  it("adds no scheme hint to other SSSOM rejections", () => {
+    const described = describeImportError(
+      {
+        response: {
+          status: 400,
+          data: { message: "Could not parse SSSOM/TSV." },
+        },
+      },
+      "sssom",
+    )
+
+    expect(described.message).toBe(
+      "The server rejected the data: Could not parse SSSOM/TSV.",
+    )
+  })
+
   it("falls back to the plain error for other responses", () => {
     expect(
       describeImportError({

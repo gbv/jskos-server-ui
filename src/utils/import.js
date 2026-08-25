@@ -18,7 +18,15 @@ export const IMPORTABLE_TYPES = Object.keys(OBJECT_TYPES).filter(
 const FORMAT_BY_EXTENSION = {
   json: "json",
   ndjson: "ndjson",
+  tsv: "sssom",
 }
+
+/**
+ * Content type jskos-server recognizes SSSOM/TSV request bodies by.
+ *
+ * @const {string}
+ */
+export const SSSOM_CONTENT_TYPE = "application/sssom+tsv"
 
 /**
  * Value for the file input's `accept` attribute.
@@ -31,7 +39,7 @@ export const ACCEPTED_FILE_TYPES = Object.keys(FORMAT_BY_EXTENSION)
 
 /**
  * Human-readable counterpart of {@link ACCEPTED_FILE_TYPES}, e.g.
- * `.json or .ndjson`.
+ * `.json, .ndjson, or .tsv`.
  *
  * @const {string}
  */
@@ -170,8 +178,8 @@ export function isCanceled(error) {
  * Detects the import format from a file name or URL.
  *
  * @param {string} nameOrUrl A file name or URL.
- * @returns {?string} `"json"`, `"ndjson"`, or null when the extension is
- *     missing or unknown.
+ * @returns {?string} `"json"`, `"ndjson"`, `"sssom"`, or null when the
+ *     extension is missing or unknown.
  */
 export function detectFormat(nameOrUrl) {
   if (!nameOrUrl) {
@@ -249,3 +257,30 @@ export function readSample(file, format) {
   const shouldReadFully = format === "json" && file.size <= MAX_SAMPLE_SIZE
   return shouldReadFully ? file.text() : file.slice(0, SAMPLE_BYTE_COUNT).text()
 }
+
+/**
+ * How jskos-server should determine `fromScheme` and `toScheme` of imported
+ * mappings, in the order the options are offered in the UI.
+ *
+ * These are the values of the server's `scheme` parameter, of which exactly one
+ * applies per import. The first is the server's default.
+ *
+ * @const {!Array<{value: string, label: string, description: string}>}
+ */
+export const SCHEME_MODES = [
+  {
+    value: "given",
+    label: "From SSSOM metadata",
+    description: "Takes missing schemes from the SSSOM metadata.",
+  },
+  {
+    value: "lookup",
+    label: "From stored concepts",
+    description: "Resolves missing schemes from concepts on the server.",
+  },
+  {
+    value: "ignore",
+    label: "Not required",
+    description: "Imports mappings that have no schemes instead of failing.",
+  },
+]
