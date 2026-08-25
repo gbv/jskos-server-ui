@@ -29,7 +29,7 @@ const entries = computed(() =>
     record,
     label: recordLabel(record),
     dataUrl: store.activeUrl
-      ? resolveDataUrl(store.activeUrl, record.uri)
+      ? resolveDataUrl(store.activeUrl, record.uri || record.id)
       : null,
     browseRoute: resolveRecordRoute(props.result.type, record),
   })),
