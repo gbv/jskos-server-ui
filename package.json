@@ -45,6 +45,7 @@
     "vue-router": "^5.0.5"
   },
   "overrides": {
+    "fast-uri": "^3.1.6",
     "js-beautify": "^2.0.3"
   },
   "lint-staged": {
