@@ -128,12 +128,15 @@ export function describeImportError(error, format = null) {
   // jskos-server errors
   const message = error.response.data?.message ?? error.message
   if (status === 400 || status === 422) {
+    const position = Object.entries(error.response.data?.position || {})
+      .map(([dim, addr]) => ` ${dim} ${addr} `)
+      .join("=")
     const hint = needsSssomSchemeHint(message, format)
       ? ` ${SSSOM_SCHEME_HINT}`
       : ""
     return {
       kind: "rejected",
-      message: `The server rejected the data: ${message}${hint}`,
+      message: `The server rejected the data: ${message}${position}${hint}`,
     }
   }
   return { kind: "other", message }
