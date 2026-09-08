@@ -25,14 +25,18 @@ const props = defineProps({
 const store = useServerStore()
 
 const entries = computed(() =>
-  props.result.records.map((record) => ({
-    record,
-    label: recordLabel(record),
-    dataUrl: store.activeUrl
-      ? resolveDataUrl(store.activeUrl, record.uri || record.id)
-      : null,
-    browseRoute: resolveRecordRoute(props.result.type, record),
-  })),
+  props.result.records.map((record, index) => {
+    const uri = record.uri || record.id
+    return {
+      record,
+      uri,
+      key: uri || `record-${index}`,
+      label: recordLabel(record),
+      dataUrl:
+        store.activeUrl && uri ? resolveDataUrl(store.activeUrl, uri) : null,
+      browseRoute: resolveRecordRoute(props.result.type, record),
+    }
+  }),
 )
 
 const remainingCount = computed(
@@ -67,21 +71,16 @@ function showDetails(record) {
       Records ({{ formatCount(result.count) }})
     </h3>
     <ul class="import-result-list list-unstyled mb-0">
-      <li
-        v-for="entry in entries"
-        :key="entry.record.uri"
-        class="import-result-entry"
-      >
-        <span
-          class="import-result-name text-truncate"
-          :title="entry.record.uri"
-        >
+      <li v-for="entry in entries" :key="entry.key" class="import-result-entry">
+        <span class="import-result-name text-truncate" :title="entry.uri">
           <ItemName
             v-if="entry.label"
             :item="entry.record"
             :draggable="false"
           />
-          <span v-else class="import-result-uri">{{ entry.record.uri }}</span>
+          <span v-else class="import-result-uri">{{
+            entry.uri || "no identifier reported"
+          }}</span>
         </span>
         <span class="import-result-actions">
           <button
