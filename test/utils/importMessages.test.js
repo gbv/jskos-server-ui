@@ -189,6 +189,43 @@ describe("describeImportError", () => {
     )
   })
 
+  it.each([
+    [{ line: 6 }, "(line 6)"],
+    [
+      { jsonpointer: "/mapping_date", line: 3, rfc5147: "line=2,3" },
+      "(line 3, /mapping_date)",
+    ],
+    [{ jsonpointer: "/confidence", line: 7 }, "(line 7, /confidence)"],
+    [{ linecol: "3:5" }, "(line 3 column 5)"],
+    [{ rfc5147: "line=2,4" }, "(line 3-4)"],
+    [
+      { jsonpointer: "/creator_id", rfc5147: "line=2,5" },
+      "(line 3-5, /creator_id)",
+    ],
+    [{ jsonpointer: "/curie_map/skos" }, "(/curie_map/skos)"],
+  ])("names the error location of %j", (position, expected) => {
+    const described = describeImportError({
+      response: { status: 400, data: { message: "Invalid value.", position } },
+    })
+
+    expect(described.message).toBe(
+      `The server rejected the data: Invalid value. ${expected}`,
+    )
+  })
+
+  it("leaves the message alone without a usable position", () => {
+    const described = describeImportError({
+      response: {
+        status: 400,
+        data: { message: "Could not parse.", position: { rfc5147: "char=17" } },
+      },
+    })
+
+    expect(described.message).toBe(
+      "The server rejected the data: Could not parse.",
+    )
+  })
+
   it("falls back to the plain error for other responses", () => {
     expect(
       describeImportError({

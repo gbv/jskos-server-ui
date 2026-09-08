@@ -91,6 +91,29 @@ const SSSOM_SCHEME_HINT =
   "The SSSOM file declares no `subject_source` or `object_source`."
 
 /**
+ * Formats where in the source a rejected record went wrong.
+ *
+ * @param {?Object<string, *>} position The error location as reported by
+ *     jskos-server, mapping locator types to locations.
+ * @returns {string} The location in parentheses, or an empty string when no
+ *     locator is usable.
+ */
+function formatPosition(position) {
+  const { linecol, line, rfc5147, jsonpointer } = position ?? {}
+  // RFC 5147 counts line positions from 0, so "line=2,5" means lines 3 to 5.
+  const span = /^line=(\d+),(\d+)(;.*)?$/.exec(rfc5147 ?? "")
+  const location = [
+    (/^\d+:\d+$/.test(linecol) && `line ${linecol.replace(":", " column ")}`) ||
+      (line && `line ${line}`) ||
+      (span && `line ${Number(span[1]) + 1}-${span[2]}`),
+    jsonpointer,
+  ]
+    .filter(Boolean)
+    .join(", ")
+  return location ? ` (${location})` : ""
+}
+
+/**
  * Returns whether a rejection is about concept schemes missing from an SSSOM
  * source, which jskos-server reports without naming SSSOM.
  *
@@ -128,9 +151,7 @@ export function describeImportError(error, format = null) {
   // jskos-server errors
   const message = error.response.data?.message ?? error.message
   if (status === 400 || status === 422) {
-    const position = Object.entries(error.response.data?.position || {})
-      .map(([dim, addr]) => ` ${dim} ${addr} `)
-      .join("=")
+    const position = formatPosition(error.response.data?.position)
     const hint = needsSssomSchemeHint(message, format)
       ? ` ${SSSOM_SCHEME_HINT}`
       : ""
