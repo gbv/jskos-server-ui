@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from "vue-router"
 import OverviewView from "../views/OverviewView.vue"
 import ConnectionView from "../views/ConnectionView.vue"
 
-const placeholder = () => import("../views/PlaceholderView.vue")
 const browse = () => import("../views/BrowseView.vue")
 const importView = () => import("../views/ImportView.vue")
 
