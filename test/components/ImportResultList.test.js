@@ -162,6 +162,32 @@ describe("ImportResultList", () => {
     ).toEqual(["Details", "Browse"])
   })
 
+  it("identifies records that carry an id instead of a uri", () => {
+    const wrapper = mountList({
+      type: "annotations",
+      records: [{ id: "http://example.org/annotations/1" }],
+    })
+
+    expect(wrapper.find(".import-result-uri").text()).toBe(
+      "http://example.org/annotations/1",
+    )
+    expect(wrapper.find("a").attributes("href")).toBe(
+      "http://localhost:3000/data?uri=http%3A%2F%2Fexample.org%2Fannotations%2F1",
+    )
+  })
+
+  it("omits the data link for a record without any identifier", () => {
+    const wrapper = mountList({
+      type: "annotations",
+      records: [{ motivation: "assessing" }],
+    })
+
+    expect(wrapper.find(".import-result-uri").text()).toBe(
+      "no identifier reported",
+    )
+    expect(wrapper.findAll("a")).toHaveLength(0)
+  })
+
   it("links each record to its own place in the browse view", () => {
     const wrapper = mountList({
       count: 2,
