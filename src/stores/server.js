@@ -8,6 +8,15 @@ import { useAuth } from "@/composables/useAuth"
 const LS_URL_KEY = "jskos-server-ui:activeUrl"
 const LS_SERVERS_KEY = "jskos-server-ui:servers"
 
+function setSearchParams(query) {
+  const url = new URL(window.location)
+  url.search = ""
+  Object.entries(query).forEach(([key, value]) =>
+    url.searchParams.set(key, value),
+  )
+  window.history.pushState(null, null, url)
+}
+
 export const useServerStore = defineStore("server", () => {
   const activeUrl = ref(localStorage.getItem(LS_URL_KEY) ?? null)
   const servers = ref(
@@ -88,6 +97,7 @@ export const useServerStore = defineStore("server", () => {
           "Server did not return a status. Check the URL and try again.",
         )
       }
+      setSearchParams({ endpoint: url })
       const mappingsReg = cdk.initializeRegistry({
         provider: "MappingsApi",
         api: url,
@@ -136,6 +146,7 @@ export const useServerStore = defineStore("server", () => {
     error.value = null
     activeUrl.value = null
     localStorage.removeItem(LS_URL_KEY)
+    setSearchParams({})
   }
 
   function removeServer(url) {
