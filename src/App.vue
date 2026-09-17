@@ -17,7 +17,11 @@ useThemeStore()
 
 onMounted(async () => {
   await config.loadConfig()
-  const url = server.activeUrl ?? config.defaultService?.endpoint ?? null
+  const url =
+    new URLSearchParams(window.location.search).get("endpoint") ??
+    server.activeUrl ??
+    config.defaultService?.endpoint ??
+    null
   if (url) {
     await server.connectToServer(url)
     if (server.error) {

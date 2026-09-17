@@ -72,9 +72,14 @@ describe("App.vue — startup sequence", () => {
     expect(cdk.initializeRegistry).toHaveBeenCalledWith(
       expect.objectContaining({ api: "http://cached.org/" }),
     )
+
+    expect(window.location.search).toEqual(
+      "?endpoint=http%3A%2F%2Fcached.org%2F",
+    )
   })
 
   it("auto-connects with default service when no activeUrl", async () => {
+    window.location.search = ""
     mockFetchSuccess({
       services: [
         {
@@ -95,10 +100,21 @@ describe("App.vue — startup sequence", () => {
     )
   })
 
-  it("does not connect when neither activeUrl nor default service is set", async () => {
+  it("does not connect when no query parameter, activeUrl, or default service is set", async () => {
     const { cdk } = await import("cocoda-sdk")
+    window.location.search = ""
     mountApp({ server: { activeUrl: null } })
     await flushPromises()
     expect(cdk.initializeRegistry).not.toHaveBeenCalled()
+  })
+
+  it("gets endpoint from query parameter first", async () => {
+    const { cdk } = await import("cocoda-sdk")
+    window.location.search = "endpoint=http://example.com/"
+    mountApp({ server: { activeUrl: "http://default.org/" } })
+    await flushPromises()
+    expect(cdk.initializeRegistry).toHaveBeenCalledWith(
+      expect.objectContaining({ api: "http://example.com/" }),
+    )
   })
 })
