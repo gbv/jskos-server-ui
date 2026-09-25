@@ -16,6 +16,9 @@ export function makeRegistry(overrides = {}) {
       mappings: { read: {}, create: { auth: true } },
       concordances: { read: {} },
       annotations: { read: {} },
+      openapi: {
+        paths: { "/checkAut": {} },
+      },
     },
     getSchemes: vi.fn().mockResolvedValue(makeCountResponse(5)),
     getMappings: vi.fn().mockResolvedValue(makeCountResponse(100)),
@@ -23,6 +26,14 @@ export function makeRegistry(overrides = {}) {
     getAnnotations: vi.fn().mockResolvedValue(makeCountResponse(0)),
     setAuth: vi.fn(),
     isAuthorizedFor: vi.fn(() => true),
+    checkAuth: vi.fn().mockResolvedValue({
+      access: {
+        schemes: { read: true, create: true, update: true, delete: true },
+        mappings: { read: true, create: true, update: true, delete: true },
+        concordances: { read: true, create: true, update: true, delete: true },
+        annotations: { read: true, create: true, update: true, delete: true },
+      },
+    }),
     ...overrides,
   }
 }
