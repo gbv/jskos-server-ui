@@ -35,7 +35,7 @@
   "dependencies": {
     "bootstrap": "^5.3.8",
     "bootstrap-vue-next": "^0.44.7",
-    "cocoda-sdk": "~3.7.0",
+    "cocoda-sdk": "^3.8.4",
     "countup.js": "^2.10.0",
     "gbv-login-client-vue": "^1.0.0",
     "jskos-tools": "^1.3.1",

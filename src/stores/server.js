@@ -41,42 +41,48 @@ export const useServerStore = defineStore("server", () => {
   }
 
   /**
-   * Rebuilds the authorization matrix from the current capabilities and
+   * Queries or builds the authorization matrix from the current capabilities and
    * the logged-in user.
    *
    * @returns {?Object<string, Object<string, boolean>>} Matrix keyed by type
    *     and action, or `null` when no capabilities are loaded.
    */
-  function computeAuthorizationMatrix() {
-    const caps = capabilities.value
-    if (!caps) return null
-    const matrix = {}
-    for (const [type, actions] of Object.entries(caps)) {
-      if (!actions) continue
-      for (const [action, cap] of Object.entries(actions)) {
-        if (!cap?.requiresAuth) continue
-        const reg = registryForType(type)
-        if (!reg) continue
-        matrix[type] ??= {}
-        matrix[type][action] = reg.isAuthorizedFor({
-          type,
-          action,
-          user: user.value,
-        })
+  async function getAuthorizationMatrix() {
+    const checkAuth = registry.value?.checkAuth()
+    if (checkAuth) {
+      // not available for all JSKOS-API services
+      return (await checkAuth.catch(() => null))?.access
+    } else {
+      const matrix = {}
+      const caps = capabilities.value
+      if (!caps) return null
+      for (const [type, actions] of Object.entries(caps)) {
+        if (!actions) continue
+        for (const [action, cap] of Object.entries(actions)) {
+          if (!cap?.requiresAuth) continue
+          const reg = registryForType(type)
+          if (!reg) continue
+          matrix[type] ??= {}
+          matrix[type][action] = reg.isAuthorizedFor({
+            type,
+            action,
+            user: user.value,
+          })
+        }
       }
+      return matrix
     }
-    return matrix
   }
 
   /**
    * Pushes the current login credentials into both registries and refreshes the
    * authorization matrix.
    */
-  function syncAuth() {
+  async function syncAuth() {
     const auth = { key: loginPublicKey.value, bearerToken: token.value }
     registry.value?.setAuth(auth)
     mappingsRegistry.value?.setAuth(auth)
-    authorizationMatrix.value = computeAuthorizationMatrix()
+    authorizationMatrix.value = getAuthorizationMatrix()
   }
 
   // Keep registry auth and authorization in sync when the login state changes
@@ -108,7 +114,7 @@ export const useServerStore = defineStore("server", () => {
       mappingsRegistry.value = mappingsReg
       status.value = reg._config
       capabilities.value = parseCapabilities(reg)
-      syncAuth()
+      await syncAuth()
       activeUrl.value = url
       localStorage.setItem(LS_URL_KEY, url)
       const cfg = status.value
