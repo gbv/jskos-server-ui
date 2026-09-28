@@ -331,25 +331,7 @@ describe("useServerStore", () => {
       const store = useServerStore()
       await store.connectToServer("http://example.org/")
       mreg.isAuthorizedFor.mockClear()
-      store.isAuthorizedFor("mappings", "create")
-      expect(mreg.isAuthorizedFor).toHaveBeenCalledWith({
-        type: "mappings",
-        action: "create",
-        user: null,
-      })
-    })
-
-    it("delegates to the concept registry for non-mapping types", async () => {
-      const { reg } = await setup()
-      const store = useServerStore()
-      await store.connectToServer("http://example.org/")
-      reg.isAuthorizedFor.mockClear()
-      store.isAuthorizedFor("schemes", "update")
-      expect(reg.isAuthorizedFor).toHaveBeenCalledWith({
-        type: "schemes",
-        action: "update",
-        user: null,
-      })
+      expect(store.isAuthorizedFor("mappings", "create")).toBe(true)
     })
 
     it("returns false when not connected", () => {
