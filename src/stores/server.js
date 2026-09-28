@@ -172,8 +172,7 @@ export const useServerStore = defineStore("server", () => {
   }
 
   /**
-   * Returns whether the currently logged-in user is authorized for the given
-   * action.
+   * Returns whether the current user is authorized for the given action.
    *
    * @param {string} type Capability type (e.g. `"schemes"`, `"mappings"`).
    * @param {string} action Action to check (`"read"`, `"create"`, `"update"`,
@@ -182,6 +181,9 @@ export const useServerStore = defineStore("server", () => {
    *     connected.
    */
   function isAuthorizedFor(type, action) {
+    if (authorizationMatrix.value) {
+      return authorizationMatrix.value[type]?.[action]
+    }
     const reg = registryForType(type)
     if (!reg) return false
     return reg.isAuthorizedFor({ type, action, user: user.value })
